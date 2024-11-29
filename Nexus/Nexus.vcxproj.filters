@@ -25,6 +25,7 @@
       <Filter>API\third_party\miniaudio</Filter>
     </ClCompile>
     <ClCompile Include="App\DirectSound.cpp" />
+    <ClCompile Include="Games\OriginalTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -57,6 +58,7 @@
     </ClInclude>
     <ClInclude Include="App\DirectSound.h" />
     <ClInclude Include="App\mydirectsound.h" />
+    <ClInclude Include="Games\OriginalTest.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
