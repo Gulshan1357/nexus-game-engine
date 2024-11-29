@@ -1,6 +1,6 @@
 #pragma once
 
-class OriginalTest
+class OriginalDemo
 {
 public:
 	void Initialize();

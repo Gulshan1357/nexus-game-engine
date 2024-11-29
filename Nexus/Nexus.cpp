@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "Games/OriginalTest.h"
-OriginalTest game;
+#include "Games/OriginalDemo.h"
+OriginalDemo game;
 
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.

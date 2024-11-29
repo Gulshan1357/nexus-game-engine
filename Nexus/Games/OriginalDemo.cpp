@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //------------------------------------------------------------------------
 #include "stdafx.h"
-#include "OriginalTest.h"
+#include "OriginalDemo.h"
 //------------------------------------------------------------------------
 #include <windows.h> 
 #include <math.h>  
@@ -27,7 +27,7 @@ enum
 };
 //------------------------------------------------------------------------
 
-void OriginalTest::Initialize()
+void OriginalDemo::Initialize()
 {
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
@@ -42,7 +42,7 @@ void OriginalTest::Initialize()
 	//------------------------------------------------------------------------
 }
 
-void OriginalTest::Update(float deltaTime)
+void OriginalDemo::Update(float deltaTime)
 {
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
@@ -112,7 +112,7 @@ void OriginalTest::Update(float deltaTime)
 	}
 }
 
-void OriginalTest::Render()
+void OriginalDemo::Render()
 {
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
@@ -145,7 +145,7 @@ void OriginalTest::Render()
 	}
 }
 
-void OriginalTest::Shutdown()
+void OriginalDemo::Shutdown()
 {
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
