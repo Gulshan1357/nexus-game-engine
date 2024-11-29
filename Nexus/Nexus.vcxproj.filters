@@ -26,6 +26,7 @@
     </ClCompile>
     <ClCompile Include="App\DirectSound.cpp" />
     <ClCompile Include="Games\OriginalTest.cpp" />
+    <ClCompile Include="src\Utils\Logger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -59,6 +60,7 @@
     <ClInclude Include="App\DirectSound.h" />
     <ClInclude Include="App\mydirectsound.h" />
     <ClInclude Include="Games\OriginalTest.h" />
+    <ClInclude Include="src\Utils\Logger.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
