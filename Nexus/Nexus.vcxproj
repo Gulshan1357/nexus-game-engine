@@ -186,7 +186,9 @@
   <ItemGroup>
     <ClInclude Include="App\app.h" />
     <ClInclude Include="App\AppSettings.h" />
+    <ClInclude Include="App\DirectSound.h" />
     <ClInclude Include="App\main.h" />
+    <ClInclude Include="App\mydirectsound.h" />
     <ClInclude Include="App\SimpleController.h" />
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
@@ -197,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App\app.cpp" />
+    <ClCompile Include="App\DirectSound.cpp" />
     <ClCompile Include="App\main.cpp" />
     <ClCompile Include="App\SimpleController.cpp" />
     <ClCompile Include="App\SimpleSound.cpp" />

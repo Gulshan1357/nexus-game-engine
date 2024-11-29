@@ -3711,6 +3711,14 @@ See below for some tips on improving performance.
   is due to 64-bit file APIs not being available.
 */
 
+// Suppress some warnings that arises due to code analysis
+#pragma warning( push )
+#pragma warning( disable : 6262 )
+#pragma warning( disable : 6385 )
+#pragma warning( disable : 26819 )
+#pragma warning( disable : 6011 )
+#pragma warning( disable : 6386 )
+
 #ifndef miniaudio_h
 #define miniaudio_h
 
@@ -92569,6 +92577,8 @@ MA_API void ma_dr_mp3_free(void* p, const ma_allocation_callbacks* pAllocationCa
 #endif  /* miniaudio_c */
 #endif  /* MINIAUDIO_IMPLEMENTATION */
 
+// End Supressed warnings
+#pragma warning( pop )
 
 /*
 This software is available as a choice of the following licenses. Choose

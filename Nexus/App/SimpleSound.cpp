@@ -20,9 +20,13 @@ CSimpleSound &CSimpleSound::GetInstance()
 	return theSoundClass;
 }
 
+// Suppress a warning that arises due to code analysis
+#pragma warning( push )
+#pragma warning( disable : 26495 )
 CSimpleSound::CSimpleSound()
 {
 }
+#pragma warning( pop )
 
 CSimpleSound::~CSimpleSound()
 {
