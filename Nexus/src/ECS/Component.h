@@ -6,9 +6,6 @@ protected:
 	static int m_nextId;
 };
 
-// Allocating memory for the static variable
-int IComponent::m_nextId = 0;
-
 template <typename T>
 class Component : public IComponent
 {
