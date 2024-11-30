@@ -28,6 +28,7 @@
     <ClCompile Include="Games\OriginalDemo.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="Games\TestApp.cpp" />
+    <ClCompile Include="src\ECS\Coordinator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -63,6 +64,11 @@
     <ClInclude Include="Games\OriginalDemo.h" />
     <ClInclude Include="src\Utils\Logger.h" />
     <ClInclude Include="Games\TestApp.h" />
+    <ClInclude Include="src\ECS\Entity.h" />
+    <ClInclude Include="src\ECS\Coordinator.h" />
+    <ClInclude Include="src\ECS\Pool.h" />
+    <ClInclude Include="src\ECS\Component.h" />
+    <ClInclude Include="src\ECS\System.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

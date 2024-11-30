@@ -195,6 +195,11 @@
     <ClInclude Include="Games\OriginalDemo.h" />
     <ClInclude Include="Games\TestApp.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
+    <ClInclude Include="src\ECS\Component.h" />
+    <ClInclude Include="src\ECS\Coordinator.h" />
+    <ClInclude Include="src\ECS\Entity.h" />
+    <ClInclude Include="src\ECS\Pool.h" />
+    <ClInclude Include="src\ECS\System.h" />
     <ClInclude Include="src\Utils\Logger.h" />
     <ClInclude Include="stb_image\stb_image.h" />
     <ClInclude Include="stdafx.h" />
@@ -211,6 +216,7 @@
     <ClCompile Include="Games\TestApp.cpp" />
     <ClCompile Include="Nexus.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />
+    <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">
