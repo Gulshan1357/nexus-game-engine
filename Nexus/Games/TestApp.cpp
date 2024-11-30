@@ -26,7 +26,7 @@ void TestApp::Initialize()
 	Logger::Log("TestApp::Initialize()");
 
 	Entity test = m_coordinator->CreateEntity();
-	m_coordinator->AddComponent<TransformComponent>(test, 0.f, 0.f, 0.f);
+	m_coordinator->AddComponent<TransformComponent>(test, Vector2(5.2f, 7.9f), Vector2(5.2f, 7.9f), 0.0);
 	m_coordinator->KillEntity(test);
 }
 

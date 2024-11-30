@@ -72,6 +72,7 @@
     <ClInclude Include="src\ECS\Component.h" />
     <ClInclude Include="src\ECS\System.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
+    <ClInclude Include="src\Utils\Vector2.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
