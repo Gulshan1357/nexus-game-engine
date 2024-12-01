@@ -82,10 +82,27 @@ void Coordinator::KillEntity(Entity entity)
 
 void Coordinator::AddEntityToSystems(Entity entity) const
 {
-	// TODO:
+	const auto entityId = entity.GetId();
+
+	const auto& entityComponentSignature = m_entityComponentSignatures[entityId];
+
+	for (auto& system : systems)
+	{
+		const auto& systemComponentSignature = system.second->GetComponentSignature();
+
+		bool isInterested = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
+
+		if (isInterested)
+		{
+			system.second->AddEntityToSystem(entity);
+		}
+	}
 }
 
-void Coordinator::RemoveEntityFromSystem(Entity entity)
+void Coordinator::RemoveEntityFromSystem(Entity entity) const
 {
-	// TODO:  
+	for (auto system : systems)
+	{
+		system.second->RemoveEntityFromSystem(entity);
+	}
 }

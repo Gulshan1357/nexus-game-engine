@@ -201,6 +201,7 @@
     <ClInclude Include="src\ECS\Entity.h" />
     <ClInclude Include="src\ECS\Pool.h" />
     <ClInclude Include="src\ECS\System.h" />
+    <ClInclude Include="src\Systems\MovementSystem.h" />
     <ClInclude Include="src\Utils\Logger.h" />
     <ClInclude Include="src\Utils\Vector2.h" />
     <ClInclude Include="stb_image\stb_image.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />
+    <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">

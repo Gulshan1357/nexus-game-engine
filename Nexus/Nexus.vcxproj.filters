@@ -31,6 +31,7 @@
     <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
+    <ClCompile Include="src\ECS\System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -73,6 +74,7 @@
     <ClInclude Include="src\ECS\System.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
     <ClInclude Include="src\Utils\Vector2.h" />
+    <ClInclude Include="src\Systems\MovementSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

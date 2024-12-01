@@ -1,7 +1,5 @@
 #pragma once
 
-#include <src/Utils/Logger.h>
-
 #include "../Utils/Vector2.h"
 
 struct TransformComponent
@@ -14,7 +12,5 @@ struct TransformComponent
 		position(position),
 		scale(scale),
 		rotation(rotation)
-	{
-		Logger::Log("Added TransformComponent");
-	}
+	{}
 };

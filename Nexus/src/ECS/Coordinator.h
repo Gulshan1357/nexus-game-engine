@@ -11,7 +11,11 @@
 #include "Pool.h"
 #include "src/Utils/Logger.h"
 #include <deque>
+#include <unordered_map>
+#include <typeindex>
+#include "System.h"
 
+// Do I need to forward declare IPool?
 class IPool;
 
 constexpr unsigned int MAX_COMPONENTS = 32;
@@ -46,9 +50,19 @@ public:
 	template <typename TComponent>
 	TComponent& GetComponent(Entity entity) const;
 
+	// System management
+	template <typename TSystem, typename... TArgs>
+	void AddSystem(TArgs&&... args);
+	template <typename TSystem>
+	void RemoveSystem();
+	template <typename TSystem>
+	bool HasSystem() const;
+	template <typename TSystem>
+	TSystem GetSystem() const;
+
 	// Check the component signature of an entity and add the entity to the systems that are interested in it
 	void AddEntityToSystems(Entity entity) const;
-	void RemoveEntityFromSystem(Entity entity);
+	void RemoveEntityFromSystem(Entity entity) const;
 
 private:
 	int m_numEntities = 0;
@@ -61,6 +75,10 @@ private:
 	// Vector of component signatures per entity, saying which component is turned on for a given entity
 	// [Vector index = entity id]
 	std::vector<Signature> m_entityComponentSignatures;
+
+	// Map of active systems
+	// [Map key = system type id]
+	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
 	// Set of entities that are flagged to be added or removed in the next registry Update();
 	std::set<Entity> m_entitiesToBeAdded;
@@ -83,56 +101,56 @@ void Coordinator::AddComponent(Entity entity, TArgs&& ...args)
 	const auto entityId = entity.GetId();
 
 	// Ensuring entity doesn't have this component
-	/*if (!m_entityComponentSignatures[entityId].test(componentId))
-	{*/
-	std::cout << "Here" << std::endl;
-	// Check if the list of Pools is big enough, if not resize()
-	if (componentId >= m_componentPools.size())
+	if (!m_entityComponentSignatures[entityId].test(componentId))
 	{
-		Logger::Warn("Increasing m_componentPools size");
-		m_componentPools.resize(componentId + 1, nullptr);
-	}
+		// std::cout << "Here" << std::endl;
+		// Check if the list of Pools is big enough, if not resize()
+		if (componentId >= m_componentPools.size())
+		{
+			// Logger::Warn("Increasing m_componentPools size");
+			m_componentPools.resize(componentId + 1, nullptr);
+		}
 
-	std::cout << "The type is: " << typeid(TComponent).name() << std::endl;
-	std::cout << "Component Id: " << componentId << std::endl;
-	std::cout << "Component Pools [Component id]: " << m_componentPools[componentId] << std::endl;
-	// if the required pool is not there, add a new pool for the component
-	if (!m_componentPools[componentId])
-	{
-		std::cout << "The type is: " << typeid(TComponent).name() << std::endl;
-		std::shared_ptr<Pool<TComponent>> newComponentPool = std::make_shared<Pool<TComponent>>();
-		m_componentPools[componentId] = newComponentPool;
-	}
+		// std::cout << "The type is: " << typeid(TComponent).name() << std::endl;
+		// std::cout << "Component Id: " << componentId << std::endl;
+		// std::cout << "Component Pools [Component id]: " << m_componentPools[componentId] << std::endl;
+		// if the required pool is not there, add a new pool for the component
+		if (!m_componentPools[componentId])
+		{
+			// std::cout << "The type is: " << typeid(TComponent).name() << std::endl;
+			std::shared_ptr<Pool<TComponent>> newComponentPool = std::make_shared<Pool<TComponent>>();
+			m_componentPools[componentId] = newComponentPool;
+		}
 
-	std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(m_componentPools[componentId]);
+		std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(m_componentPools[componentId]);
 
-	// If the component pool is not big enough for the entity id then resize()
-	if (entityId >= componentPool->GetSize())
-	{
-		std::cout << "Resizing " << typeid(TComponent).name() << " Pool" << std::endl;
-		componentPool->Resize(m_numEntities);
-	}
+		// If the component pool is not big enough for the entity id then resize()
+		if (entityId >= componentPool->GetSize())
+		{
+			std::cout << "Resizing " << typeid(TComponent).name() << " Pool" << std::endl;
+			componentPool->Resize(m_numEntities);
+		}
 
-	// Finally we can create the component and set it's component bitset
-	TComponent newComponent(std::forward<TArgs>(args)...);
-	componentPool->Set(entityId, newComponent);
-	m_entityComponentSignatures[entityId].set(componentId);
+		// Finally we can create the component and set it's component bitset
+		TComponent newComponent(std::forward<TArgs>(args)...);
+		componentPool->Set(entityId, newComponent);
+		m_entityComponentSignatures[entityId].set(componentId);
 
-	if (m_entityComponentSignatures[entityId].test(componentId))
-	{
-		Logger::Log(
-			"Component id = " + std::to_string(componentId) +
-			" was added to entity id " + std::to_string(entityId));
+		if (m_entityComponentSignatures[entityId].test(componentId))
+		{
+			Logger::Log(
+				"Component id = " + std::to_string(componentId) +
+				" was added to entity id " + std::to_string(entityId));
+		}
+		else
+		{
+			Logger::Err("Couldn't add the component!");
+		}
 	}
-	else
-	{
-		Logger::Err("Couldn't add the component!");
-	}
-	/*}
 	else
 	{
 		Logger::Err("Entity already has this component");
-	}*/
+	}
 }
 
 template <typename TComponent>
@@ -172,8 +190,43 @@ TComponent& Coordinator::GetComponent(Entity entity) const
 	return componentPool->Get(entityId);
 }
 
+//------------------------------------------------------------------------
+// System management Template Functions
+//------------------------------------------------------------------------
+template <typename TSystem, typename ...TArgs>
+void Coordinator::AddSystem(TArgs&& ...args)
+{
+	TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
+	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
 
-// // For debug
+	// If error try this:
+	/*if (auto system = systems.find(std::type_index(typeid(TSystem))); system != systems.end())
+	{
+		systems.erase(system);
+	}*/
+}
+
+template <typename TSystem>
+void Coordinator::RemoveSystem()
+{
+	auto system = systems.find(std::type_index(typeid(TSystem)));
+	systems.erase(system);
+}
+
+template <typename TSystem>
+bool Coordinator::HasSystem() const
+{
+	return systems.find(std::type_index(typeid(TSystem))) != systems.end();
+}
+
+template <typename TSystem>
+TSystem Coordinator::GetSystem() const
+{
+	auto system = systems.find(std::type_index(typeid(TSystem)));
+	return *(std::static_pointer_cast<TSystem>(system->second));
+}
+
+// // To debug forward Args
 // template <typename... TArgs>
 // void PrintArgs(TArgs&&... args)
 // {

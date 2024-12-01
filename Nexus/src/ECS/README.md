@@ -8,7 +8,7 @@ Contains:
 4. **Coordinator**: Manages ECS
    - Entity Management: To add and delete entities at the start of Update()
    - Component Management: Template functions for each <TComponent>
-   - System Management: ?
+   - System Management: Every system has a list of m_entities and a bitset m_componentSignature. Each System's Update() handles the modification to their respective <TComponent> which is called in game.Update(). Template functions for each <TSystem>
 
 Highlights:
 

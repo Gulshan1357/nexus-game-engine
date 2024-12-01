@@ -7,6 +7,7 @@
 #include "src/Components/TransformComponent.h"
 #include "src/ECS/Coordinator.h"
 #include "src/ECS/Entity.h"
+#include "src/Systems/MovementSystem.h"
 
 #include "src/Utils/Logger.h"
 
@@ -25,9 +26,13 @@ void TestApp::Initialize()
 {
 	Logger::Log("TestApp::Initialize()");
 
+	// Add Systems
+	m_coordinator->AddSystem<MovementSystem>();
+
+	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
 	m_coordinator->AddComponent<TransformComponent>(test, Vector2(5.2f, 7.9f), Vector2(5.2f, 7.9f), 0.0);
-	m_coordinator->KillEntity(test);
+	// m_coordinator->KillEntity(test);
 }
 
 // int test = 0;
@@ -43,6 +48,9 @@ void TestApp::Update(float deltaTime)
 
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
+
+	// Invoke all the systems to needs to update
+	m_coordinator->GetSystem<MovementSystem>().Update(deltaTime);
 }
 
 void TestApp::Render()
