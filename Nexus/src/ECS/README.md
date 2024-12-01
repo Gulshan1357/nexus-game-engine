@@ -1,6 +1,6 @@
 # ECS: Entity Component System
 
-Contains:
+## Contains:
 
 1. **Entity**: Contains just an integer id and some helpful operator overload for Entity to Entity comparisons
 2. **Component**: Contains an IComponent interface and ...
@@ -10,6 +10,6 @@ Contains:
    - Component Management: Template functions for each <TComponent>
    - System Management: Every system has a list of m_entities and a bitset m_componentSignature. Each System's Update() handles the modification to their respective <TComponent> which is called in game.Update(). Template functions for each <TSystem>
 
-Highlights:
+## Highlights:
 
 1. Packed Entities: Reusing entity ids of deleted entity so that the are packed. This make sure that there is less data fragmentation in component pools

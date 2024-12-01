@@ -1,4 +1,5 @@
-# ECS: Entity Component System
+# Systems
+Systems maintain a list of relevant entity IDs and, during each update(), iterate through them to perform calculations based on the values of the required components.
 
 ## Contains:
 
