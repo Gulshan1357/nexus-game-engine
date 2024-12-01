@@ -30,9 +30,19 @@ void TestApp::Initialize()
 	m_coordinator->KillEntity(test);
 }
 
+// int test = 0;
 void TestApp::Update(float deltaTime)
 {
-	// Logger::Log("TestApp::Update()");
+	// if (test <=2)
+	// {
+	// 	m_coordinator->CreateEntity();
+	// 	m_coordinator->CreateEntity();
+	// 	m_coordinator->CreateEntity();
+	// 	test += 1;
+	// }
+
+	// Update the coordinator to process the entities that are waiting to be created/deleted
+	m_coordinator->Update();
 }
 
 void TestApp::Render()

@@ -10,6 +10,7 @@
 #include "Entity.h"
 #include "Pool.h"
 #include "src/Utils/Logger.h"
+#include <deque>
 
 class IPool;
 
@@ -64,6 +65,9 @@ private:
 	// Set of entities that are flagged to be added or removed in the next registry Update();
 	std::set<Entity> m_entitiesToBeAdded;
 	std::set<Entity> m_entitiesToBeKilled;
+
+	// List of free entity ids that were previously removed
+	std::deque<int> m_freeIds;
 };
 
 //------------------------------------------------------------------------
