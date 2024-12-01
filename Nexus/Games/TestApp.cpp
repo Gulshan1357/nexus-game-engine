@@ -4,11 +4,17 @@
 #include <memory>
 
 #include "../App/app.h"
-#include "src/Components/TransformComponent.h"
-#include "src/ECS/Coordinator.h"
-#include "src/ECS/Entity.h"
-#include "src/Systems/MovementSystem.h"
 
+#include "src/ECS/Entity.h"
+#include "src/ECS/Coordinator.h"
+
+#include "src/Components/TransformComponent.h"
+#include "src/Components/SpriteComponent.h"
+
+#include "src/Systems/MovementSystem.h"
+#include "src/Systems/RenderSystem.h"
+
+#include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
 
 TestApp::TestApp()
@@ -28,10 +34,14 @@ void TestApp::Initialize()
 
 	// Add Systems
 	m_coordinator->AddSystem<MovementSystem>();
+	m_coordinator->AddSystem<RenderSystem>();
 
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
-	m_coordinator->AddComponent<TransformComponent>(test, Vector2(5.2f, 7.9f), Vector2(5.2f, 7.9f), 0.0);
+	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
+	test.AddComponent<RigidBodyComponent>(Vector2(0.02f, 0.02f));
+	test.AddComponent<SpriteComponent>(); // Only prints a default sprite
+
 	// m_coordinator->KillEntity(test);
 }
 
@@ -55,7 +65,8 @@ void TestApp::Update(float deltaTime)
 
 void TestApp::Render()
 {
-	App::Print(100, 100, "Sample Text");
+	// Update Render Systems
+	m_coordinator->GetSystem<RenderSystem>().Update();
 }
 
 void TestApp::Shutdown()

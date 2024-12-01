@@ -75,6 +75,9 @@
     <ClInclude Include="src\Components\TransformComponent.h" />
     <ClInclude Include="src\Utils\Vector2.h" />
     <ClInclude Include="src\Systems\MovementSystem.h" />
+    <ClInclude Include="src\Components\SpriteComponent.h" />
+    <ClInclude Include="src\Components\RigidbodyComponent.h" />
+    <ClInclude Include="src\Systems\RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
