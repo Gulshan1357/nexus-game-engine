@@ -78,6 +78,8 @@
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
+    <ClInclude Include="src\Components\BoxColliderComponent.h" />
+    <ClInclude Include="src\Systems\CollisionSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
