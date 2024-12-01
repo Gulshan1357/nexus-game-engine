@@ -4,7 +4,9 @@
 
 1. **Movement System**: Require Rigidbody and Transform component
 2. **Render System**: Require Transform and Sprite Component. Unfinished.
+3. **Collision System**:  Require Transform and BoxCollider Component. Unfinished.
 
 ## TODO:
 1. SpriteComponent should keep track of sprite asset location and 
 2. RenderSystem should render based on the sprite location inside SpriteComponent
+3. Collision System should emit events after collision. Need Event System
