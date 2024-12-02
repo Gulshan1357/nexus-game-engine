@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Coordinator;
 
 class Entity
@@ -13,13 +15,20 @@ public:
 	[[nodiscard]] int GetId() const;
 	void Kill() const;
 
+	// For Entity to Entity comparisons
 	Entity& operator= (const Entity& other) = default;
 	bool operator== (const Entity& other) const { return m_id == other.GetId(); }
 	bool operator!= (const Entity& other) const { return m_id != other.GetId(); }
 	bool operator> (const Entity& other) const { return m_id > other.GetId(); }
 	bool operator< (const Entity& other) const { return m_id < other.GetId(); }
 
-	/// Helper functions for direct Entity to Component interactions rather than through Coordinator
+	// Manage entity tags and groups
+	void Tag(const std::string& tag) const;
+	bool HasTag(const std::string& tag) const;
+	void Group(const std::string& group) const;
+	bool BelongsToGroup(const std::string& group) const;
+
+	/// Manage direct Entity to Component interactions rather than via Coordinator
 	template <typename TComponent, typename ...TArgs>
 	void AddComponent(TArgs&& ...args);
 	template <typename TComponent>

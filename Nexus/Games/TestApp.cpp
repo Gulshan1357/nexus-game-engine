@@ -45,27 +45,20 @@ void TestApp::Initialize()
 	test.AddComponent<RigidBodyComponent>(Vector2(0.02f, 0.0f));
 	test.AddComponent<SpriteComponent>(); // Only prints a default sprite
 	test.AddComponent<BoxColliderComponent>(32, 32, Vector2());
+	test.Group("Player1");
 
 	Entity test2 = m_coordinator->CreateEntity();
 	test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.02f, 0.0f));
 	test2.AddComponent<SpriteComponent>();
 	test2.AddComponent<BoxColliderComponent>(32, 32, Vector2());
+	test2.Group("Player2");
 
 	// m_coordinator->KillEntity(test);
 }
 
-// int test = 0;
 void TestApp::Update(float deltaTime)
 {
-	// if (test <=2)
-	// {
-	// 	m_coordinator->CreateEntity();
-	// 	m_coordinator->CreateEntity();
-	// 	m_coordinator->CreateEntity();
-	// 	test += 1;
-	// }
-
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
 

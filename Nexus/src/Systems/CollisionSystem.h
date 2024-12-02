@@ -56,9 +56,14 @@ public:
 
 				if (collisionHappened)
 				{
-					Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
+					// Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
 
 					// TODO: emit an event....
+					if (a.BelongsToGroup("Player1") && b.BelongsToGroup("Player2"))
+					{
+						std::cout << "Entity Player1 is colliding with entity Player2\n";
+
+					}
 				}
 			}
 		}

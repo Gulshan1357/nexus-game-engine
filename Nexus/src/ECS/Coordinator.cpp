@@ -106,3 +106,84 @@ void Coordinator::RemoveEntityFromSystem(Entity entity) const
 		system.second->RemoveEntityFromSystem(entity);
 	}
 }
+
+//------------------------------------------------------------------------
+// Tag Management
+//------------------------------------------------------------------------
+void Coordinator::TagEntity(Entity entity, const std::string& tag)
+{
+	m_entityPerTag.emplace(tag, entity);
+	m_tagPerEntity.emplace(entity.GetId(), tag);
+}
+
+bool Coordinator::EntityHasTag(Entity entity, const std::string& tag) const
+{
+	if (m_tagPerEntity.find(entity.GetId()) == m_tagPerEntity.end())
+	{
+		return false;
+	}
+	return m_entityPerTag.find(tag)->second == entity;
+}
+
+Entity Coordinator::GetEntityByTag(const std::string& tag) const
+{
+	return m_entityPerTag.at(tag);
+}
+
+void Coordinator::RemoveEntityTag(Entity entity)
+{
+	auto taggedEntity = m_tagPerEntity.find(entity.GetId());
+	if (taggedEntity != m_tagPerEntity.end())
+	{
+		auto tag = taggedEntity->second;
+		m_entityPerTag.erase(tag);
+		m_tagPerEntity.erase(taggedEntity);
+	}
+}
+
+//------------------------------------------------------------------------
+// Group Management
+//------------------------------------------------------------------------
+void Coordinator::GroupEntity(Entity entity, const std::string& group)
+{
+	m_entitiesPerGroup.emplace(group, std::set<Entity>());
+	m_entitiesPerGroup[group].emplace(entity);
+	m_groupPerEntity.emplace(entity.GetId(), group);
+}
+
+bool Coordinator::EntityBelongsToGroup(Entity entity, const std::string& group) const
+{
+	if (m_entitiesPerGroup.find(group) == m_entitiesPerGroup.end())
+	{
+		return false;
+	}
+	// auto groupEntities = m_entitiesPerGroup.at(group);
+	// return groupEntities.find(entity.GetId()) != groupEntities.end();
+	return m_groupPerEntity.find(entity.GetId())->second == group;
+}
+
+std::vector<Entity> Coordinator::GetEntitiesByGroup(const std::string& group) const
+{
+	auto& setOfEntities = m_entitiesPerGroup.at(group);
+	return std::vector<Entity>(setOfEntities.begin(), setOfEntities.end());
+
+}
+
+void Coordinator::RemoveEntityGroup(Entity entity)
+{
+	//if in group, remove entity from group management
+	auto groupedEntity = m_groupPerEntity.find(entity.GetId());
+	if (groupedEntity != m_groupPerEntity.end())
+	{
+		auto group = m_entitiesPerGroup.find(groupedEntity->second);
+		if (group != m_entitiesPerGroup.end())
+		{
+			auto entityInGroup = group->second.find(entity);
+			if (entityInGroup != group->second.end())
+			{
+				group->second.erase(entityInGroup);
+			}
+		}
+		m_groupPerEntity.erase(groupedEntity);
+	}
+}

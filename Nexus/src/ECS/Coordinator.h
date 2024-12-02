@@ -33,12 +33,24 @@ public:
 		Logger::Log("Coordinator destructor called");
 	}
 
-	// The registry Update() process the entities that are waiting to be added/killed
+	// The m_Coordinator Update() process the entities that are waiting to be added/killed
 	void Update();
 
 	// Entity Management
 	Entity CreateEntity();
 	void KillEntity(Entity entity);
+
+	// Tag management
+	void TagEntity(Entity entity, const std::string& tag);
+	bool EntityHasTag(Entity entity, const std::string& tag) const;
+	Entity GetEntityByTag(const std::string& tag) const;
+	void RemoveEntityTag(Entity entity);
+
+	// Group management
+	void GroupEntity(Entity entity, const std::string& group);
+	bool EntityBelongsToGroup(Entity entity, const std::string& group) const;
+	std::vector<Entity> GetEntitiesByGroup(const std::string& group) const;
+	void RemoveEntityGroup(Entity entity);
 
 	// Component management
 	template <typename TComponent, typename... TArgs>
@@ -80,9 +92,22 @@ private:
 	// [Map key = system type id]
 	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
-	// Set of entities that are flagged to be added or removed in the next registry Update();
+	// Set of entities that are flagged to be added or removed in the next m_Coordinator Update();
 	std::set<Entity> m_entitiesToBeAdded;
 	std::set<Entity> m_entitiesToBeKilled;
+
+	// TODO: To ensure faster lookup both ways for Tags and Groups, creating duplicates. Maybe find an alternative which doesn't sacrifice the performance
+
+	// Each entity can only have one tag and vice-versa
+	// Entity tags (one tag name per entity) 
+	std::unordered_map<std::string, Entity> m_entityPerTag;
+	std::unordered_map<int, std::string> m_tagPerEntity;
+
+	// Each group can have multiple entities but an entity can only belong to one group
+	//Entity groups (a set of entities per group name) 
+	std::unordered_map<std::string, std::set<Entity>> m_entitiesPerGroup;
+	std::unordered_map<int, std::string> m_groupPerEntity;
+	// TODO: Entity should be able to belong to multiple groups
 
 	// List of free entity ids that were previously removed
 	std::deque<int> m_freeIds;
