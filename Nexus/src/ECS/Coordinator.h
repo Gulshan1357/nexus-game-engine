@@ -2,7 +2,6 @@
 
 #include <set>
 #include <bitset>
-#include <iostream>
 #include <vector>
 #include <memory>
 #include <typeinfo>
@@ -77,7 +76,7 @@ public:
 	void RemoveEntityFromSystem(Entity entity) const;
 
 private:
-	int m_numEntities = 0;
+	size_t m_numEntities = 0;
 
 	// Vector of component pools, each pool contains all the data for a certain component types
 	// [Vector index = component type id]
@@ -101,7 +100,7 @@ private:
 	// Each entity can only have one tag and vice-versa
 	// Entity tags (one tag name per entity) 
 	std::unordered_map<std::string, Entity> m_entityPerTag;
-	std::unordered_map<int, std::string> m_tagPerEntity;
+	std::unordered_map<size_t, std::string> m_tagPerEntity;
 
 	// Each group can have multiple entities but an entity can only belong to one group
 	//Entity groups (a set of entities per group name) 
@@ -110,7 +109,7 @@ private:
 	// TODO: Entity should be able to belong to multiple groups
 
 	// List of free entity ids that were previously removed
-	std::deque<int> m_freeIds;
+	std::deque<size_t> m_freeIds;
 };
 
 //------------------------------------------------------------------------

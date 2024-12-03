@@ -10,9 +10,10 @@ public:
 	// Hold a pointer to the entity's owner coordinator
 	Coordinator* m_Coordinator;
 
-	Entity(int id) : m_id(id) {}
+	Entity(size_t id) : m_id(id) {}
+	Entity(const Entity& other) = default;
 
-	[[nodiscard]] int GetId() const;
+	[[nodiscard]] size_t GetId() const;
 	void Kill() const;
 
 	// For Entity to Entity comparisons
@@ -39,7 +40,7 @@ public:
 	TComponent& GetComponent() const;
 
 private:
-	int m_id;
+	size_t m_id;
 };
 
 template<typename TComponent, typename ...TArgs>

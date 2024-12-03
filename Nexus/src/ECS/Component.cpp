@@ -2,4 +2,4 @@
 #include "Component.h"
 
 /// Allocating memory for the static variable
-int IComponent::m_nextId = 0;
+size_t IComponent::m_nextId = 0;

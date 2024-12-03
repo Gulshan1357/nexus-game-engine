@@ -2,7 +2,7 @@
 #include "Entity.h"
 #include "Coordinator.h"
 
-int Entity::GetId() const { return m_id; }
+size_t Entity::GetId() const { return m_id; }
 
 void Entity::Kill() const
 {
