@@ -61,7 +61,7 @@ public:
 					// TODO: emit an event....
 					if (a.BelongsToGroup("Player1") && b.BelongsToGroup("Player2"))
 					{
-						std::cout << "Entity Player1 is colliding with entity Player2\n";
+						Logger::Log("Entity Player1 is colliding with entity Player2");
 
 					}
 				}
