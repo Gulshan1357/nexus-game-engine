@@ -13,4 +13,5 @@
 ## Highlights:
 
 1. Packed Entities: Reusing entity ids of deleted entity so that the are packed. This make sure that there is less data fragmentation in component pools.
-2. Tags and Groups: Entities have groups and tags with average lookup speed of O(1) both ways.
+2. Tags and Groups: Entities have groups and tags with average lookup speed of O(1) both ways (Entity <-> Tag/Group).
+3. Packed Component Pools: When a component is deleted the last component of the vector will be moved to the empty position.

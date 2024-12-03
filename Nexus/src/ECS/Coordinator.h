@@ -106,7 +106,7 @@ private:
 	// Each group can have multiple entities but an entity can only belong to one group
 	//Entity groups (a set of entities per group name) 
 	std::unordered_map<std::string, std::set<Entity>> m_entitiesPerGroup;
-	std::unordered_map<int, std::string> m_groupPerEntity;
+	std::unordered_map<size_t, std::string> m_groupPerEntity;
 	// TODO: Entity should be able to belong to multiple groups
 
 	// List of free entity ids that were previously removed
@@ -152,7 +152,7 @@ void Coordinator::AddComponent(Entity entity, TArgs&& ...args)
 		// If the component pool is not big enough for the entity id then resize()
 		if (entityId >= componentPool->GetSize())
 		{
-			std::cout << "Resizing " << typeid(TComponent).name() << " Pool" << std::endl;
+			// std::cout << "Resizing " << typeid(TComponent).name() << " Pool" << std::endl;
 			componentPool->Resize(m_numEntities);
 		}
 
@@ -166,6 +166,7 @@ void Coordinator::AddComponent(Entity entity, TArgs&& ...args)
 			Logger::Log(
 				"Component id = " + std::to_string(componentId) +
 				" was added to entity id " + std::to_string(entityId));
+			// std::cout <<  typeid(TComponent).name() << " Pool with Component id: " << componentId << "--- Pool Size: " << componentPool->GetSize() << "\n";
 		}
 		else
 		{
@@ -187,6 +188,12 @@ void Coordinator::RemoveComponent(Entity entity)
 	// Check if component exist
 	if (m_entityComponentSignatures[entityId].test(componentId))
 	{
+
+		// Remove the component from the component list for that entity
+		std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(m_componentPools[componentId]);
+		componentPool->Remove(entityId);
+
+		// Set this component signature for that entity to false
 		m_entityComponentSignatures[entityId].set(componentId, false);
 		Logger::Log(
 			"Component id = " + std::to_string(componentId) + " was removed to entity id " + std::to_string(entityId));

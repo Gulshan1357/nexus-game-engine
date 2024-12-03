@@ -24,8 +24,21 @@ void Coordinator::Update()
 
 		m_entityComponentSignatures[entity.GetId()].reset();
 
+		// Remove the entity from the component pools
+		for (const auto& pool : m_componentPools)
+		{
+			if (pool)
+			{
+				pool->RemoveEntityFromPool(entity.GetId());
+			}
+		}
+
 		// Make the entity id available to be reused
 		m_freeIds.push_back(entity.GetId());
+
+		// Remove any traces of that entity from the tag/group maps
+		RemoveEntityTag(entity);
+		RemoveEntityGroup(entity);
 	}
 	m_entitiesToBeKilled.clear();
 
@@ -101,7 +114,7 @@ void Coordinator::AddEntityToSystems(Entity entity) const
 
 void Coordinator::RemoveEntityFromSystem(Entity entity) const
 {
-	for (auto system : systems)
+	for (const auto& system : systems)
 	{
 		system.second->RemoveEntityFromSystem(entity);
 	}
@@ -166,7 +179,6 @@ std::vector<Entity> Coordinator::GetEntitiesByGroup(const std::string& group) co
 {
 	auto& setOfEntities = m_entitiesPerGroup.at(group);
 	return std::vector<Entity>(setOfEntities.begin(), setOfEntities.end());
-
 }
 
 void Coordinator::RemoveEntityGroup(Entity entity)

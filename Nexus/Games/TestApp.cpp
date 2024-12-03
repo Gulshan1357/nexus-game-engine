@@ -54,6 +54,9 @@ void TestApp::Initialize()
 	test2.AddComponent<BoxColliderComponent>(32, 32, Vector2());
 	test2.Group("Player2");
 
+	// test2.RemoveComponent<TransformComponent>();
+	// test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
+
 	// m_coordinator->KillEntity(test);
 }
 
