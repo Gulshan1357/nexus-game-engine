@@ -3,6 +3,7 @@
 #include <memory>
 
 class Coordinator;
+class EventBus;
 
 class TestApp
 {
@@ -17,4 +18,5 @@ public:
 
 private:
 	std::unique_ptr<Coordinator> m_coordinator;
+	std::unique_ptr<EventBus> m_eventBus;
 };

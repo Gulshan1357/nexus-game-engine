@@ -7,6 +7,7 @@
 
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
+#include <src/Event/EventBus.h>
 
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
@@ -15,15 +16,16 @@
 #include "src/Systems/MovementSystem.h"
 #include "src/Systems/RenderSystem.h"
 #include "src/Systems/CollisionSystem.h"
+#include "src/Systems/DamageSystem.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
 
 TestApp::TestApp()
 {
-	Logger::Log("Game constructor called!");
-
 	m_coordinator = std::make_unique<Coordinator>();
+	m_eventBus = std::make_unique<EventBus>();
+	Logger::Log("Game constructor called!");
 }
 TestApp::~TestApp()
 {
@@ -38,6 +40,7 @@ void TestApp::Initialize()
 	m_coordinator->AddSystem<MovementSystem>();
 	m_coordinator->AddSystem<RenderSystem>();
 	m_coordinator->AddSystem<CollisionSystem>();
+	m_coordinator->AddSystem<DamageSystem>();
 
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
@@ -65,9 +68,17 @@ void TestApp::Update(float deltaTime)
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
 
+	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
+
+	// Reset all event callbacks for the current frame
+	m_eventBus->Reset();
+
+	// Perform the subscription of the events for all systems
+	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventBus);
+
 	// Invoke all the systems that needs to be updated
 	m_coordinator->GetSystem<MovementSystem>().Update(deltaTime);
-	m_coordinator->GetSystem<CollisionSystem>().Update();
+	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventBus);
 }
 
 void TestApp::Render()

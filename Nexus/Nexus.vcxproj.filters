@@ -80,6 +80,11 @@
     <ClInclude Include="src\Systems\RenderSystem.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
+    <ClInclude Include="src\Events\CollisionEvent.h" />
+    <ClInclude Include="src\Event\EventBus.h" />
+    <ClInclude Include="src\Event\EventCallback.h" />
+    <ClInclude Include="src\Event\IEvent.h" />
+    <ClInclude Include="src\Systems\DamageSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

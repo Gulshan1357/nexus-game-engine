@@ -6,6 +6,9 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/BoxColliderComponent.h"
 
+#include "../Event/EventBus.h"
+#include "../Events/CollisionEvent.h"
+
 #include "../Utils/Logger.h"
 
 class CollisionSystem : public System
@@ -17,7 +20,7 @@ public:
 		RequireComponent<TransformComponent>();
 	}
 
-	void Update()
+	void Update(const std::unique_ptr<EventBus>& eventBus)
 	{
 		auto entities = GetSystemEntities();
 
@@ -59,11 +62,12 @@ public:
 					// Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
 
 					// TODO: emit an event....
-					if (a.BelongsToGroup("Player1") && b.BelongsToGroup("Player2"))
+					/*if (a.BelongsToGroup("Player1") && b.BelongsToGroup("Player2"))
 					{
 						Logger::Log("Entity Player1 is colliding with entity Player2");
 
-					}
+					}*/
+					eventBus->EmitEvent<CollisionEvent>(a, b);
 				}
 			}
 		}

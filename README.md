@@ -2,6 +2,8 @@
 
 This repository contains my project for the Ubisoft NEXT 2024-2025 Programming Challenge.
 
+## Timeline
+
 ## Learning Resources
 
 Books:
@@ -13,6 +15,7 @@ Online Texts:
 
 1. A Simple Entity Component System (Austin Morlan) - [Link](https://austinmorlan.com/posts/entity_component_system/) -> My ECS system is heavily inspired by this blog post. I am horrible at naming things so most my ECS class names are inspired form this.
 2. Studyplan.dev - [Link](https://www.studyplan.dev/) -> My journey into C++ begins with this. Most of my knowledge about the basic and intermediate C++ came from this.
+3. Nomad Game Engine: Part 7— The Event System (Niko Savas) - [Medium Link](https://medium.com/@savas/nomad-game-engine-part-7-the-event-system-45a809ccb68f) -> My event system is inspired from this blog post.
 
 YouTube:
 
