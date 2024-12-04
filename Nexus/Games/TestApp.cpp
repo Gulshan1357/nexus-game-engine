@@ -12,11 +12,13 @@
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
 #include "src/Components/BoxColliderComponent.h"
+#include "src/Components/UITextComponent.h"
 
 #include "src/Systems/MovementSystem.h"
 #include "src/Systems/RenderSystem.h"
 #include "src/Systems/CollisionSystem.h"
 #include "src/Systems/DamageSystem.h"
+#include "src/Systems/RenderTextSystem.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
@@ -41,6 +43,7 @@ void TestApp::Initialize()
 	m_coordinator->AddSystem<RenderSystem>();
 	m_coordinator->AddSystem<CollisionSystem>();
 	m_coordinator->AddSystem<DamageSystem>();
+	m_coordinator->AddSystem<RenderTextSystem>();
 
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
@@ -56,6 +59,9 @@ void TestApp::Initialize()
 	test2.AddComponent<SpriteComponent>();
 	test2.AddComponent<BoxColliderComponent>(32, 32, Vector2());
 	test2.Group("Player2");
+
+	Entity uiTextHello = m_coordinator->CreateEntity();
+	uiTextHello.AddComponent<UITextComponent>("New Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18);
 
 	// test2.RemoveComponent<TransformComponent>();
 	// test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
@@ -85,6 +91,7 @@ void TestApp::Render()
 {
 	// Update Render Systems
 	m_coordinator->GetSystem<RenderSystem>().Update();
+	m_coordinator->GetSystem<RenderTextSystem>().Update();
 }
 
 void TestApp::Shutdown()

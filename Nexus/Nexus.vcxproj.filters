@@ -85,6 +85,10 @@
     <ClInclude Include="src\Event\EventCallback.h" />
     <ClInclude Include="src\Event\IEvent.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
+    <ClInclude Include="src\Systems\RenderTextSystem.h" />
+    <ClInclude Include="src\Components\UITextComponent.h" />
+    <ClInclude Include="src\Utils\Font.h" />
+    <ClInclude Include="src\Utils\Color.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

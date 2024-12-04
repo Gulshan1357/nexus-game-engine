@@ -199,6 +199,7 @@
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
+    <ClInclude Include="src\Components\UITextComponent.h" />
     <ClInclude Include="src\ECS\Component.h" />
     <ClInclude Include="src\ECS\Coordinator.h" />
     <ClInclude Include="src\ECS\Entity.h" />
@@ -212,6 +213,9 @@
     <ClInclude Include="src\Systems\DamageSystem.h" />
     <ClInclude Include="src\Systems\MovementSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
+    <ClInclude Include="src\Systems\RenderTextSystem.h" />
+    <ClInclude Include="src\Utils\Color.h" />
+    <ClInclude Include="src\Utils\Font.h" />
     <ClInclude Include="src\Utils\Logger.h" />
     <ClInclude Include="src\Utils\Vector2.h" />
     <ClInclude Include="stb_image\stb_image.h" />
