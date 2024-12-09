@@ -10,20 +10,20 @@
 
 #include <src/Utils/Logger.h>
 
-class EventBus
+class EventManager
 {
 private:
 	using CallbackList = std::list<std::unique_ptr<IEventCallback>>;
 
 public:
-	EventBus()
+	EventManager()
 	{
-		Logger::Log("EventBus constructor called!");
+		Logger::Log("EventManager constructor called!");
 	}
 
-	~EventBus()
+	~EventManager()
 	{
-		Logger::Log("EventBus destructor called!");
+		Logger::Log("EventManager destructor called!");
 	}
 
 	// Clears the subscribers list
@@ -35,7 +35,7 @@ public:
 	//------------------------------------------------------------------------
 	// Subscribe to an event type <T>
 	// A listener subscribe to an event
-	// Example : eventBus->SubscribeToEvent<CollisionEvent>(this, &System::OnCollision);
+	// Example : eventManager->SubscribeToEvent<CollisionEvent>(this, &System::OnCollision);
 	// ------------------------------------------------------------------------
 	template <typename TEvent, typename TOwner>
 	void SubscribeToEvent(TOwner* ownerInstance, std::function<void(TOwner*, TEvent&)> callbackFunction)
@@ -53,7 +53,7 @@ public:
 	//------------------------------------------------------------------------
 	// Emit an event type <T>
 	// As soon as something emits an event the game is blocked until all the listener callbacks are executed first
-	// Example: eventBus->EmitEvent<CollisionEvent>(player, enemy);
+	// Example: eventManager->EmitEvent<CollisionEvent>(player, enemy);
 	// Bug: Try to always pass the concerned entities with events, The callback function are unable to retrieve system entities using GetSystemEntities().
 	//------------------------------------------------------------------------
 	template<typename TEvent, typename ...TArgs>

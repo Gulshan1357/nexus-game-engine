@@ -209,7 +209,7 @@
     <ClInclude Include="src\Events\CollisionEvent.h" />
     <ClInclude Include="src\Events\KeyPressEvent.h" />
     <ClInclude Include="src\EventManagement\IEvent.h" />
-    <ClInclude Include="src\EventManagement\EventBus.h" />
+    <ClInclude Include="src\EventManagement\EventManager.h" />
     <ClInclude Include="src\EventManagement\EventCallback.h" />
     <ClInclude Include="src\InputManagement\KeyBindings.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />

@@ -6,7 +6,7 @@
 #include "src/Components/TransformComponent.h"
 #include "src/Components/BoxColliderComponent.h"
 
-#include "src/EventManagement/EventBus.h"
+#include "src/EventManagement/EventManager.h"
 #include "src/Events/CollisionEvent.h"
 
 #include "src/Utils/Logger.h"
@@ -20,7 +20,7 @@ public:
 		RequireComponent<TransformComponent>();
 	}
 
-	void Update(const std::unique_ptr<EventBus>& eventBus)
+	void Update(const std::unique_ptr<EventManager>& eventManager)
 	{
 		auto entities = GetSystemEntities();
 
@@ -67,7 +67,7 @@ public:
 						Logger::Log("Entity Player1 is colliding with entity Player2");
 
 					}*/
-					eventBus->EmitEvent<CollisionEvent>(a, b);
+					eventManager->EmitEvent<CollisionEvent>(a, b);
 				}
 			}
 		}

@@ -7,7 +7,7 @@
 
 #include "src/Components/BoxColliderComponent.h"
 
-#include "src/EventManagement/EventBus.h"
+#include "src/EventManagement/EventManager.h"
 #include "src/Events/CollisionEvent.h"
 
 #include "src/Utils/Logger.h"
@@ -20,11 +20,11 @@ public:
 		RequireComponent<BoxColliderComponent>();
 	}
 
-	void SubscribeToEvents(const std::unique_ptr<EventBus>& eventBus)
+	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
 	{
 		using CallbackType = std::function<void(DamageSystem*, CollisionEvent&)>;
 		CallbackType callback = std::bind(&DamageSystem::onCollision, this, std::placeholders::_2);
-		eventBus->SubscribeToEvent<CollisionEvent>(this, callback);
+		eventManager->SubscribeToEvent<CollisionEvent>(this, callback);
 		//  std::placeholders::_2 tells std::bind that the second argument (the event) will be provided when the resulting function is called. This allows us to create a callable object that matches the required function signature of SubscribeToEvent, where the first argument is the instance (DamageSystem*), and the second argument is the event (CollisionEvent&).
 	}
 

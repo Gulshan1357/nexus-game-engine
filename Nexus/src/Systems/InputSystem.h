@@ -4,7 +4,7 @@
 
 #include "src/ECS/System.h"
 #include "src/ECS/Entity.h"
-#include "src/EventManagement/EventBus.h"
+#include "src/EventManagement/EventManager.h"
 
 #include "src/Events/KeyPressEvent.h"
 #include "src/InputManagement/InputEnums.h"
@@ -25,11 +25,11 @@ public:
 		RequireComponent<InputComponent>();
 	}
 
-	void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
+	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
 	{
 		using CallbackType = std::function<void(InputSystem*, KeyPressEvent&)>;
 		CallbackType callback = std::bind(&InputSystem::OnKeyPressed, this, std::placeholders::_2);
-		eventBus->SubscribeToEvent<KeyPressEvent>(this, callback);
+		eventManager->SubscribeToEvent<KeyPressEvent>(this, callback);
 		// std::bind usually copies the so need std::ref to ensure object is passed by reference wrapper using std::ref
 	}
 

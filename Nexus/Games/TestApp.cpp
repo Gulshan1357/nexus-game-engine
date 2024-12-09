@@ -7,7 +7,7 @@
 
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
-#include "src/EventManagement/EventBus.h"
+#include "src/EventManagement/EventManager.h"
 #include "src/InputManagement/KeyBindings.h"
 #include "src/InputManagement/InputEnums.h"
 
@@ -32,7 +32,7 @@
 TestApp::TestApp()
 {
 	m_coordinator = std::make_unique<Coordinator>();
-	m_eventBus = std::make_unique<EventBus>();
+	m_eventManager = std::make_unique<EventManager>();
 	m_keyBindings = std::make_unique<KeyBindings>();
 	Logger::Log("Game constructor called!");
 }
@@ -106,7 +106,7 @@ void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& pla
 		if (App::IsKeyPressed(key))
 		{
 			// Send the Keypress event by mapping key to action using KeyBindings::GetAction();
-			m_eventBus->EmitEvent<KeyPressEvent>(
+			m_eventManager->EmitEvent<KeyPressEvent>(
 				playerId,
 				m_keyBindings->GetAction(playerId, key),
 				m_coordinator->GetEntityByTag(playerTag)
@@ -120,18 +120,18 @@ void TestApp::Update(float deltaTime)
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
 	// Reset all event callbacks for the current frame
-	m_eventBus->Reset();
+	m_eventManager->Reset();
 
 	// Perform the subscription of the events for all systems
-	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventBus);
-	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventBus);
+	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
+	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
 
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
 
 	// Invoke all the systems that needs to be updated
 	m_coordinator->GetSystem<MovementSystem>().Update(deltaTime);
-	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventBus);
+	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 }
 
 void TestApp::Render()
