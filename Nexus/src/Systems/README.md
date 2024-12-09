@@ -19,4 +19,3 @@ Systems maintain a list of relevant entity IDs and, during each update(), iterat
 
 1. SpriteComponent should keep track of sprite asset location and
 2. RenderSystem should render based on the sprite location inside SpriteComponent
-3. Collision System should emit events after collision. Need Event System
