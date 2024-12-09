@@ -178,7 +178,7 @@ bool Coordinator::EntityBelongsToGroup(Entity entity, const std::string& group) 
 std::vector<Entity> Coordinator::GetEntitiesByGroup(const std::string& group) const
 {
 	auto& setOfEntities = m_entitiesPerGroup.at(group);
-	return {setOfEntities.begin(), setOfEntities.end()};
+	return { setOfEntities.begin(), setOfEntities.end() };
 }
 
 void Coordinator::RemoveEntityGroup(Entity entity)

@@ -22,9 +22,7 @@ class EventCallback : public IEventCallback
 {
 private:
 	// The Callback function is of the type TOwner::TEvent == Game::onCollisionEvent
-	// typedef void (TOwner::* CallbackFunction)(TEvent&);
 	using CallbackFunction = std::function<void(TOwner*, TEvent&)>;
-	// Hoisting CallbackFunction here since this typedef is required in public.
 
 public:
 	EventCallback(TOwner* ownerInstance, CallbackFunction callbackFunction)

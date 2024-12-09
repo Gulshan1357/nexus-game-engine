@@ -196,6 +196,7 @@
     <ClInclude Include="Games\TestApp.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
+    <ClInclude Include="src\Components\InputComponent.h" />
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
@@ -206,11 +207,15 @@
     <ClInclude Include="src\ECS\Pool.h" />
     <ClInclude Include="src\ECS\System.h" />
     <ClInclude Include="src\Events\CollisionEvent.h" />
+    <ClInclude Include="src\Events\KeyPressEvent.h" />
     <ClInclude Include="src\Event\IEvent.h" />
     <ClInclude Include="src\Event\EventBus.h" />
     <ClInclude Include="src\Event\EventCallback.h" />
+    <ClInclude Include="src\Input\KeyBindings.h" />
+    <ClInclude Include="src\Input\InputEnums.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
+    <ClInclude Include="src\Systems\InputSystem.h" />
     <ClInclude Include="src\Systems\MovementSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
     <ClInclude Include="src\Systems\RenderTextSystem.h" />
@@ -237,6 +242,7 @@
     <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
+    <ClCompile Include="src\Input\KeyBindings.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">

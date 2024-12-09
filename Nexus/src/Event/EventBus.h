@@ -1,13 +1,14 @@
 #pragma once
 
 #include <functional>
-#include <src/Utils/Logger.h>
-
 #include <map>
 #include <typeindex>
 #include <memory>
 #include <list>
+
 #include "EventCallback.h"
+
+#include <src/Utils/Logger.h>
 
 class EventBus
 {
@@ -34,7 +35,7 @@ public:
 	//------------------------------------------------------------------------
 	// Subscribe to an event type <T>
 	// A listener subscribe to an event
-	// Example : eventBus->SubscribeToEvent<CollisionEvent>(this, &Game::OnCollision);
+	// Example : eventBus->SubscribeToEvent<CollisionEvent>(this, &System::OnCollision);
 	// ------------------------------------------------------------------------
 	template <typename TEvent, typename TOwner>
 	void SubscribeToEvent(TOwner* ownerInstance, std::function<void(TOwner*, TEvent&)> callbackFunction)
@@ -53,6 +54,7 @@ public:
 	// Emit an event type <T>
 	// As soon as something emits an event the game is blocked until all the listener callbacks are executed first
 	// Example: eventBus->EmitEvent<CollisionEvent>(player, enemy);
+	// Bug: Try to always pass the concerned entities with events, The callback function are unable to retrieve system entities using GetSystemEntities().
 	//------------------------------------------------------------------------
 	template<typename TEvent, typename ...TArgs>
 	void EmitEvent(TArgs&& ...args)

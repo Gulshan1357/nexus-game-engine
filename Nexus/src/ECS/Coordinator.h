@@ -4,15 +4,17 @@
 #include <bitset>
 #include <vector>
 #include <memory>
-#include <typeinfo>
-#include "Component.h"
-#include "Entity.h"
-#include "Pool.h"
-#include "src/Utils/Logger.h"
 #include <deque>
+#include <typeinfo>
 #include <unordered_map>
 #include <typeindex>
+
+#include "Component.h"
+#include "Entity.h"
 #include "System.h"
+#include "Pool.h"
+
+#include "src/Utils/Logger.h"
 
 // Do I need to forward declare IPool?
 class IPool;
@@ -165,7 +167,16 @@ void Coordinator::AddComponent(Entity entity, TArgs&& ...args)
 			Logger::Log(
 				"Component id = " + std::to_string(componentId) +
 				" was added to entity id " + std::to_string(entityId));
-			// std::cout <<  typeid(TComponent).name() << " Pool with Component id: " << componentId << "--- Pool Size: " << componentPool->GetSize() << "\n";
+				// std::cout <<  typeid(TComponent).name() << " Pool with Component id: " << componentId << "--- Pool Size: " << componentPool->GetSize() << "\n";
+			// std::cout <<
+			// 	"Component name = " <<
+			// 	typeid(TComponent).name() <<
+			// 	" Component id = " <<
+			// 	std::to_string(componentId) <<
+			// 	" was added to entity id " <<
+			// 	std::to_string(entityId) <<
+			// 	" --- Pool Size: " <<
+			// 	componentPool->GetSize() << "\n";
 		}
 		else
 		{
