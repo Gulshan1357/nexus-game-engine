@@ -1,12 +1,13 @@
 #pragma once
 
+#include <string>
+
 struct SpriteComponent
 {
-	int width;
-	int height;
+	std::string assetId;
+	int zIndex;
 
-	SpriteComponent(int width = 0, int height = 0) : width(width), height(height)
-	{
-		// TODO: Should keep track of sprite asset location
-	}
+	SpriteComponent(std::string assetId = "", int zIndex = 0) :
+		assetId(assetId), zIndex(zIndex)
+	{}
 };

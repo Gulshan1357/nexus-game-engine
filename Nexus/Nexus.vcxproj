@@ -195,6 +195,7 @@
     <ClInclude Include="Games\OriginalDemo.h" />
     <ClInclude Include="Games\TestApp.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
+    <ClInclude Include="src\AssetManagement\AssetManager.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="Games\TestApp.cpp" />
     <ClCompile Include="Nexus.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />
+    <ClCompile Include="src\AssetManagement\AssetManager.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />

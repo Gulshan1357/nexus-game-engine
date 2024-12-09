@@ -10,6 +10,7 @@
 #include "src/EventManagement/EventManager.h"
 #include "src/InputManagement/KeyBindings.h"
 #include "src/InputManagement/InputEnums.h"
+#include "src/AssetManagement/AssetManager.h"
 
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
@@ -34,6 +35,7 @@ TestApp::TestApp()
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_unique<EventManager>();
 	m_keyBindings = std::make_unique<KeyBindings>();
+	m_assetManager = std::make_unique<AssetManager>();
 	Logger::Log("Game constructor called!");
 }
 TestApp::~TestApp()
@@ -53,11 +55,14 @@ void TestApp::Initialize()
 	m_coordinator->AddSystem<RenderTextSystem>();
 	m_coordinator->AddSystem<InputSystem>();
 
+	// Add assets to the asset manager
+	m_assetManager->AddSprite("test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
+
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
-	test.AddComponent<SpriteComponent>(); // Only prints a default sprite
+	test.AddComponent<SpriteComponent>("test-image"); // Only prints a default sprite
 	test.AddComponent<BoxColliderComponent>(32, 32, Vector2());
 	test.Tag("Player1");
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
@@ -65,7 +70,7 @@ void TestApp::Initialize()
 	Entity test2 = m_coordinator->CreateEntity();
 	test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
-	test2.AddComponent<SpriteComponent>();
+	test2.AddComponent<SpriteComponent>("test-image");
 	test2.AddComponent<BoxColliderComponent>(32, 32, Vector2());
 	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
 	test2.Tag("Player2");
@@ -137,7 +142,7 @@ void TestApp::Update(float deltaTime)
 void TestApp::Render()
 {
 	// Update Render Systems
-	m_coordinator->GetSystem<RenderSystem>().Update();
+	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager);
 	m_coordinator->GetSystem<RenderTextSystem>().Update();
 }
 
