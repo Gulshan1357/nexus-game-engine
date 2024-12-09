@@ -47,6 +47,11 @@ void TestApp::Initialize()
 {
 	Logger::Log("TestApp::Initialize()");
 
+	LoadLevel(1);
+}
+
+void TestApp::LoadLevel(int level)
+{
 	// Add Systems
 	m_coordinator->AddSystem<MovementSystem>();
 	m_coordinator->AddSystem<RenderSystem>();
@@ -97,29 +102,6 @@ void TestApp::Initialize()
 	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
 }
 
-void TestApp::ProcessInput()
-{
-	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
-	ProcessPlayerKeys(Input::PlayerID::PLAYER_2, "Player2");
-}
-
-void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag)
-{
-	// Loop all player keys and check is any is currently clicked
-	for (const auto key : m_keyBindings->GetAllKeys(playerId))
-	{
-		if (App::IsKeyPressed(key))
-		{
-			// Send the Keypress event by mapping key to action using KeyBindings::GetAction();
-			m_eventManager->EmitEvent<KeyPressEvent>(
-				playerId,
-				m_keyBindings->GetAction(playerId, key),
-				m_coordinator->GetEntityByTag(playerTag)
-			);
-		}
-	}
-}
-
 void TestApp::Update(float deltaTime)
 {
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
@@ -137,6 +119,36 @@ void TestApp::Update(float deltaTime)
 	// Invoke all the systems that needs to be updated
 	m_coordinator->GetSystem<MovementSystem>().Update(deltaTime);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
+
+	ProcessInput();
+}
+
+//------------------------------------------------------------------------
+// Process key input for each player
+//------------------------------------------------------------------------
+void TestApp::ProcessInput()
+{
+	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
+	ProcessPlayerKeys(Input::PlayerID::PLAYER_2, "Player2");
+}
+
+//------------------------------------------------------------------------
+// Loop all player keys and check is any is currently clicked
+//------------------------------------------------------------------------
+void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag)
+{
+	for (const auto key : m_keyBindings->GetAllKeys(playerId))
+	{
+		if (App::IsKeyPressed(key))
+		{
+			// Send the Keypress event by mapping key to action using KeyBindings::GetAction();
+			m_eventManager->EmitEvent<KeyPressEvent>(
+				playerId,
+				m_keyBindings->GetAction(playerId, key),
+				m_coordinator->GetEntityByTag(playerTag)
+			);
+		}
+	}
 }
 
 void TestApp::Render()

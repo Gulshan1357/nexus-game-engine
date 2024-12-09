@@ -21,7 +21,6 @@ void Init()
 void Update(const float deltaTime)
 {
 	game.Update(deltaTime);
-	game.ProcessInput();
 }
 
 //------------------------------------------------------------------------

@@ -17,9 +17,10 @@ public:
 	~TestApp();
 
 	void Initialize();
+	void LoadLevel(int level);
+	void Update(float deltaTime);
 	void ProcessInput();
 	void ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag);
-	void Update(float deltaTime);
 	void Render();
 	void Shutdown();
 
