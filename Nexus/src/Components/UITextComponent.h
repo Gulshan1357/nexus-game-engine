@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "../Utils/Vector2.h"
-#include "../Utils/Color.h"
-#include "../Utils/Font.h"
+#include "src/Utils/Vector2.h"
+#include "src/Utils/Color.h"
+#include "src/Utils/Font.h"
 
 struct UITextComponent
 {
@@ -13,5 +13,7 @@ struct UITextComponent
 	Color color;
 	FontType font;
 
-	UITextComponent(std::string text, Vector2 position, Color color, FontType font) : text(std::move(text)), position(position), color(color), font(font) {}
+	UITextComponent(std::string text, Vector2 position, Color color, FontType font) :
+		text(std::move(text)), position(position), color(color), font(font)
+	{}
 };

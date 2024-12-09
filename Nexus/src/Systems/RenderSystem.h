@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../../App/app.h"
-#include "../ECS/Entity.h"
-#include "../ECS/System.h"
-#include "../Components/SpriteComponent.h"
-#include "../Components/TransformComponent.h"
+#include "../App/app.h"
 #include "../App/SimpleSprite.h"
+
+#include "src/ECS/Entity.h"
+#include "src/ECS/System.h"
+
+#include "src/Components/SpriteComponent.h"
+#include "src/Components/TransformComponent.h"
 
 class RenderSystem : public System
 {

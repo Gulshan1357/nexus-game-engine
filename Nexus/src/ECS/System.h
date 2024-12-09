@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <bitset>
+
 #include "Component.h"
 
 // TODO: Refactor the magic number from coordinator

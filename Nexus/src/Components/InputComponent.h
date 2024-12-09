@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/Utils/Vector2.h"
-#include "src/Input/InputEnums.h"
+#include "src/InputManagement/InputEnums.h"
 
 struct InputComponent
 {

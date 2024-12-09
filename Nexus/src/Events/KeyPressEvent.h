@@ -1,7 +1,7 @@
 #pragma once
 
-#include "src/Event/IEvent.h"
-#include "../Input/InputEnums.h"
+#include "src/EventManagement/IEvent.h"
+#include "src/InputManagement/InputEnums.h"
 
 class KeyPressEvent : public IEvent
 {

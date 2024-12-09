@@ -7,9 +7,9 @@
 
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
-#include "src/Event/EventBus.h"
-#include "src/Input/KeyBindings.h"
-#include "src/Input/InputEnums.h"
+#include "src/EventManagement/EventBus.h"
+#include "src/InputManagement/KeyBindings.h"
+#include "src/InputManagement/InputEnums.h"
 
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"

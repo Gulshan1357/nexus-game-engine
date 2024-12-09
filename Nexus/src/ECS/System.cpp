@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "System.h"
+
 #include "Entity.h"
 
 void System::AddEntityToSystem(Entity entity)

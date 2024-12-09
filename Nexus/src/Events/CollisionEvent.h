@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ECS/Entity.h"
-#include "../Event/IEvent.h"
+#include "src/ECS/Entity.h"
+#include "src/EventManagement/IEvent.h"
 
 class CollisionEvent : public IEvent
 {

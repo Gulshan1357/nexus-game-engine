@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Utils/Vector2.h"
+#include "src/Utils/Vector2.h"
 
 struct RigidBodyComponent
 {

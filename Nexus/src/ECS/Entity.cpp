@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Entity.h"
+
 #include "Coordinator.h"
 
 size_t Entity::GetId() const { return m_id; }

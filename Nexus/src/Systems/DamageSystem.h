@@ -7,7 +7,7 @@
 
 #include "src/Components/BoxColliderComponent.h"
 
-#include "src/Event/EventBus.h"
+#include "src/EventManagement/EventBus.h"
 #include "src/Events/CollisionEvent.h"
 
 #include "src/Utils/Logger.h"

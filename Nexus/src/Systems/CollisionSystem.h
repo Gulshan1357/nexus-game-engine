@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../ECS/System.h"
-#include "../ECS/Entity.h"
+#include "src/ECS/System.h"
+#include "src/ECS/Entity.h"
 
-#include "../Components/TransformComponent.h"
-#include "../Components/BoxColliderComponent.h"
+#include "src/Components/TransformComponent.h"
+#include "src/Components/BoxColliderComponent.h"
 
-#include "../Event/EventBus.h"
-#include "../Events/CollisionEvent.h"
+#include "src/EventManagement/EventBus.h"
+#include "src/Events/CollisionEvent.h"
 
-#include "../Utils/Logger.h"
+#include "src/Utils/Logger.h"
 
 class CollisionSystem : public System
 {
@@ -28,8 +28,8 @@ public:
 		for (auto i = entities.begin(); i != entities.end(); ++i)
 		{
 			Entity a = *i;
-			const auto aTransform = a.GetComponent<TransformComponent>();
-			const auto aCollider = a.GetComponent<BoxColliderComponent>();
+			const auto& aTransform = a.GetComponent<TransformComponent>();
+			const auto& aCollider = a.GetComponent<BoxColliderComponent>();
 
 			// Loop all the entities that still need to be checked
 			for (auto j = i; j != entities.end(); ++j)
@@ -42,8 +42,8 @@ public:
 					continue;
 				}
 
-				const auto bTransform = b.GetComponent<TransformComponent>();
-				const auto bCollider = b.GetComponent<BoxColliderComponent>();
+				const auto& bTransform = b.GetComponent<TransformComponent>();
+				const auto& bCollider = b.GetComponent<BoxColliderComponent>();
 
 				// Perform AABB collision check
 				bool collisionHappened = CheckAABBCollision(

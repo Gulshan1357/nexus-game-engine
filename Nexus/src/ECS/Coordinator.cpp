@@ -3,9 +3,10 @@
 
 #include <cassert>
 
-#include "../Utils/Logger.h"
 #include "Entity.h"
 #include "Pool.h"
+
+#include "src/Utils/Logger.h"
 
 void Coordinator::Update()
 {

@@ -32,7 +32,7 @@
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
-    <ClCompile Include="src\Input\KeyBindings.cpp" />
+    <ClCompile Include="src\InputManagement\KeyBindings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -82,18 +82,18 @@
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Events\CollisionEvent.h" />
-    <ClInclude Include="src\Event\EventBus.h" />
-    <ClInclude Include="src\Event\EventCallback.h" />
-    <ClInclude Include="src\Event\IEvent.h" />
+    <ClInclude Include="src\EventManagement\EventBus.h" />
+    <ClInclude Include="src\EventManagement\EventCallback.h" />
+    <ClInclude Include="src\EventManagement\IEvent.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
     <ClInclude Include="src\Systems\RenderTextSystem.h" />
     <ClInclude Include="src\Components\UITextComponent.h" />
     <ClInclude Include="src\Utils\Font.h" />
     <ClInclude Include="src\Utils\Color.h" />
-    <ClInclude Include="src\Input\InputEnums.h" />
+    <ClInclude Include="src\InputManagement\InputEnums.h" />
     <ClInclude Include="src\Events\KeyPressEvent.h" />
     <ClInclude Include="src\Systems\InputSystem.h" />
-    <ClInclude Include="src\Input\KeyBindings.h" />
+    <ClInclude Include="src\InputManagement\KeyBindings.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
   </ItemGroup>
   <ItemGroup>

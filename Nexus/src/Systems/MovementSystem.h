@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../ECS/Entity.h"
-#include "../ECS/System.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/RigidbodyComponent.h"
+#include "src/ECS/Entity.h"
+#include "src/ECS/System.h"
+
+#include "src/Components/TransformComponent.h"
+#include "src/Components/RigidbodyComponent.h"
 
 class MovementSystem : public System
 {

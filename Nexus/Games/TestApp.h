@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "src/Input/InputEnums.h"
+#include "src/InputManagement/InputEnums.h"
 
 class Coordinator;
 class EventBus;

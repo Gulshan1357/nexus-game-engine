@@ -4,10 +4,10 @@
 
 #include "src/ECS/System.h"
 #include "src/ECS/Entity.h"
-#include "src/Event/EventBus.h"
+#include "src/EventManagement/EventBus.h"
 
 #include "src/Events/KeyPressEvent.h"
-#include "src/Input/InputEnums.h"
+#include "src/InputManagement/InputEnums.h"
 
 #include "src/Components/InputComponent.h"
 #include "src/Components/RigidbodyComponent.h"
@@ -63,7 +63,7 @@ private:
 	// ------------------------------------------------------------------------
 	void PerformMoveUpAction(Input::PlayerID playerId, Entity player)
 	{
-		const auto inputComponent = player.GetComponent<InputComponent>();
+		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
 
 		rigidbody.velocity += inputComponent.upVelocity;
@@ -71,7 +71,7 @@ private:
 
 	void PerformMoveRightAction(Input::PlayerID playerId, Entity player)
 	{
-		const auto inputComponent = player.GetComponent<InputComponent>();
+		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
 
 		rigidbody.velocity += inputComponent.rightVelocity;
@@ -79,7 +79,7 @@ private:
 
 	void PerformMoveDownAction(Input::PlayerID playerId, Entity player)
 	{
-		const auto inputComponent = player.GetComponent<InputComponent>();
+		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
 
 		rigidbody.velocity += inputComponent.downVelocity;
@@ -87,7 +87,7 @@ private:
 
 	void PerformMoveLeftAction(Input::PlayerID playerId, Entity player)
 	{
-		const auto inputComponent = player.GetComponent<InputComponent>();
+		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
 
 		rigidbody.velocity += inputComponent.leftVelocity;
@@ -95,7 +95,7 @@ private:
 
 	void PerformJump(Input::PlayerID playerId, Entity player)
 	{
-		const auto inputComponent = player.GetComponent<InputComponent>();
+		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
 
 		rigidbody.velocity += inputComponent.upVelocity * 2;
