@@ -21,6 +21,13 @@ struct Vector2
 
 	Vector2& operator-();
 
+	Vector2& operator+=(const Vector2& vector);
+	Vector2& operator-=(const Vector2& vector);
+	Vector2& operator*=(float scalar);
+	Vector2& operator*=(const Vector2& vector);
+	Vector2& operator/=(float scalar);
+	Vector2& operator/=(const Vector2& vector);
+
 	bool operator==(const Vector2& vector) const;
 	bool operator!=(const Vector2& vector) const;
 
@@ -64,6 +71,48 @@ inline Vector2& Vector2::operator-()
 {
 	x = -x;
 	y = -y;
+	return *this;
+}
+
+inline Vector2& Vector2::operator+=(const Vector2& vector)
+{
+	x += vector.x;
+	y += vector.y;
+	return *this;
+}
+
+inline Vector2& Vector2::operator-=(const Vector2& vector)
+{
+	x -= vector.x;
+	y -= vector.y;
+	return *this;
+}
+
+inline Vector2& Vector2::operator*=(float scalar)
+{
+	x *= scalar;
+	y *= scalar;
+	return *this;
+}
+
+inline Vector2& Vector2::operator*=(const Vector2& vector)
+{
+	x *= vector.x;
+	y *= vector.y;
+	return *this;
+}
+
+inline Vector2& Vector2::operator/=(float scalar)
+{
+	x /= scalar;
+	y /= scalar;
+	return *this;
+}
+
+inline Vector2& Vector2::operator/=(const Vector2& vector)
+{
+	x /= vector.x;
+	y /= vector.y;
 	return *this;
 }
 
