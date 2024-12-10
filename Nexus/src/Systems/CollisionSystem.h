@@ -31,42 +31,31 @@ public:
 			const auto& aTransform = a.GetComponent<TransformComponent>();
 			const auto& aCollider = a.GetComponent<BoxColliderComponent>();
 
+			// Calculate the bottom-left position of entity 'a' based on its position and collider-offset
+			float aBottomLeftX = aTransform.position.x + aCollider.offset.x - static_cast<float>(aCollider.width) / 2.0f;
+			float aBottomLeftY = aTransform.position.y + aCollider.offset.y - static_cast<float>(aCollider.height) / 2.0f;
+
 			// Loop all the entities that still need to be checked
-			for (auto j = i; j != entities.end(); ++j)
+			for (auto j = i + 1; j != entities.end(); ++j)
 			{
 				Entity b = *j;
-
-				// Bypass if we are trying to test the same entity
-				if (a == b)
-				{
-					continue;
-				}
 
 				const auto& bTransform = b.GetComponent<TransformComponent>();
 				const auto& bCollider = b.GetComponent<BoxColliderComponent>();
 
+				// Calculate the bottom-left position of entity 'b'
+				float bBottomLeftX = bTransform.position.x + bCollider.offset.x - static_cast<float>(bCollider.width) / 2.0f;
+				float bBottomLeftY = bTransform.position.y + bCollider.offset.y - static_cast<float>(bCollider.height) / 2.0f;
+
 				// Perform AABB collision check
 				bool collisionHappened = CheckAABBCollision(
-					aTransform.position.x + aCollider.offset.x,
-					aTransform.position.y + aCollider.offset.y,
-					aCollider.width,
-					aCollider.height,
-					bTransform.position.x + bCollider.offset.x,
-					bTransform.position.y + bCollider.offset.y,
-					bCollider.width,
-					bCollider.height
+					aBottomLeftX, aBottomLeftY, aCollider.width, aCollider.height,
+					bBottomLeftX, bBottomLeftY, bCollider.width, bCollider.height
 				);
 
 				if (collisionHappened)
 				{
-					// Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
-
-					// TODO: emit an event....
-					/*if (a.BelongsToGroup("Player1") && b.BelongsToGroup("Player2"))
-					{
-						Logger::Log("Entity Player1 is colliding with entity Player2");
-
-					}*/
+					Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
 					eventManager->EmitEvent<CollisionEvent>(a, b);
 				}
 			}
