@@ -26,6 +26,7 @@
 #include "src/Systems/DamageSystem.h"
 #include "src/Systems/RenderTextSystem.h"
 #include "src/Systems/InputSystem.h"
+#include "src/Systems/RenderDebugSystem.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
@@ -34,6 +35,8 @@
 
 TestApp::TestApp()
 {
+	bIsDebug = false;
+
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_unique<EventManager>();
 	m_keyBindings = std::make_unique<KeyBindings>();
@@ -61,6 +64,7 @@ void TestApp::LoadLevel(int level)
 	m_coordinator->AddSystem<DamageSystem>();
 	m_coordinator->AddSystem<RenderTextSystem>();
 	m_coordinator->AddSystem<InputSystem>();
+	m_coordinator->AddSystem<RenderDebugSystem>();
 
 	// Add assets to the asset manager
 	m_assetManager->AddSprite("test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
@@ -74,7 +78,7 @@ void TestApp::LoadLevel(int level)
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
 	test.AddComponent<SpriteComponent>("test-image", 2, 2); // Only prints a default sprite
-	test.AddComponent<BoxColliderComponent>(32, 32, Vector2());
+	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSprite("test-image")->GetWidth() / 2, m_assetManager->GetSprite("test-image")->GetHeight(), Vector2());
 	test.Tag("Player1");
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
 
@@ -82,7 +86,7 @@ void TestApp::LoadLevel(int level)
 	test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
 	test2.AddComponent<SpriteComponent>("test-image", 12);
-	test2.AddComponent<BoxColliderComponent>(32, 32, Vector2());
+	test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSprite("test-image")->GetWidth() / 4, m_assetManager->GetSprite("test-image")->GetHeight(), Vector2());
 	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
 	test2.Tag("Player2");
 
@@ -109,7 +113,7 @@ void TestApp::LoadLevel(int level)
 
 }
 
-void TestApp::PrintTiles(const std::string& tileMapAssetId, double scale, std::string mapFileLocation, int rows, int cols)
+void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
 {
 	// Tiles positioning w.r.t each other
 	float tileWidth = (m_assetManager->GetSprite(tileMapAssetId)->GetWidth()) * scale;
@@ -185,6 +189,11 @@ void TestApp::Update(float deltaTime)
 //------------------------------------------------------------------------
 void TestApp::ProcessInput()
 {
+	// For debug mode
+	if (App::IsKeyPressed('B'))
+	{
+		bIsDebug = !bIsDebug;
+	}
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_2, "Player2");
 }
@@ -213,6 +222,12 @@ void TestApp::Render()
 	// Update Render Systems
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager);
 	m_coordinator->GetSystem<RenderTextSystem>().Update();
+
+	if (bIsDebug)
+	{
+		m_coordinator->GetSystem<RenderDebugSystem>().Update();
+
+	}
 }
 
 void TestApp::Shutdown()

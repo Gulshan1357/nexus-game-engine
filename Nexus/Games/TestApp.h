@@ -18,7 +18,7 @@ public:
 
 	void Initialize();
 	void LoadLevel(int level);
-	void PrintTiles(const std::string& tileMapAssetId, double scale, std::string mapFileLocation, int rows, int cols);
+	void PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols);
 	void Update(float deltaTime);
 	void ProcessInput();
 	void ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag);
@@ -26,6 +26,8 @@ public:
 	void Shutdown();
 
 private:
+	bool bIsDebug; // Trigger debug mode using 'B' key
+
 	std::unique_ptr<Coordinator> m_coordinator;
 	std::unique_ptr<EventManager> m_eventManager;
 	std::unique_ptr<KeyBindings> m_keyBindings;

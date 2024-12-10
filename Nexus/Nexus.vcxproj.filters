@@ -98,6 +98,7 @@
     <ClInclude Include="src\Components\InputComponent.h" />
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
     <ClInclude Include="src\AssetManagement\AssetEnums.h" />
+    <ClInclude Include="src\Systems\RenderDebugSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
