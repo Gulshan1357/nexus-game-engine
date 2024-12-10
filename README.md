@@ -2,7 +2,9 @@
 
 This repository contains my project for the Ubisoft NEXT 2024-2025 Programming Challenge.
 
-## Timeline
+## Credits
+
+1. Isometric Blocks (Kenny) - [Link](https://www.kenney.nl/assets/isometric-blocks) - [License](Nexus/Assets/Sprites/License.txt) -> For Isometric tiles
 
 ## Learning Resources
 
