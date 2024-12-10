@@ -14,8 +14,4 @@ Systems maintain a list of relevant entity IDs and, during each update(), iterat
    - _KeyBindings_: This file stores all the keys and their corresponding action and provide some function to add/retrieve them.
    - _KeyPressEvent_: Contains playerId, action, player entity.
    - _InputSystem_: The system is subscribed to KeyPressEvent. When this event is fired it triggers the necessary action based on the event data.
-
-## TODO:
-
-1. SpriteComponent should keep track of sprite asset location and
-2. RenderSystem should render based on the sprite location inside SpriteComponent
+7. **RenderDebugSystem**: Supposed to render multiple useful info. Currently only renders red rectangles around the box Colliders.
