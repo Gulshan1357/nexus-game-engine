@@ -68,8 +68,10 @@ public:
 			CSimpleSprite* sprite = assetManager->GetSprite(spriteComponent.assetId);
 			sprite->SetPosition(transformComponent.position.x, transformComponent.position.y);
 			sprite->SetAngle(transformComponent.rotation);
-			//sprite->SetScale(transformComponent.scale.x);
+			sprite->SetScale(transformComponent.scale.x);
+			sprite->SetFrame(spriteComponent.frame);
 			sprite->Draw();
+
 		}
 	}
 };

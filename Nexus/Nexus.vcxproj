@@ -181,6 +181,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="Assets\Sprites\License.txt" />
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +196,7 @@
     <ClInclude Include="Games\OriginalDemo.h" />
     <ClInclude Include="Games\TestApp.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
+    <ClInclude Include="src\AssetManagement\AssetEnums.h" />
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
@@ -256,6 +258,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="src\Utils\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Sprites\allTiles_sheet.bmp" />
+    <Image Include="Assets\Sprites\Test.bmp" />
+    <Image Include="Assets\Sprites\tilesheet.bmp" />
+    <Image Include="Assets\Sprites\tilesheet2X.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Sprites\test.map" />
+    <None Include="Assets\Sprites\test2.map" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

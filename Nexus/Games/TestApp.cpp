@@ -2,6 +2,7 @@
 #include "TestApp.h"
 
 #include <memory>
+#include <fstream>
 
 #include "../App/app.h"
 
@@ -11,6 +12,7 @@
 #include "src/InputManagement/KeyBindings.h"
 #include "src/InputManagement/InputEnums.h"
 #include "src/AssetManagement/AssetManager.h"
+#include "src/AssetManagement/AssetEnums.h"
 
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
@@ -62,12 +64,16 @@ void TestApp::LoadLevel(int level)
 
 	// Add assets to the asset manager
 	m_assetManager->AddSprite("test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
+	m_assetManager->AddSprite("tile-map", R"(.\Assets\Sprites\tilesheet.bmp)", 21, 8);
+
+	// Print TileMaps
+	PrintTiles("tile-map", 0.8, R"(.\Assets\Sprites\test2.map)", 20, 20);
 
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
-	test.AddComponent<SpriteComponent>("test-image"); // Only prints a default sprite
+	test.AddComponent<SpriteComponent>("test-image", 2, 2); // Only prints a default sprite
 	test.AddComponent<BoxColliderComponent>(32, 32, Vector2());
 	test.Tag("Player1");
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
@@ -75,7 +81,7 @@ void TestApp::LoadLevel(int level)
 	Entity test2 = m_coordinator->CreateEntity();
 	test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
-	test2.AddComponent<SpriteComponent>("test-image");
+	test2.AddComponent<SpriteComponent>("test-image", 12);
 	test2.AddComponent<BoxColliderComponent>(32, 32, Vector2());
 	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
 	test2.Tag("Player2");
@@ -100,6 +106,57 @@ void TestApp::LoadLevel(int level)
 	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
 	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
 	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
+
+}
+
+void TestApp::PrintTiles(const std::string& tileMapAssetId, double scale, std::string mapFileLocation, int rows, int cols)
+{
+	// Tiles positioning w.r.t each other
+	float tileWidth = (m_assetManager->GetSprite(tileMapAssetId)->GetWidth()) * scale;
+	float tileHeight = (m_assetManager->GetSprite(tileMapAssetId)->GetHeight()) * scale;
+	float horizontalSpacing = tileWidth * 0.99f;
+	float verticalSpacing = tileHeight * 0.25f;
+
+	std::fstream mapFile;
+	mapFile.open(mapFileLocation);
+
+	for (int y = rows - 1; y >= 0; y--)
+	{
+		for (int x = 0; x < cols; x++)
+		{
+			// Store the integer and use the value as a frame number to print the correct tile
+			int frame;
+			mapFile >> frame;
+			mapFile.ignore();
+
+			// Calculate position
+			float posX = x * horizontalSpacing;
+			float posY = y * verticalSpacing;
+
+			// Stagger even rows
+			if (y % 2 == 0)
+			{
+				posX += tileWidth * 0.5f;
+			}
+
+			Entity tile = m_coordinator->CreateEntity();
+			tile.Group("tiles");
+			tile.AddComponent<TransformComponent>(Vector2(posX, posY), Vector2(scale, scale), 0.0f);
+
+			// Set different components for different tiles
+			switch (frame)
+			{
+				case Asset::Tiles::LOCK:
+					// Higher z-index for Lock tiles
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, frame, 1);
+					tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
+					break;
+				default:
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, frame, 0);
+					break;
+			}
+		}
+	}
 }
 
 void TestApp::Update(float deltaTime)

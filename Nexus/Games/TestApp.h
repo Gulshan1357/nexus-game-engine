@@ -18,6 +18,7 @@ public:
 
 	void Initialize();
 	void LoadLevel(int level);
+	void PrintTiles(const std::string& tileMapAssetId, double scale, std::string mapFileLocation, int rows, int cols);
 	void Update(float deltaTime);
 	void ProcessInput();
 	void ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag);

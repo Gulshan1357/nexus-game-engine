@@ -33,6 +33,7 @@
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\InputManagement\KeyBindings.cpp" />
+    <ClCompile Include="src\AssetManagement\AssetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -95,6 +96,8 @@
     <ClInclude Include="src\Systems\InputSystem.h" />
     <ClInclude Include="src\InputManagement\KeyBindings.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
+    <ClInclude Include="src\AssetManagement\AssetManager.h" />
+    <ClInclude Include="src\AssetManagement\AssetEnums.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
@@ -114,5 +117,16 @@
     <Text Include="ReadMe.txt">
       <Filter>API</Filter>
     </Text>
+    <Text Include="Assets\Sprites\License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Sprites\allTiles_sheet.bmp" />
+    <Image Include="Assets\Sprites\Test.bmp" />
+    <Image Include="Assets\Sprites\tilesheet.bmp" />
+    <Image Include="Assets\Sprites\tilesheet2X.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Sprites\test.map" />
+    <None Include="Assets\Sprites\test2.map" />
   </ItemGroup>
 </Project>
