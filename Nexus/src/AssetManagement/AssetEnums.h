@@ -5,10 +5,10 @@ namespace Asset
 	// Demo sprite
 	enum DemoPlayer
 	{
-		ANIM_FORWARDS = 0,
-		ANIM_BACKWARDS = 1,
-		ANIM_LEFT = 2,
-		ANIM_RIGHT = 3,
+		ANIM_BACKWARDS = 0,
+		ANIM_LEFT = 8,
+		ANIM_RIGHT = 16,
+		ANIM_FORWARDS = 24,
 	};
 
 	// Tile map cols and rows = 21 X 8
