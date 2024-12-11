@@ -5,7 +5,7 @@
 struct SpriteComponent
 {
 	std::string assetId;
-	unsigned int frame;
+	unsigned int frame; // Frame to render when not animating
 	int zIndex;
 
 	SpriteComponent(std::string assetId = "", unsigned int frame = 0, int zIndex = 0) :

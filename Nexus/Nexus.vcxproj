@@ -198,6 +198,7 @@
     <ClInclude Include="miniaudio\miniaudio.h" />
     <ClInclude Include="src\AssetManagement\AssetEnums.h" />
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
+    <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
@@ -216,6 +217,7 @@
     <ClInclude Include="src\EventManagement\EventCallback.h" />
     <ClInclude Include="src\InputManagement\KeyBindings.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
+    <ClInclude Include="src\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
     <ClInclude Include="src\Systems\InputSystem.h" />

@@ -32,6 +32,8 @@
 #include "src/Utils/Logger.h"
 
 #include "src/Events/KeyPressEvent.h"
+#include "src/Components/AnimationComponent.h"
+#include <src/Systems/AnimationSystem.h>
 
 TestApp::TestApp()
 {
@@ -65,30 +67,50 @@ void TestApp::LoadLevel(int level)
 	m_coordinator->AddSystem<RenderTextSystem>();
 	m_coordinator->AddSystem<InputSystem>();
 	m_coordinator->AddSystem<RenderDebugSystem>();
+	m_coordinator->AddSystem<AnimationSystem>();
 
 	// Add assets to the asset manager
-	m_assetManager->AddSprite("test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
+	m_assetManager->AddSprite("player1-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
+	m_assetManager->AddSprite("player2-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
 	m_assetManager->AddSprite("tile-map", R"(.\Assets\Sprites\tilesheet.bmp)", 21, 8);
 
 	// Print TileMaps
 	PrintTiles("tile-map", 0.8, R"(.\Assets\Sprites\test2.map)", 20, 20);
 
+	// If one player is animating then all should animatation component otherwise different player sprite start animating on different player's input
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
-	test.AddComponent<SpriteComponent>("test-image", 2, 2); // Only prints a default sprite
-	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSprite("test-image")->GetWidth() / 2, m_assetManager->GetSprite("test-image")->GetHeight(), Vector2());
-	test.Tag("Player1");
+	test.AddComponent<SpriteComponent>("player1-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 2); // Only prints a default sprite
+	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
+	test.AddComponent<AnimationComponent>(false);
+	test.Tag("Player1");
+	test.Group("Player");
+
+	// Create animation for test Player 1
+	m_assetManager->CreateAnimation("player1-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 1.0f / 15.0f, { 0,1,2,3,4,5,6,7 });
+	m_assetManager->CreateAnimation("player1-test-image", Asset::DemoPlayer::ANIM_LEFT, 1.0f / 15.0f, { 8,9,10,11,12,13,14,15 });
+	m_assetManager->CreateAnimation("player1-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
+	m_assetManager->CreateAnimation("player1-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
 
 	Entity test2 = m_coordinator->CreateEntity();
 	test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
-	test2.AddComponent<SpriteComponent>("test-image", 12);
-	test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSprite("test-image")->GetWidth() / 4, m_assetManager->GetSprite("test-image")->GetHeight(), Vector2());
+	test2.AddComponent<SpriteComponent>("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 2);
+	test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
 	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
+	test2.AddComponent<AnimationComponent>(false);
 	test2.Tag("Player2");
+	test2.Group("Player");
+
+	// Create animation for test Player 2
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 1.0f / 15.0f, { 0,1,2,3,4,5,6,7 });
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_LEFT, 1.0f / 15.0f, { 8,9,10,11,12,13,14,15 });
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
+
 
 	Entity uiTextHello = m_coordinator->CreateEntity();
 	uiTextHello.AddComponent<UITextComponent>("New Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18);
@@ -173,6 +195,7 @@ void TestApp::Update(float deltaTime)
 	// Perform the subscription of the events for all systems
 	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
+	m_coordinator->GetSystem<AnimationSystem>().SubscribeToEvents(m_eventManager);
 
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
@@ -180,6 +203,7 @@ void TestApp::Update(float deltaTime)
 	// Invoke all the systems that needs to be updated
 	m_coordinator->GetSystem<MovementSystem>().Update(deltaTime);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
+	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 
 	ProcessInput();
 }
@@ -213,6 +237,8 @@ void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& pla
 				m_keyBindings->GetAction(playerId, key),
 				m_coordinator->GetEntityByTag(playerTag)
 			);
+			// Activate animation
+			m_coordinator->GetEntityByTag(playerTag).GetComponent<AnimationComponent>().bIsPlaying = true;
 		}
 	}
 }

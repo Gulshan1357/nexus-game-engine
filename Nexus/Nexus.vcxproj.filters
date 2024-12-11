@@ -99,6 +99,8 @@
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
     <ClInclude Include="src\AssetManagement\AssetEnums.h" />
     <ClInclude Include="src\Systems\RenderDebugSystem.h" />
+    <ClInclude Include="src\Components\AnimationComponent.h" />
+    <ClInclude Include="src\Systems\AnimationSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
