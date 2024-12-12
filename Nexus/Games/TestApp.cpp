@@ -227,6 +227,7 @@ void TestApp::ProcessInput()
 //------------------------------------------------------------------------
 void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag)
 {
+	bool noKeyPressed = true;
 	for (const auto key : m_keyBindings->GetAllKeys(playerId))
 	{
 		if (App::IsKeyPressed(key))
@@ -239,8 +240,15 @@ void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& pla
 			);
 			// Activate animation
 			m_coordinator->GetEntityByTag(playerTag).GetComponent<AnimationComponent>().bIsPlaying = true;
+			noKeyPressed = false;
 		}
 	}
+	if (noKeyPressed)
+	{
+		m_coordinator->GetEntityByTag(playerTag).GetComponent<AnimationComponent>().bIsPlaying = false;
+	}
+
+
 }
 
 void TestApp::Render()
