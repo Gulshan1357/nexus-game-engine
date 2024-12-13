@@ -12,7 +12,7 @@
 #include "src/AssetManagement/AssetManager.h"
 #include "src/EventManagement/EventManager.h"
 
-#include "src/Events/KeyPressEvent.h"
+#include "src/Events/InputKeyEvent.h"
 
 #include "src/Components/SpriteComponent.h"
 #include "src/Components/AnimationComponent.h"

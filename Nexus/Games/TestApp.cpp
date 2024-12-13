@@ -31,7 +31,7 @@
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
 
-#include "src/Events/KeyPressEvent.h"
+#include "src/Events/InputKeyEvent.h"
 #include "src/Components/AnimationComponent.h"
 #include <src/Systems/AnimationSystem.h>
 

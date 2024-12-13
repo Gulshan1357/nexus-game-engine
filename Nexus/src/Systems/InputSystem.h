@@ -6,7 +6,7 @@
 #include "src/ECS/Entity.h"
 #include "src/EventManagement/EventManager.h"
 
-#include "src/Events/KeyPressEvent.h"
+#include "src/Events/InputKeyEvent.h"
 #include "src/InputManagement/InputEnums.h"
 
 #include "src/Components/InputComponent.h"
