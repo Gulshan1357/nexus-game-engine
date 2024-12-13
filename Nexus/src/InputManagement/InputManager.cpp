@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "KeyBindings.h"
+#include "InputManager.h"
 
 #include <iostream>
 
-void KeyBindings::AddKeyBinding(const Input::PlayerID playerId, const int keyCode, const Input::PlayerAction action)
+void InputManager::AddKeyBinding(const Input::PlayerID playerId, const int keyCode, const Input::PlayerAction action)
 {
 	if (playerId == Input::PlayerID::PLAYER_1)
 	{
@@ -22,7 +22,7 @@ void KeyBindings::AddKeyBinding(const Input::PlayerID playerId, const int keyCod
 	}
 }
 
-const std::vector<int>& KeyBindings::GetAllKeys(const Input::PlayerID playerId)
+const std::vector<int>& InputManager::GetAllKeys(const Input::PlayerID playerId)
 {
 	switch (playerId)
 	{
@@ -35,7 +35,7 @@ const std::vector<int>& KeyBindings::GetAllKeys(const Input::PlayerID playerId)
 	}
 }
 
-Input::PlayerAction KeyBindings::GetAction(const Input::PlayerID playerId, const int key)
+Input::PlayerAction InputManager::GetAction(const Input::PlayerID playerId, const int key)
 {
 	const auto& keyBindings = (playerId == Input::PlayerID::PLAYER_1)
 		? m_playerOneKeyBindings
@@ -45,5 +45,5 @@ Input::PlayerAction KeyBindings::GetAction(const Input::PlayerID playerId, const
 		return it->second;
 	}
 	// You shouldn't reach this stage
-	throw std::runtime_error("KeyBindings::GetAction() No action found!");
+	throw std::runtime_error("InputManager::GetAction() No action found!");
 }

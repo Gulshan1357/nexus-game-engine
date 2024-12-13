@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------
 // Contain a maps from keyBindings to action and also a vector<int> for each player key codes for fast traversal.
 //------------------------------------------------------------------------
-class KeyBindings
+class InputManager
 {
 public:
 	void AddKeyBinding(Input::PlayerID playerId, int keyCode, Input::PlayerAction action);

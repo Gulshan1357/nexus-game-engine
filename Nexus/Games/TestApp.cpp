@@ -9,7 +9,7 @@
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
 #include "src/EventManagement/EventManager.h"
-#include "src/InputManagement/KeyBindings.h"
+#include "src/InputManagement/InputManager.h"
 #include "src/InputManagement/InputEnums.h"
 #include "src/AssetManagement/AssetManager.h"
 #include "src/AssetManagement/AssetEnums.h"
@@ -41,7 +41,7 @@ TestApp::TestApp()
 
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_unique<EventManager>();
-	m_keyBindings = std::make_unique<KeyBindings>();
+	m_inputManager = std::make_unique<InputManager>();
 	m_assetManager = std::make_unique<AssetManager>();
 	Logger::Log("Game constructor called!");
 }
@@ -122,16 +122,16 @@ void TestApp::LoadLevel(int level)
 
 	// Add Key bindings for players
 	// Player 1
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_1, 'W', Input::PlayerAction::MOVE_UP);
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_1, 'D', Input::PlayerAction::MOVE_RIGHT);
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_1, 'S', Input::PlayerAction::MOVE_DOWN);
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_1, 'A', Input::PlayerAction::MOVE_LEFT);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'W', Input::PlayerAction::MOVE_UP);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'D', Input::PlayerAction::MOVE_RIGHT);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'S', Input::PlayerAction::MOVE_DOWN);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'A', Input::PlayerAction::MOVE_LEFT);
 
 	// Player 2
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_UP, Input::PlayerAction::MOVE_UP);
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
-	m_keyBindings->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_UP, Input::PlayerAction::MOVE_UP);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
+	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
 
 }
 
@@ -187,6 +187,7 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 
 void TestApp::Update(float deltaTime)
 {
+	ProcessInput();
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
 	// Reset all event callbacks for the current frame
@@ -205,7 +206,7 @@ void TestApp::Update(float deltaTime)
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 
-	ProcessInput();
+
 }
 
 //------------------------------------------------------------------------
@@ -228,14 +229,14 @@ void TestApp::ProcessInput()
 void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag)
 {
 	bool noKeyPressed = true;
-	for (const auto key : m_keyBindings->GetAllKeys(playerId))
+	for (const auto key : m_inputManager->GetAllKeys(playerId))
 	{
 		if (App::IsKeyPressed(key))
 		{
 			// Send the Keypress event by mapping key to action using KeyBindings::GetAction();
 			m_eventManager->EmitEvent<KeyPressEvent>(
 				playerId,
-				m_keyBindings->GetAction(playerId, key),
+				m_inputManager->GetAction(playerId, key),
 				m_coordinator->GetEntityByTag(playerTag)
 			);
 			// Activate animation

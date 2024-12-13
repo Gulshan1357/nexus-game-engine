@@ -7,7 +7,7 @@
 
 class Coordinator;
 class EventManager;
-class KeyBindings;
+class InputManager;
 class AssetManager;
 
 class TestApp
@@ -30,6 +30,6 @@ private:
 
 	std::unique_ptr<Coordinator> m_coordinator;
 	std::unique_ptr<EventManager> m_eventManager;
-	std::unique_ptr<KeyBindings> m_keyBindings;
+	std::unique_ptr<InputManager> m_inputManager;
 	std::unique_ptr<AssetManager> m_assetManager;
 };

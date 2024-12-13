@@ -32,7 +32,7 @@
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
-    <ClCompile Include="src\InputManagement\KeyBindings.cpp" />
+    <ClCompile Include="src\InputManagement\InputManager.cpp" />
     <ClCompile Include="src\AssetManagement\AssetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -94,7 +94,7 @@
     <ClInclude Include="src\InputManagement\InputEnums.h" />
     <ClInclude Include="src\Events\KeyPressEvent.h" />
     <ClInclude Include="src\Systems\InputSystem.h" />
-    <ClInclude Include="src\InputManagement\KeyBindings.h" />
+    <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
     <ClInclude Include="src\AssetManagement\AssetEnums.h" />
