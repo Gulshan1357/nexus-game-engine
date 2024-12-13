@@ -15,7 +15,7 @@ Systems maintain a list of relevant entity IDs and, during each update(), iterat
    - _KeyPressEvent_: Contains playerId, action, player entity.
    - _InputSystem_: The system is subscribed to KeyPressEvent. When this event is fired it triggers the necessary action based on the event data.
 7. **RenderDebugSystem**: Supposed to render multiple useful info. Currently only renders red rectangles around the box Colliders.
-8. **Animation System**: Alter animation component which contains data like isAnimating, animation frame. It also modifies the frame in sprite component which is like an idle frame. Render component then renders the active frame which is either a looping animation frame of idle frame in sprite component.
+8. **Animation System**: Animate all the entities whose AnimationComponent's IsActive value is set to true. This value is supposed to be changed by other systems.
 
 ## TODO:
 

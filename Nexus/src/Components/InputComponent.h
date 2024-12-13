@@ -1,17 +1,16 @@
 #pragma once
 
-#include "src/Utils/Vector2.h"
 #include "src/InputManagement/InputEnums.h"
 
 struct InputComponent
 {
 	Input::PlayerID playerId;
-	Vector2 upVelocity;
-	Vector2 rightVelocity;
-	Vector2 downVelocity;
-	Vector2 leftVelocity;
+	float upVelocity;
+	float rightVelocity;
+	float downVelocity;
+	float leftVelocity;
 
-	InputComponent(Input::PlayerID playerId = Input::PlayerID::PLAYER_1, Vector2 upVelocity = Vector2(), Vector2 rightVelocity = Vector2(), Vector2 downVelocity = Vector2(), Vector2 leftVelocity = Vector2()) :
+	InputComponent(Input::PlayerID playerId = Input::PlayerID::PLAYER_1, float upVelocity = 0.0f, float rightVelocity = 0.0f, float downVelocity = 0.0f, float leftVelocity = float()) :
 		playerId(playerId),
 		upVelocity(upVelocity),
 		rightVelocity(rightVelocity),

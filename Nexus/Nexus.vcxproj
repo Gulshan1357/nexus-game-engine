@@ -210,8 +210,8 @@
     <ClInclude Include="src\ECS\Entity.h" />
     <ClInclude Include="src\ECS\Pool.h" />
     <ClInclude Include="src\ECS\System.h" />
+    <ClInclude Include="src\Events\ActionChangeEvent.h" />
     <ClInclude Include="src\Events\CollisionEvent.h" />
-    <ClInclude Include="src\Events\InputKeyEvent.h" />
     <ClInclude Include="src\EventManagement\IEvent.h" />
     <ClInclude Include="src\EventManagement\EventManager.h" />
     <ClInclude Include="src\EventManagement\EventCallback.h" />

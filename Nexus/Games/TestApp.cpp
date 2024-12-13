@@ -31,9 +31,10 @@
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
 
-#include "src/Events/InputKeyEvent.h"
 #include "src/Components/AnimationComponent.h"
 #include <src/Systems/AnimationSystem.h>
+
+#include "src/Events/ActionChangeEvent.h"
 
 TestApp::TestApp()
 {
@@ -75,16 +76,16 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->AddSprite("tile-map", R"(.\Assets\Sprites\tilesheet.bmp)", 21, 8);
 
 	// Print TileMaps
-	PrintTiles("tile-map", 0.8, R"(.\Assets\Sprites\test2.map)", 20, 20);
+	PrintTiles("tile-map", static_cast<float>(0.8), R"(.\Assets\Sprites\test2.map)", 20, 20);
 
-	// If one player is animating then all should animatation component otherwise different player sprite start animating on different player's input
+	// Animation SystemLimitation: If one player is animating then all should animation component otherwise different player sprite start animating on different player's input
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
 	test.AddComponent<SpriteComponent>("player1-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 2); // Only prints a default sprite
 	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
-	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
+	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 0.018f, 0.018f, 0.018f, 0.018f);
 	test.AddComponent<AnimationComponent>(false);
 	test.Tag("Player1");
 	test.Group("Player");
@@ -100,7 +101,7 @@ void TestApp::LoadLevel(int level)
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
 	test2.AddComponent<SpriteComponent>("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 2);
 	test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
-	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, Vector2(0, 0.018f), Vector2(0.018f, 0), Vector2(0, -0.018f), Vector2(-0.018f, 0));
+	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 0.018f, 0.018f, 0.018f, 0.018f);
 	test2.AddComponent<AnimationComponent>(false);
 	test2.Tag("Player2");
 	test2.Group("Player");
@@ -156,8 +157,8 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 			mapFile.ignore();
 
 			// Calculate position
-			float posX = x * horizontalSpacing;
-			float posY = y * verticalSpacing;
+			float posX = static_cast<float>(x) * horizontalSpacing;
+			float posY = static_cast<float>(y) * verticalSpacing;
 
 			// Stagger even rows
 			if (y % 2 == 0)
@@ -196,7 +197,6 @@ void TestApp::Update(float deltaTime)
 	// Perform the subscription of the events for all systems
 	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
-	m_coordinator->GetSystem<AnimationSystem>().SubscribeToEvents(m_eventManager);
 
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
@@ -205,8 +205,6 @@ void TestApp::Update(float deltaTime)
 	m_coordinator->GetSystem<MovementSystem>().Update(deltaTime);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
-
-
 }
 
 //------------------------------------------------------------------------
@@ -228,28 +226,22 @@ void TestApp::ProcessInput()
 //------------------------------------------------------------------------
 void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag)
 {
-	bool noKeyPressed = true;
-	for (const auto key : m_inputManager->GetAllKeys(playerId))
+	// bool noKeyPressed = true;
+	// For every keyState check if currently pressed and compare the new state(bIsPressed) with old state(bIsPressed)
+	for (auto& keyState : m_inputManager->GetAllKeys(playerId))
 	{
-		if (App::IsKeyPressed(key))
+		if (App::IsKeyPressed(keyState.keyCode) != keyState.bIsPressed) // Key state is different
 		{
-			// Send the Keypress event by mapping key to action using KeyBindings::GetAction();
-			m_eventManager->EmitEvent<KeyPressEvent>(
-				playerId,
-				m_inputManager->GetAction(playerId, key),
-				m_coordinator->GetEntityByTag(playerTag)
-			);
-			// Activate animation
-			m_coordinator->GetEntityByTag(playerTag).GetComponent<AnimationComponent>().bIsPlaying = true;
-			noKeyPressed = false;
+			// store the current key state
+			keyState.bIsPressed = !keyState.bIsPressed;
+
+			m_inputManager->UpdateActionStatus(playerId, m_inputManager->GetActionEnum(playerId, keyState.keyCode), keyState.bIsPressed);
+
+			const Input::PlayerAction action = m_inputManager->GetActionEnum(playerId, keyState.keyCode);
+			const bool actionStatus = m_inputManager->GetActionStatus(playerId, action);
+			m_eventManager->EmitEvent<ActionChangeEvent>(m_coordinator->GetEntityByTag(playerTag), playerId, action, actionStatus);
 		}
 	}
-	if (noKeyPressed)
-	{
-		m_coordinator->GetEntityByTag(playerTag).GetComponent<AnimationComponent>().bIsPlaying = false;
-	}
-
-
 }
 
 void TestApp::Render()

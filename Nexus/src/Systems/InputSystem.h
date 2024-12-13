@@ -1,12 +1,15 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 
+#include "src/Components/AnimationComponent.h"
 #include "src/ECS/System.h"
 #include "src/ECS/Entity.h"
 #include "src/EventManagement/EventManager.h"
+#include "src/InputManagement/InputManager.h"
 
-#include "src/Events/InputKeyEvent.h"
+#include "src/Events/ActionChangeEvent.h"
 #include "src/InputManagement/InputEnums.h"
 
 #include "src/Components/InputComponent.h"
@@ -23,37 +26,45 @@ public:
 	InputSystem()
 	{
 		RequireComponent<InputComponent>();
+		RequireComponent<AnimationComponent>();
 	}
 
 	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
 	{
-		using CallbackType = std::function<void(InputSystem*, KeyPressEvent&)>;
-		CallbackType callback = std::bind(&InputSystem::OnKeyPressed, this, std::placeholders::_2);
-		eventManager->SubscribeToEvent<KeyPressEvent>(this, callback);
+		using CallbackType = std::function<void(InputSystem*, ActionChangeEvent&)>;
+		CallbackType callback = std::bind(&InputSystem::OnActionChange, this, std::placeholders::_2);
+		eventManager->SubscribeToEvent<ActionChangeEvent>(this, callback);
 		// std::bind usually copies the so need std::ref to ensure object is passed by reference wrapper using std::ref
 	}
 
-	void OnKeyPressed(const KeyPressEvent& event)
+	void OnActionChange(const ActionChangeEvent& actionEvent)
 	{
-		if (event.action == Input::PlayerAction::MOVE_UP)
+		// Currently we are sending events when action gets activated and also when it gets deactivated.
+		// TODO: Improve the control flow. Example: what happens when both MOVE_UP and MOVE_RIGHT are active?
+		if (actionEvent.action == Input::PlayerAction::MOVE_UP && actionEvent.isActionActive)
 		{
-			PerformMoveUpAction(event.playerId, event.player);
+			PerformMoveUp(actionEvent.playerId, actionEvent.player);
 		}
-		if (event.action == Input::PlayerAction::MOVE_RIGHT)
+		else if (actionEvent.action == Input::PlayerAction::MOVE_RIGHT && actionEvent.isActionActive)
 		{
-			PerformMoveRightAction(event.playerId, event.player);
+			PerformMoveRight(actionEvent.playerId, actionEvent.player);
 		}
-		if (event.action == Input::PlayerAction::MOVE_DOWN)
+		else if (actionEvent.action == Input::PlayerAction::MOVE_DOWN && actionEvent.isActionActive)
 		{
-			PerformMoveDownAction(event.playerId, event.player);
+			PerformMoveDown(actionEvent.playerId, actionEvent.player);
 		}
-		if (event.action == Input::PlayerAction::MOVE_LEFT)
+		else if (actionEvent.action == Input::PlayerAction::MOVE_LEFT && actionEvent.isActionActive)
 		{
-			PerformMoveLeftAction(event.playerId, event.player);
+			PerformMoveLeft(actionEvent.playerId, actionEvent.player);
 		}
-		if (event.action == Input::PlayerAction::JUMP)
+		else if (actionEvent.action == Input::PlayerAction::JUMP && actionEvent.isActionActive)
 		{
-			PerformJump(event.playerId, event.player);
+			PerformJump(actionEvent.playerId, actionEvent.player);
+		}
+		// If none of the above then stop movement and animation
+		else
+		{
+			PerformIdle(actionEvent.playerId, actionEvent.player);
 		}
 	}
 
@@ -61,43 +72,76 @@ private:
 	//------------------------------------------------------------------------
 	// Definition of all the actions. Action can be tailored to each player using playerID
 	// ------------------------------------------------------------------------
-	void PerformMoveUpAction(Input::PlayerID playerId, Entity player)
+	void PerformMoveUp(Input::PlayerID playerId, Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+		auto& animationComponent = player.GetComponent<AnimationComponent>();
+		auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity += inputComponent.upVelocity;
+		rigidbody.velocity.y = inputComponent.upVelocity;
+		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
+		animationComponent.bIsPlaying = true;
+		spriteComponent.frame = Asset::DemoPlayer::ANIM_FORWARDS;
 	}
 
-	void PerformMoveRightAction(Input::PlayerID playerId, Entity player)
+	void PerformMoveRight(Input::PlayerID playerId, Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+		auto& animationComponent = player.GetComponent<AnimationComponent>();
+		auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity += inputComponent.rightVelocity;
+		rigidbody.velocity.x = inputComponent.rightVelocity;
+		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_RIGHT;
+		animationComponent.bIsPlaying = true;
+		spriteComponent.frame = Asset::DemoPlayer::ANIM_RIGHT;
 	}
 
-	void PerformMoveDownAction(Input::PlayerID playerId, Entity player)
+	void PerformMoveDown(Input::PlayerID playerId, Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+		auto& animationComponent = player.GetComponent<AnimationComponent>();
+		auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity += inputComponent.downVelocity;
+		rigidbody.velocity.y = -inputComponent.downVelocity;
+		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_BACKWARDS;
+		animationComponent.bIsPlaying = true;
+		spriteComponent.frame = Asset::DemoPlayer::ANIM_BACKWARDS;
 	}
 
-	void PerformMoveLeftAction(Input::PlayerID playerId, Entity player)
+	void PerformMoveLeft(Input::PlayerID playerId, Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+		auto& animationComponent = player.GetComponent<AnimationComponent>();
+		auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity += inputComponent.leftVelocity;
+		rigidbody.velocity.x = -inputComponent.leftVelocity;
+		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_LEFT;
+		animationComponent.bIsPlaying = true;
+		spriteComponent.frame = Asset::DemoPlayer::ANIM_LEFT;
 	}
 
 	void PerformJump(Input::PlayerID playerId, Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+		auto& animationComponent = player.GetComponent<AnimationComponent>();
+		auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity += inputComponent.upVelocity * 2;
+		rigidbody.velocity.y = inputComponent.upVelocity * 2;
+		// animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
+	}
+	void PerformIdle(Input::PlayerID playerId, Entity player)
+	{
+		const auto& inputComponent = player.GetComponent<InputComponent>();
+		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+		auto& animationComponent = player.GetComponent<AnimationComponent>();
+
+		rigidbody.velocity = Vector2();
+		// animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
+		animationComponent.bIsPlaying = false;
 	}
 };

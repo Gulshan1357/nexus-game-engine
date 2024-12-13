@@ -92,7 +92,6 @@
     <ClInclude Include="src\Utils\Font.h" />
     <ClInclude Include="src\Utils\Color.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
-    <ClInclude Include="src\Events\KeyPressEvent.h" />
     <ClInclude Include="src\Systems\InputSystem.h" />
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
@@ -101,6 +100,7 @@
     <ClInclude Include="src\Systems\RenderDebugSystem.h" />
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Systems\AnimationSystem.h" />
+    <ClInclude Include="src\Events\ActionChangeEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
