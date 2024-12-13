@@ -122,16 +122,16 @@ void TestApp::LoadLevel(int level)
 
 	// Add Key bindings for players
 	// Player 1
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'W', Input::PlayerAction::MOVE_UP);
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'D', Input::PlayerAction::MOVE_RIGHT);
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'S', Input::PlayerAction::MOVE_DOWN);
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_1, 'A', Input::PlayerAction::MOVE_LEFT);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'W', Input::PlayerAction::MOVE_UP);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'D', Input::PlayerAction::MOVE_RIGHT);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'S', Input::PlayerAction::MOVE_DOWN);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'A', Input::PlayerAction::MOVE_LEFT);
 
 	// Player 2
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_UP, Input::PlayerAction::MOVE_UP);
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
-	m_inputManager->AddKeyBinding(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_UP, Input::PlayerAction::MOVE_UP);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
 
 }
 
