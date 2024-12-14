@@ -23,7 +23,7 @@ public:
 	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
 	{
 		using CallbackType = std::function<void(DamageSystem*, CollisionEvent&)>;
-		CallbackType callback = std::bind(&DamageSystem::onCollision, this, std::placeholders::_2);
+		const CallbackType callback = [this](auto&&, auto&& placeholder2) { onCollision(std::forward<decltype(placeholder2)>(placeholder2)); };
 		eventManager->SubscribeToEvent<CollisionEvent>(this, callback);
 		//  std::placeholders::_2 tells std::bind that the second argument (the event) will be provided when the resulting function is called. This allows us to create a callable object that matches the required function signature of SubscribeToEvent, where the first argument is the instance (DamageSystem*), and the second argument is the event (CollisionEvent&).
 	}

@@ -4,11 +4,11 @@
 
 struct BoxColliderComponent
 {
-	int width;
-	int height;
+	float width;
+	float height;
 	Vector2 offset;
 
-	BoxColliderComponent(int width = 0, int height = 0, Vector2 offset = Vector2())
+	explicit BoxColliderComponent(const float width = 0, const float height = 0, const Vector2 offset = Vector2())
 		: width(width), height(height), offset(offset)
 	{}
 };

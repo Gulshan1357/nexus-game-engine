@@ -8,7 +8,7 @@ struct SpriteComponent
 	unsigned int frame; // Frame to render when not animating
 	int zIndex;
 
-	SpriteComponent(std::string assetId = "", unsigned int frame = 0, int zIndex = 0) :
-		assetId(assetId), frame(frame), zIndex(zIndex)
+	explicit SpriteComponent(std::string assetId = "", const unsigned int frame = 0, const int zIndex = 0) :
+		assetId(std::move(assetId)), frame(frame), zIndex(zIndex)
 	{}
 };

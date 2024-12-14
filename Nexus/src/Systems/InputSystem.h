@@ -1,21 +1,17 @@
 #pragma once
 
-#include <iostream>
 #include <memory>
 
 #include "src/Components/AnimationComponent.h"
 #include "src/ECS/System.h"
 #include "src/ECS/Entity.h"
 #include "src/EventManagement/EventManager.h"
-#include "src/InputManagement/InputManager.h"
 
 #include "src/Events/ActionChangeEvent.h"
 #include "src/InputManagement/InputEnums.h"
 
 #include "src/Components/InputComponent.h"
 #include "src/Components/RigidbodyComponent.h"
-
-#include "src/Utils/Logger.h"
 
 //------------------------------------------------------------------------
 // The input system listens to Input events (Keyboard key press) and perform necessary action.
@@ -32,7 +28,7 @@ public:
 	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
 	{
 		using CallbackType = std::function<void(InputSystem*, ActionChangeEvent&)>;
-		CallbackType callback = std::bind(&InputSystem::OnActionChange, this, std::placeholders::_2);
+		const CallbackType callback = [this](auto&&, auto&& placeholder2) { OnActionChange(std::forward<decltype(placeholder2)>(placeholder2)); };
 		eventManager->SubscribeToEvent<ActionChangeEvent>(this, callback);
 		// std::bind usually copies the so need std::ref to ensure object is passed by reference wrapper using std::ref
 	}
@@ -72,7 +68,7 @@ private:
 	//------------------------------------------------------------------------
 	// Definition of all the actions. Action can be tailored to each player using playerID
 	// ------------------------------------------------------------------------
-	void PerformMoveUp(Input::PlayerID playerId, Entity player)
+	void PerformMoveUp(Input::PlayerID playerId, const Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
@@ -85,7 +81,7 @@ private:
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_FORWARDS;
 	}
 
-	void PerformMoveRight(Input::PlayerID playerId, Entity player)
+	void PerformMoveRight(Input::PlayerID playerId, const Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
@@ -98,7 +94,7 @@ private:
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_RIGHT;
 	}
 
-	void PerformMoveDown(Input::PlayerID playerId, Entity player)
+	void PerformMoveDown(Input::PlayerID playerId, const Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
@@ -111,7 +107,7 @@ private:
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_BACKWARDS;
 	}
 
-	void PerformMoveLeft(Input::PlayerID playerId, Entity player)
+	void PerformMoveLeft(Input::PlayerID playerId, const Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
@@ -124,19 +120,19 @@ private:
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_LEFT;
 	}
 
-	void PerformJump(Input::PlayerID playerId, Entity player)
+	void PerformJump(Input::PlayerID playerId, const Entity player)
 	{
 		const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-		auto& animationComponent = player.GetComponent<AnimationComponent>();
-		auto& spriteComponent = player.GetComponent<SpriteComponent>();
+		// auto& animationComponent = player.GetComponent<AnimationComponent>();
+		// auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
 		rigidbody.velocity.y = inputComponent.upVelocity * 2;
 		// animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
 	}
-	void PerformIdle(Input::PlayerID playerId, Entity player)
+	void PerformIdle(Input::PlayerID playerId, const Entity player)
 	{
-		const auto& inputComponent = player.GetComponent<InputComponent>();
+		// const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
 		auto& animationComponent = player.GetComponent<AnimationComponent>();
 

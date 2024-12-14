@@ -6,5 +6,5 @@ struct RigidBodyComponent
 {
 	Vector2 velocity;
 
-	RigidBodyComponent(Vector2 velocity = Vector2()) : velocity(velocity) {}
+	explicit RigidBodyComponent(const Vector2 velocity = Vector2()) : velocity(velocity) {}
 };

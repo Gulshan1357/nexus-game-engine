@@ -12,7 +12,7 @@ struct AnimationComponent
 	int animationFramesRow;
 	bool playFromBeginning;
 
-	AnimationComponent(bool bIsActive = false, int animationLength = 2, bool bIsLooping = true, int animationFramesRow = 0, bool playFromBeginning = false) :
+	explicit AnimationComponent(const bool bIsActive = false, const int animationLength = 2, const bool bIsLooping = true, const int animationFramesRow = 0, const bool playFromBeginning = false) :
 		bIsActive(bIsActive), animationLength(animationLength), bIsLooping(bIsLooping), animationFramesRow(animationFramesRow), playFromBeginning(playFromBeginning)
 	{}
 };

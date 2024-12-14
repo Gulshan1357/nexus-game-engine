@@ -17,7 +17,7 @@ public:
 		RequireComponent<BoxColliderComponent>();
 	}
 
-	void Update()
+	void Update() const
 	{
 		for (auto entity : GetSystemEntities())
 		{
@@ -30,14 +30,14 @@ public:
 			// To reduce the amount of calculations, calculating two points the bottom-left and collider's center.
 			// The rest of the points are calculated based on these two points and collider's width and height.
 
-			float colliderCenterX = transform.position.x + collider.offset.x;
-			float colliderCenterY = transform.position.y + collider.offset.y;
+			const float colliderCenterX = transform.position.x + collider.offset.x;
+			const float colliderCenterY = transform.position.y + collider.offset.y;
 
-			float halfWidth = static_cast<float>(collider.width) / 2.0f;
-			float halfHeight = static_cast<float>(collider.height) / 2.0f;
+			const float halfWidth = static_cast<float>(collider.width) / 2.0f;
+			const float halfHeight = static_cast<float>(collider.height) / 2.0f;
 
-			float bottomLeftX = colliderCenterX - halfWidth;
-			float bottomLeftY = colliderCenterY - halfHeight;
+			const float bottomLeftX = colliderCenterX - halfWidth;
+			const float bottomLeftY = colliderCenterY - halfHeight;
 
 			// Draw a rectangle around the collider
 			App::DrawLine(bottomLeftX, bottomLeftY, colliderCenterX + halfWidth, bottomLeftY, 1.0f, 0.0f, 0.0f);

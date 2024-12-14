@@ -17,7 +17,7 @@ public:
 		RequireComponent<UITextComponent>();
 	}
 
-	void Update()
+	void Update() const
 	{
 		for (auto entity : GetSystemEntities())
 		{

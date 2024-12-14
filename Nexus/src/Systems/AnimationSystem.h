@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <memory>
 
 #include "../App/app.h"
@@ -23,7 +22,7 @@ public:
 		RequireComponent<AnimationComponent>();
 	}
 
-	void Update(std::unique_ptr<AssetManager>& assetManager, float deltaTime)
+	void Update(const std::unique_ptr<AssetManager>& assetManager, const float deltaTime) const
 	{
 		for (auto entity : GetSystemEntities())
 		{

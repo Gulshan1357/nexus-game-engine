@@ -20,7 +20,7 @@ public:
 		RequireComponent<TransformComponent>();
 	}
 
-	void Update(const std::unique_ptr<EventManager>& eventManager)
+	void Update(const std::unique_ptr<EventManager>& eventManager) const
 	{
 		auto entities = GetSystemEntities();
 
@@ -32,8 +32,8 @@ public:
 			const auto& aCollider = a.GetComponent<BoxColliderComponent>();
 
 			// Calculate the bottom-left position of entity 'a' based on its position and collider-offset
-			float aBottomLeftX = aTransform.position.x + aCollider.offset.x - static_cast<float>(aCollider.width) / 2.0f;
-			float aBottomLeftY = aTransform.position.y + aCollider.offset.y - static_cast<float>(aCollider.height) / 2.0f;
+			const float aBottomLeftX = aTransform.position.x + aCollider.offset.x - static_cast<float>(aCollider.width) / 2.0f;
+			const float aBottomLeftY = aTransform.position.y + aCollider.offset.y - static_cast<float>(aCollider.height) / 2.0f;
 
 			// Loop all the entities that still need to be checked
 			for (auto j = i + 1; j != entities.end(); ++j)
@@ -44,16 +44,14 @@ public:
 				const auto& bCollider = b.GetComponent<BoxColliderComponent>();
 
 				// Calculate the bottom-left position of entity 'b'
-				float bBottomLeftX = bTransform.position.x + bCollider.offset.x - static_cast<float>(bCollider.width) / 2.0f;
-				float bBottomLeftY = bTransform.position.y + bCollider.offset.y - static_cast<float>(bCollider.height) / 2.0f;
+				const float bBottomLeftX = bTransform.position.x + bCollider.offset.x - static_cast<float>(bCollider.width) / 2.0f;
+				const float bBottomLeftY = bTransform.position.y + bCollider.offset.y - static_cast<float>(bCollider.height) / 2.0f;
 
-				// Perform AABB collision check
-				bool collisionHappened = CheckAABBCollision(
+				// Check if AABB collision happened
+				if (CheckAABBCollision(
 					aBottomLeftX, aBottomLeftY, aCollider.width, aCollider.height,
 					bBottomLeftX, bBottomLeftY, bCollider.width, bCollider.height
-				);
-
-				if (collisionHappened)
+				))
 				{
 					Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
 					eventManager->EmitEvent<CollisionEvent>(a, b);

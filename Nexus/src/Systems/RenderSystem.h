@@ -22,7 +22,7 @@ public:
 		RequireComponent<SpriteComponent>();
 	}
 
-	void Update(std::unique_ptr<AssetManager>& assetManager)
+	void Update(const std::unique_ptr<AssetManager>& assetManager) const
 	{
 		//------------------------------------------------------------------------
 		// To make sure that the entity with higher SpriteComponent::z-index are rendered on top of lower, we need a sorted vector of SpriteComponent w.r.t z-index. 
@@ -38,7 +38,7 @@ public:
 
 		std::vector<RenderableEntity> renderQueue;
 
-		auto entities = GetSystemEntities();
+		const auto entities = GetSystemEntities();
 		renderQueue.reserve(entities.size());
 
 		for (const auto& entity : entities)
@@ -60,15 +60,15 @@ public:
 		);
 
 		// Finally render the entities based on sorted renderQueue
-		for (const auto& renderableEntity : renderQueue)
+		for (const auto& [transformComponent, spriteComponent] : renderQueue)
 		{
-			const auto& transformComponent = *renderableEntity.transformComponent;
-			const auto& spriteComponent = *renderableEntity.spriteComponent;
+			// const auto& transformComponent = *transformComponent;
+			// const auto& spriteComponent = *spriteComponent;
 
-			CSimpleSprite* sprite = assetManager->GetSprite(spriteComponent.assetId);
-			sprite->SetPosition(transformComponent.position.x, transformComponent.position.y);
-			sprite->SetAngle(transformComponent.rotation);
-			sprite->SetScale(transformComponent.scale.x);
+			CSimpleSprite* sprite = assetManager->GetSprite(spriteComponent->assetId);
+			sprite->SetPosition(transformComponent->position.x, transformComponent->position.y);
+			sprite->SetAngle(transformComponent->rotation);
+			sprite->SetScale(transformComponent->scale.x);
 			sprite->Draw();
 		}
 	}

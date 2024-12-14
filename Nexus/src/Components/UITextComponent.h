@@ -13,7 +13,7 @@ struct UITextComponent
 	Color color;
 	FontType font;
 
-	UITextComponent(std::string text, Vector2 position, Color color, FontType font) :
+	UITextComponent(std::string text, const Vector2 position, const Color color, const FontType font) :
 		text(std::move(text)), position(position), color(color), font(font)
 	{}
 };

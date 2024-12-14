@@ -15,7 +15,7 @@ public:
 		RequireComponent<RigidBodyComponent>();
 	}
 
-	void Update(float deltaTime)
+	void Update(const float deltaTime) const
 	{
 		for (auto entity : GetSystemEntities())
 		{
