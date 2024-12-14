@@ -24,14 +24,14 @@ std::string CurrentDateTimeToString()
 #endif
     
     std::string output(30, '\0');
-    std::strftime(&output[0], output.size(), "%d-%b-%Y %H:%M:%S", &localTime);
+    std::strftime(output.data(), output.size(), "%d-%b-%Y %H:%M:%S", &localTime);
     return output;
 }
 
 void Logger::Log(const std::string& message)
 {
-    std::string formattedMessage = "Log: [" + CurrentDateTimeToString() + "]: " + message;
-    LogEntry logEntry{ LOG_INFO, formattedMessage };
+    const std::string formattedMessage = "Log: [" + CurrentDateTimeToString() + "]: " + message;
+    const LogEntry logEntry{ LOG_INFO, formattedMessage };
     std::cout << GRN << logEntry.message << WHT << "\n";
     messages.push_back(logEntry);
 
@@ -43,14 +43,14 @@ void Logger::Log(const std::string& message)
 
 void Logger::Warn(const std::string& message)
 {
-    LogEntry logEntry{ LOG_ERROR, "Warning: [" + CurrentDateTimeToString() + "]: " + message };
+    const LogEntry logEntry{ LOG_ERROR, "Warning: [" + CurrentDateTimeToString() + "]: " + message };
     std::cout << YEL << logEntry.message << WHT << "\n";
     messages.push_back(logEntry);
 }
 
 void Logger::Err(const std::string& message)
 {
-    LogEntry logEntry{ LOG_ERROR, "Error: [" + CurrentDateTimeToString() + "]: " + message };
+    const LogEntry logEntry{ LOG_ERROR, "Error: [" + CurrentDateTimeToString() + "]: " + message };
     std::cout << RED << logEntry.message << WHT << "\n";
     messages.push_back(logEntry);
 }

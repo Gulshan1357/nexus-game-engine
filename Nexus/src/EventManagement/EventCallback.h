@@ -18,7 +18,7 @@ private:
 };
 
 template <typename TOwner, typename TEvent>
-class EventCallback : public IEventCallback
+class EventCallback final : public IEventCallback
 {
 private:
 	// The Callback function is of the type TOwner::TEvent == Game::onCollisionEvent
@@ -26,7 +26,7 @@ private:
 
 public:
 	EventCallback(TOwner* ownerInstance, CallbackFunction callbackFunction)
-		: m_ownerInstance(ownerInstance), m_callbackFunction(callbackFunction)
+		: m_ownerInstance(ownerInstance), m_callbackFunction(std::move(callbackFunction))
 	{}
 
 	virtual ~EventCallback() override = default;

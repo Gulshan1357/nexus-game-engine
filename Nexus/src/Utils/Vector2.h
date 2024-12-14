@@ -10,7 +10,7 @@ struct Vector2
 	float x, y;
 
 	Vector2() : x(0.0f), y(0.0f) {}
-	Vector2(float newX, float newY) : x(newX), y(newY) {}
+	Vector2(const float newX, const float newY) : x(newX), y(newY) {}
 
 	Vector2 operator+(const Vector2& vector) const;
 	Vector2 operator-(const Vector2& vector) const;
@@ -47,7 +47,7 @@ inline Vector2 Vector2::operator-(const Vector2& vector) const
 	return { this->x - vector.x, this->y - vector.y };
 }
 
-inline Vector2 Vector2::operator*(float scalar) const
+inline Vector2 Vector2::operator*(const float scalar) const
 {
 	return { this->x * scalar, this->y * scalar };
 }
@@ -57,7 +57,7 @@ inline Vector2 Vector2::operator*(const Vector2& vector) const
 	return { this->x * vector.x, this->y * vector.y };
 }
 
-inline Vector2 Vector2::operator/(float scalar) const
+inline Vector2 Vector2::operator/(const float scalar) const
 {
 	return { this->x / scalar, this->y / scalar };
 }
@@ -88,7 +88,7 @@ inline Vector2& Vector2::operator-=(const Vector2& vector)
 	return *this;
 }
 
-inline Vector2& Vector2::operator*=(float scalar)
+inline Vector2& Vector2::operator*=(const float scalar)
 {
 	x *= scalar;
 	y *= scalar;
@@ -102,7 +102,7 @@ inline Vector2& Vector2::operator*=(const Vector2& vector)
 	return *this;
 }
 
-inline Vector2& Vector2::operator/=(float scalar)
+inline Vector2& Vector2::operator/=(const float scalar)
 {
 	x /= scalar;
 	y /= scalar;
