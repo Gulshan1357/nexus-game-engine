@@ -15,9 +15,4 @@ Systems maintain a list of relevant entity IDs and, during each update(), iterat
    - _KeyPressEvent_: Contains playerId, action, player entity.
    - _InputSystem_: The system is subscribed to KeyPressEvent. When this event is fired it triggers the necessary action based on the event data.
 7. **RenderDebugSystem**: Supposed to render multiple useful info. Currently only renders red rectangles around the box Colliders.
-8. **Animation System**: Animate all the entities whose AnimationComponent's IsActive value is set to true. This value is supposed to be changed by other systems.
-
-## TODO:
-
-1. **Animation System**: Currently doesn't have a way to stop animation. Can either send an event from movement system once velocity is 0 but leaning towards a something like state system. Example for player the states could be Idle, Running, Jumping, Attack etc.
-2. **Animation System**: Optimize Animation System. Can possible make some stuff static
+8. **Animation System**: Animate all the entities whose AnimationComponent's IsActive value is set to true. If bIsLooping is set to false, it only play the animation once. This value is supposed to be changed by other systems.

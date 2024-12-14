@@ -32,13 +32,20 @@ public:
 
 			if (CSimpleSprite* sprite = assetManager->GetSprite(spriteComponent.assetId))
 			{
-				if (animationComponent.bIsPlaying)
+				if (animationComponent.bIsActive)
 				{
 					sprite->Update(deltaTime);
 					sprite->SetAnimation(animationComponent.animationFramesRow, animationComponent.playFromBeginning);
 				}
 				else
 				{
+					sprite->SetFrame(spriteComponent.frame);
+				}
+
+				// If the animationComponent::bIsLooping is false then stop the animation when it reaches the last frame
+				if (!animationComponent.bIsLooping && (sprite->GetFrame() + 1) % animationComponent.animationLength == 0)
+				{
+					animationComponent.bIsActive = false;
 					sprite->SetFrame(spriteComponent.frame);
 				}
 			}

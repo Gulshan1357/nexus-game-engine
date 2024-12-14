@@ -81,7 +81,7 @@ private:
 
 		rigidbody.velocity.y = inputComponent.upVelocity;
 		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
-		animationComponent.bIsPlaying = true;
+		animationComponent.bIsActive = true;
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_FORWARDS;
 	}
 
@@ -94,7 +94,7 @@ private:
 
 		rigidbody.velocity.x = inputComponent.rightVelocity;
 		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_RIGHT;
-		animationComponent.bIsPlaying = true;
+		animationComponent.bIsActive = true;
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_RIGHT;
 	}
 
@@ -107,7 +107,7 @@ private:
 
 		rigidbody.velocity.y = -inputComponent.downVelocity;
 		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_BACKWARDS;
-		animationComponent.bIsPlaying = true;
+		animationComponent.bIsActive = true;
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_BACKWARDS;
 	}
 
@@ -120,7 +120,7 @@ private:
 
 		rigidbody.velocity.x = -inputComponent.leftVelocity;
 		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_LEFT;
-		animationComponent.bIsPlaying = true;
+		animationComponent.bIsActive = true;
 		spriteComponent.frame = Asset::DemoPlayer::ANIM_LEFT;
 	}
 
@@ -142,6 +142,6 @@ private:
 
 		rigidbody.velocity = Vector2();
 		// animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
-		animationComponent.bIsPlaying = false;
+		animationComponent.bIsActive = false;
 	}
 };

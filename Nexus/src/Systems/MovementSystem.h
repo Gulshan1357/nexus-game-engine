@@ -25,7 +25,7 @@ public:
 			transform.position.x += rigidbody.velocity.x * deltaTime;
 			transform.position.y += rigidbody.velocity.y * deltaTime;
 
-			// Send event to stop animation (player->animationComp->bIsPlaying) when velocity is zero
+			// Send event to stop animation (player->animationComp->bIsActive) when velocity is zero
 		}
 	}
 };

@@ -86,7 +86,7 @@ void TestApp::LoadLevel(int level)
 	test.AddComponent<SpriteComponent>("player1-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 2); // Only prints a default sprite
 	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 0.018f, 0.018f, 0.018f, 0.018f);
-	test.AddComponent<AnimationComponent>(false);
+	test.AddComponent<AnimationComponent>(false, 8, true);
 	test.Tag("Player1");
 	test.Group("Player");
 
@@ -97,12 +97,12 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->CreateAnimation("player1-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
 
 	Entity test2 = m_coordinator->CreateEntity();
-	test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
+	test2.AddComponent<TransformComponent>(Vector2(450.f, 450.f), Vector2(1.f, 1.f));
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
 	test2.AddComponent<SpriteComponent>("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 2);
 	test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
 	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 0.018f, 0.018f, 0.018f, 0.018f);
-	test2.AddComponent<AnimationComponent>(false);
+	test2.AddComponent<AnimationComponent>(false, 8, true);
 	test2.Tag("Player2");
 	test2.Group("Player");
 
