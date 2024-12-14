@@ -39,7 +39,7 @@ std::vector<InputManager::InputKey>& InputManager::GetAllKeys(const Input::Playe
 
 Input::PlayerAction InputManager::GetActionEnum(const Input::PlayerID playerId, const int key) const
 {
-	const auto& keyToActionMap = (playerId == Input::PlayerID::PLAYER_1)
+	const auto& keyToActionMap = playerId == Input::PlayerID::PLAYER_1
 		? m_playerOneKeyToActionMap
 		: m_playerTwoKeyToActionMap;
 	if (const auto it = keyToActionMap.find(key); it != keyToActionMap.end())
@@ -50,28 +50,28 @@ Input::PlayerAction InputManager::GetActionEnum(const Input::PlayerID playerId, 
 	throw std::runtime_error("InputManager::GetActionEnum() No action found!");
 }
 
-bool InputManager::GetActionStatus(Input::PlayerID playerId, Input::PlayerAction action)
+bool InputManager::GetActionStatus(const Input::PlayerID playerId, const Input::PlayerAction action)
 {
-	auto& actionMap = (playerId == Input::PlayerID::PLAYER_1)
+	auto& actionMap = playerId == Input::PlayerID::PLAYER_1
 		? m_playerOneActionsStatus
 		: m_playerTwoActionsStatus;
 	return actionMap[action];
 }
 
-void InputManager::UpdateActionStatus(Input::PlayerID playerId, Input::PlayerAction action, bool newStatus)
+void InputManager::UpdateActionStatus(const Input::PlayerID playerId, const Input::PlayerAction action, const bool newStatus)
 {
-	auto& actionMap = (playerId == Input::PlayerID::PLAYER_1)
+	auto& actionMap = playerId == Input::PlayerID::PLAYER_1
 		? m_playerOneActionsStatus
 		: m_playerTwoActionsStatus;
-	if (auto it = actionMap.find(action); it != actionMap.end())
+	if (const auto it = actionMap.find(action); it != actionMap.end())
 	{
 		if (it->second != newStatus) it->second = newStatus;
 	}
 }
 
-const std::unordered_map<Input::PlayerAction, bool>& InputManager::GetPlayerActionsStatus(Input::PlayerID playerId)
+const std::unordered_map<Input::PlayerAction, bool>& InputManager::GetPlayerActionsStatus(const Input::PlayerID playerId)
 {
-	return (playerId == Input::PlayerID::PLAYER_1)
+	return playerId == Input::PlayerID::PLAYER_1
 		? m_playerOneActionsStatus
 		: m_playerTwoActionsStatus;
 }

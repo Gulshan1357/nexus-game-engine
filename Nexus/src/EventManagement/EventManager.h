@@ -12,7 +12,6 @@
 
 class EventManager
 {
-private:
 	using CallbackList = std::list<std::unique_ptr<IEventCallback>>;
 
 public:

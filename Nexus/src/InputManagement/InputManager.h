@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <map>
 #include <unordered_map>
 
 #include "InputEnums.h"
@@ -14,10 +13,10 @@ class InputManager
 public:
 	struct InputKey
 	{
-		const int keyCode;
+		int keyCode;
 		bool bIsPressed;
-		InputKey(int keyCode) : keyCode(keyCode), bIsPressed(false) {}
-		InputKey(int keyCode, bool bIsPressed) : keyCode(keyCode), bIsPressed(bIsPressed) {}
+		explicit InputKey(const int keyCode) : keyCode(keyCode), bIsPressed(false) {}
+		InputKey(const int keyCode, const bool bIsPressed) : keyCode(keyCode), bIsPressed(bIsPressed) {}
 
 		// Equality operator (required for unordered_map)
 		bool operator==(const InputKey& other) const
@@ -28,7 +27,7 @@ public:
 
 	void AddInputKeyToAction(Input::PlayerID playerId, int key, Input::PlayerAction action);
 	std::vector<InputKey>& GetAllKeys(Input::PlayerID playerId);
-	Input::PlayerAction GetActionEnum(Input::PlayerID playerId, const int key) const;
+	[[nodiscard]] Input::PlayerAction GetActionEnum(Input::PlayerID playerId, const int key) const;
 
 	bool GetActionStatus(Input::PlayerID playerId, Input::PlayerAction action);
 	void UpdateActionStatus(Input::PlayerID playerId, Input::PlayerAction action, bool newStatus);

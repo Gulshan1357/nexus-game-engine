@@ -20,7 +20,6 @@ private:
 template <typename TOwner, typename TEvent>
 class EventCallback final : public IEventCallback
 {
-private:
 	// The Callback function is of the type TOwner::TEvent == Game::onCollisionEvent
 	using CallbackFunction = std::function<void(TOwner*, TEvent&)>;
 
