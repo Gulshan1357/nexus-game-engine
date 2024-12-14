@@ -19,10 +19,10 @@ public:
 // A pool is just a vector (contiguous data) of objects of type Component<T>
 //------------------------------------------------------------------------
 template <typename T>
-class Pool : public IPool
+class Pool final : public IPool
 {
 public:
-	Pool(size_t capacity = 100) { m_data.reserve(capacity); }
+	explicit Pool(size_t capacity = 100) { m_data.reserve(capacity); }
 	~Pool() override = default;
 
 	[[nodiscard]] bool IsEmpty() const { return m_data.empty(); }
@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	void Remove(size_t entityId)
+	void Remove(const size_t entityId)
 	{
 		// Copy the last element to the deleted position to keep the array packed
 		size_t indexOfRemoved = m_entityToIndex[entityId];
@@ -64,7 +64,7 @@ public:
 		m_data[indexOfRemoved] = m_data[indexOfLast];
 
 		// Update the index-entity maps to point to the correct elements
-		size_t entityIdOfLastElement = m_indexToEntity[indexOfLast];
+		const size_t entityIdOfLastElement = m_indexToEntity[indexOfLast];
 		m_entityToIndex[entityIdOfLastElement] = indexOfRemoved;
 		m_indexToEntity[indexOfRemoved] = entityIdOfLastElement;
 
@@ -76,7 +76,7 @@ public:
 		m_indexToEntity.erase(indexOfLast);
 	}
 
-	void RemoveEntityFromPool(size_t entityId)  override
+	void RemoveEntityFromPool(const size_t entityId)  override
 	{
 		if (m_entityToIndex.find(entityId) != m_entityToIndex.end())
 		{

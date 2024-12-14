@@ -118,12 +118,14 @@ inline Vector2& Vector2::operator/=(const Vector2& vector)
 
 inline bool Vector2::operator==(const Vector2& vector) const
 {
-	return x == vector.x && y == vector.y;
+	constexpr float epsilon = 1e-6f;
+	return std::abs(x - vector.x) < epsilon && std::abs(y - vector.y) < epsilon;
+	// return x == vector.x && y == vector.y;
 }
 
 inline bool Vector2::operator!=(const Vector2& vector) const
 {
-	return x != vector.x || y != vector.y;
+	return !(*this == vector);
 }
 
 inline float Vector2::Length() const

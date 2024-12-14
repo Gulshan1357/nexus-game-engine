@@ -19,7 +19,7 @@ enum class FontType
 // Function to map FontType to the actual font pointer of type void*.
 namespace FontUtils
 {
-	inline void* GetFontPointer(FontType fontType)
+	inline void* GetFontPointer(const FontType fontType)
 	{
 		switch (fontType)
 		{
@@ -33,4 +33,4 @@ namespace FontUtils
 			default: return GLUT_BITMAP_HELVETICA_18;
 		}
 	}
-};
+}

@@ -15,9 +15,9 @@ struct Color
 
 	Color() = default;
 
-	inline Color(const float r, const float g, const float b) : r(r), g(g), b(b) {}
+	Color(const float r, const float g, const float b) : r(r), g(g), b(b) {}
 
-	explicit inline Color(const Colors col)
+	explicit Color(const Colors col)
 	{
 		switch (col)
 		{

@@ -12,7 +12,7 @@ void Coordinator::Update()
 {
 	// Logger::Warn("Coordinator::Update() called!");
 	// Processing the entities that are waiting to be created to the active System
-	for (auto entity : m_entitiesToBeAdded)
+	for (const auto entity : m_entitiesToBeAdded)
 	{
 		AddEntityToSystems(entity);
 	}
@@ -67,9 +67,9 @@ Entity Coordinator::CreateEntity()
 			"m_entityComponentSignatures size exceeds INT_MAX");
 
 		// Make sure the entityComponentSignatures vector can accommodate the new entity
-		if (static_cast<size_t>(entityId) >= m_entityComponentSignatures.size())
+		if (entityId >= m_entityComponentSignatures.size())
 		{
-			m_entityComponentSignatures.resize(static_cast<size_t>(entityId) + 1);
+			m_entityComponentSignatures.resize(entityId + 1);
 		}
 	}
 	else
@@ -81,43 +81,40 @@ Entity Coordinator::CreateEntity()
 	}
 
 	Entity entity(entityId);
-	entity.m_Coordinator = this;
+	entity.coordinator = this;
 	m_entitiesToBeAdded.insert(entity);
 
 	Logger::Log("Entity created with id = " + std::to_string(entityId));
 	return entity;
 }
 
-void Coordinator::KillEntity(Entity entity)
+void Coordinator::KillEntity(const Entity entity)
 {
 	m_entitiesToBeKilled.insert(entity);
 	Logger::Log("Entity " + std::to_string(entity.GetId()) + " was killed!");
 }
 
-void Coordinator::AddEntityToSystems(Entity entity) const
+void Coordinator::AddEntityToSystems(const Entity entity) const
 {
 	const auto entityId = entity.GetId();
 
 	const auto& entityComponentSignature = m_entityComponentSignatures[entityId];
 
-	for (auto& system : systems)
+	for (const auto& [type, system] : m_systems)
 	{
-		const auto& systemComponentSignature = system.second->GetComponentSignature();
-
-		bool isInterested = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
-
-		if (isInterested)
+		// If interested
+		if (const auto& systemComponentSignature = system->GetComponentSignature(); (entityComponentSignature & systemComponentSignature) == systemComponentSignature)
 		{
-			system.second->AddEntityToSystem(entity);
+			system->AddEntityToSystem(entity);
 		}
 	}
 }
 
 void Coordinator::RemoveEntityFromSystem(Entity entity) const
 {
-	for (const auto& system : systems)
+	for (const auto& [type, system] : m_systems)
 	{
-		system.second->RemoveEntityFromSystem(entity);
+		system->RemoveEntityFromSystem(entity);
 	}
 }
 
@@ -144,12 +141,11 @@ Entity Coordinator::GetEntityByTag(const std::string& tag) const
 	return m_entityPerTag.at(tag);
 }
 
-void Coordinator::RemoveEntityTag(Entity entity)
+void Coordinator::RemoveEntityTag(const Entity entity)
 {
-	auto taggedEntity = m_tagPerEntity.find(entity.GetId());
-	if (taggedEntity != m_tagPerEntity.end())
+	if (const auto taggedEntity = m_tagPerEntity.find(entity.GetId()); taggedEntity != m_tagPerEntity.end())
 	{
-		auto tag = taggedEntity->second;
+		const auto tag = taggedEntity->second;
 		m_entityPerTag.erase(tag);
 		m_tagPerEntity.erase(taggedEntity);
 	}
@@ -185,13 +181,11 @@ std::vector<Entity> Coordinator::GetEntitiesByGroup(const std::string& group) co
 void Coordinator::RemoveEntityGroup(Entity entity)
 {
 	//if in group, remove entity from group management
-	auto groupedEntity = m_groupPerEntity.find(entity.GetId());
-	if (groupedEntity != m_groupPerEntity.end())
+	if (const auto groupedEntity = m_groupPerEntity.find(entity.GetId()); groupedEntity != m_groupPerEntity.end())
 	{
-		auto group = m_entitiesPerGroup.find(groupedEntity->second);
-		if (group != m_entitiesPerGroup.end())
+		if (const auto group = m_entitiesPerGroup.find(groupedEntity->second); group != m_entitiesPerGroup.end())
 		{
-			auto entityInGroup = group->second.find(entity);
+			const auto entityInGroup = group->second.find(entity);
 			if (entityInGroup != group->second.end())
 			{
 				group->second.erase(entityInGroup);

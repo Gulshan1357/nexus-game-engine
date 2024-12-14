@@ -8,9 +8,9 @@ class Entity
 {
 public:
 	// Hold a pointer to the entity's owner coordinator
-	Coordinator* m_Coordinator;
+	Coordinator* coordinator{};
 
-	Entity(size_t id) : m_id(id) {}
+	explicit Entity(const size_t id) : m_id(id) {}
 	Entity(const Entity& other) = default;
 
 	[[nodiscard]] size_t GetId() const;
@@ -25,9 +25,9 @@ public:
 
 	// Manage entity tags and groups
 	void Tag(const std::string& tag) const;
-	bool HasTag(const std::string& tag) const;
+	[[nodiscard]] bool HasTag(const std::string& tag) const;
 	void Group(const std::string& group) const;
-	bool BelongsToGroup(const std::string& group) const;
+	[[nodiscard]] bool BelongsToGroup(const std::string& group) const;
 
 	/// Manage direct Entity to Component interactions rather than via Coordinator
 	template <typename TComponent, typename ...TArgs>
@@ -35,7 +35,7 @@ public:
 	template <typename TComponent>
 	void RemoveComponent() const;
 	template <typename TComponent>
-	bool HasComponent() const;
+	[[nodiscard]] bool HasComponent() const;
 	template <typename TComponent>
 	TComponent& GetComponent() const;
 
@@ -46,23 +46,23 @@ private:
 template<typename TComponent, typename ...TArgs>
 void Entity::AddComponent(TArgs&& ...args)
 {
-	m_Coordinator->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
+	coordinator->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
 }
 
 template <typename TComponent>
 void Entity::RemoveComponent() const
 {
-	m_Coordinator->RemoveComponent<TComponent>(*this);
+	coordinator->RemoveComponent<TComponent>(*this);
 }
 
 template<typename TComponent>
 bool Entity::HasComponent() const
 {
-	return m_Coordinator->HasComponent<TComponent>(*this);
+	return coordinator->HasComponent<TComponent>(*this);
 }
 
 template <typename TComponent>
 TComponent& Entity::GetComponent() const
 {
-	return m_Coordinator->GetComponent<TComponent>(*this);
+	return coordinator->GetComponent<TComponent>(*this);
 }

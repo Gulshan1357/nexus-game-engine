@@ -43,14 +43,14 @@ public:
 
 	// Tag management
 	void TagEntity(Entity entity, const std::string& tag);
-	bool EntityHasTag(Entity entity, const std::string& tag) const;
+	[[nodiscard]] bool EntityHasTag(Entity entity, const std::string& tag) const;
 	Entity GetEntityByTag(const std::string& tag) const;
 	void RemoveEntityTag(Entity entity);
 
 	// Group management
 	void GroupEntity(Entity entity, const std::string& group);
-	bool EntityBelongsToGroup(Entity entity, const std::string& group) const;
-	std::vector<Entity> GetEntitiesByGroup(const std::string& group) const;
+	[[nodiscard]] bool EntityBelongsToGroup(Entity entity, const std::string& group) const;
+	[[nodiscard]] std::vector<Entity> GetEntitiesByGroup(const std::string& group) const;
 	void RemoveEntityGroup(Entity entity);
 
 	// Component management
@@ -59,7 +59,7 @@ public:
 	template <typename TComponent>
 	void RemoveComponent(Entity entity);
 	template <typename TComponent>
-	bool HasComponent(Entity entity) const;
+	[[nodiscard]] bool HasComponent(Entity entity) const;
 	template <typename TComponent>
 	TComponent& GetComponent(Entity entity) const;
 
@@ -69,7 +69,7 @@ public:
 	template <typename TSystem>
 	void RemoveSystem();
 	template <typename TSystem>
-	bool HasSystem() const;
+	[[nodiscard]] bool HasSystem() const;
 	template <typename TSystem>
 	TSystem GetSystem() const;
 
@@ -91,7 +91,7 @@ private:
 
 	// Map of active systems
 	// [Map key = system type id]
-	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
+	std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems;
 
 	// Set of entities that are flagged to be added or removed in the next m_Coordinator Update();
 	std::set<Entity> m_entitiesToBeAdded;
@@ -118,7 +118,7 @@ private:
 // Component management Template Functions
 //------------------------------------------------------------------------
 template <typename TComponent, typename ...TArgs>
-void Coordinator::AddComponent(Entity entity, TArgs&& ...args)
+void Coordinator::AddComponent(const Entity entity, TArgs&& ...args)
 {
 	// std::cout << "Printing forwarded arguments:" << std::endl;
 	// PrintArgs(std::forward<TArgs>(args)...);
@@ -167,16 +167,16 @@ void Coordinator::AddComponent(Entity entity, TArgs&& ...args)
 			Logger::Log(
 				"Component id = " + std::to_string(componentId) +
 				" was added to entity id " + std::to_string(entityId));
-				// std::cout <<  typeid(TComponent).name() << " Pool with Component id: " << componentId << "--- Pool Size: " << componentPool->GetSize() << "\n";
-			// std::cout <<
-			// 	"Component name = " <<
-			// 	typeid(TComponent).name() <<
-			// 	" Component id = " <<
-			// 	std::to_string(componentId) <<
-			// 	" was added to entity id " <<
-			// 	std::to_string(entityId) <<
-			// 	" --- Pool Size: " <<
-			// 	componentPool->GetSize() << "\n";
+			// std::cout <<  typeid(TComponent).name() << " Pool with Component id: " << componentId << "--- Pool Size: " << componentPool->GetSize() << "\n";
+		// std::cout <<
+		// 	"Component name = " <<
+		// 	typeid(TComponent).name() <<
+		// 	" Component id = " <<
+		// 	std::to_string(componentId) <<
+		// 	" was added to entity id " <<
+		// 	std::to_string(entityId) <<
+		// 	" --- Pool Size: " <<
+		// 	componentPool->GetSize() << "\n";
 		}
 		else
 		{
@@ -190,13 +190,12 @@ void Coordinator::AddComponent(Entity entity, TArgs&& ...args)
 }
 
 template <typename TComponent>
-void Coordinator::RemoveComponent(Entity entity)
+void Coordinator::RemoveComponent(const Entity entity)
 {
 	const auto componentId = Component<TComponent>::GetId();
-	const auto entityId = entity.GetId();
 
 	// Check if component exist
-	if (m_entityComponentSignatures[entityId].test(componentId))
+	if (const auto entityId = entity.GetId(); m_entityComponentSignatures[entityId].test(componentId))
 	{
 
 		// Remove the component from the component list for that entity
@@ -215,7 +214,7 @@ void Coordinator::RemoveComponent(Entity entity)
 }
 
 template <typename TComponent>
-bool Coordinator::HasComponent(Entity entity) const
+bool Coordinator::HasComponent(const Entity entity) const
 {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
@@ -224,7 +223,7 @@ bool Coordinator::HasComponent(Entity entity) const
 }
 
 template<typename TComponent>
-TComponent& Coordinator::GetComponent(Entity entity) const
+auto Coordinator::GetComponent(Entity entity) const -> TComponent&
 {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
@@ -239,7 +238,7 @@ template <typename TSystem, typename ...TArgs>
 void Coordinator::AddSystem(TArgs&& ...args)
 {
 	TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
-	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
+	m_systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
 
 	// If error try this:
 	/*if (auto system = systems.find(std::type_index(typeid(TSystem))); system != systems.end())
@@ -251,20 +250,20 @@ void Coordinator::AddSystem(TArgs&& ...args)
 template <typename TSystem>
 void Coordinator::RemoveSystem()
 {
-	auto system = systems.find(std::type_index(typeid(TSystem)));
-	systems.erase(system);
+	const auto system = m_systems.find(std::type_index(typeid(TSystem)));
+	m_systems.erase(system);
 }
 
 template <typename TSystem>
 bool Coordinator::HasSystem() const
 {
-	return systems.find(std::type_index(typeid(TSystem))) != systems.end();
+	return m_systems.find(std::type_index(typeid(TSystem))) != m_systems.end();
 }
 
 template <typename TSystem>
 TSystem Coordinator::GetSystem() const
 {
-	auto system = systems.find(std::type_index(typeid(TSystem)));
+	const auto system = m_systems.find(std::type_index(typeid(TSystem)));
 	return *(std::static_pointer_cast<TSystem>(system->second));
 }
 

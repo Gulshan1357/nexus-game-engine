@@ -13,8 +13,8 @@ class System
 public:
 	void AddEntityToSystem(Entity entity);
 	void RemoveEntityFromSystem(Entity entity);
-	std::vector<Entity> GetSystemEntities() const;
-	const Signature& GetComponentSignature() const;
+	[[nodiscard]] std::vector<Entity> GetSystemEntities() const;
+	[[nodiscard]] const Signature& GetComponentSignature() const;
 
 	// Define the component type T that the entities must have to be considered by the system
 	template <typename TComponent>
