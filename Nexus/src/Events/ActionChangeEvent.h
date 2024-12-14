@@ -11,7 +11,7 @@ public:
 	Input::PlayerID playerId;
 	Input::PlayerAction action;
 	bool isActionActive;
-	ActionChangeEvent(Entity player, Input::PlayerID playerId, Input::PlayerAction action, bool isActionActive) :
+	ActionChangeEvent(const Entity player, const Input::PlayerID playerId, const Input::PlayerAction action, const bool isActionActive) :
 		player(player), playerId(playerId), action(action), isActionActive(isActionActive)
 	{}
 };

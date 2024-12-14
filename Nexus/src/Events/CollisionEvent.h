@@ -8,5 +8,5 @@ class CollisionEvent : public IEvent
 public:
 	Entity a;
 	Entity b;
-	CollisionEvent(Entity a, Entity b) : a(a), b(b) {}
+	CollisionEvent(const Entity a, const Entity b) : a(a), b(b) {}
 };
