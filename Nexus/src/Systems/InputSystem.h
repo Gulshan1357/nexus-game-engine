@@ -11,7 +11,7 @@
 #include "src/InputManagement/InputEnums.h"
 
 #include "src/Components/InputComponent.h"
-#include "src/Components/RigidbodyComponent.h"
+#include "src/Components/RigidBodyComponent.h"
 
 //------------------------------------------------------------------------
 // The input system listens to Input events (Keyboard key press) and perform necessary action.

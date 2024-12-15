@@ -4,7 +4,7 @@
 #include "src/ECS/System.h"
 
 #include "src/Components/TransformComponent.h"
-#include "src/Components/RigidbodyComponent.h"
+#include "src/Components/RigidBodyComponent.h"
 
 class MovementSystem : public System
 {

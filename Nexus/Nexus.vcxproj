@@ -201,7 +201,7 @@
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
-    <ClInclude Include="src\Components\RigidbodyComponent.h" />
+    <ClInclude Include="src\Components\RigidBodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
     <ClInclude Include="src\Components\UITextComponent.h" />
@@ -263,7 +263,6 @@
     <Content Include="src\Utils\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\Sprites\allTiles_sheet.bmp" />
     <Image Include="Assets\Sprites\Test.bmp" />
     <Image Include="Assets\Sprites\tilesheet.bmp" />
     <Image Include="Assets\Sprites\tilesheet2X.bmp" />
