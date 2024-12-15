@@ -2,6 +2,12 @@
 
 #include "src/Utils/Vector2.h"
 
+/**
+ * TransformComponent Component provides entities location
+ * @param position Position from the bottom-left of the screen
+ * @param scale X and Y scale
+ * @param rotation Rotation
+*/
 struct TransformComponent
 {
 	Vector2 position;

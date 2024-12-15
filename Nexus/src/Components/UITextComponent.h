@@ -6,6 +6,13 @@
 #include "src/Utils/Color.h"
 #include "src/Utils/Font.h"
 
+/**
+ * UITextComponent Component provides information for RenderText System
+ * @param text Text to render
+ * @param position Position from bottom-left
+ * @param color RGB color values
+ * @param font Select a font the list of available fonts in FontUtils::FontType enum
+*/
 struct UITextComponent
 {
 	std::string text;

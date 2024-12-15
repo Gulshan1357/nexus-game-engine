@@ -2,6 +2,12 @@
 
 #include "src/Utils/Vector2.h"
 
+/**
+ * BoxColliderComponent Component provides information for Collision System
+ * @param width Width of the BoxCollider
+ * @param height Height of the BoxCollider
+ * @param offset Offset
+*/
 struct BoxColliderComponent
 {
 	float width;

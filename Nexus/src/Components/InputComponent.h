@@ -2,6 +2,14 @@
 
 #include "src/InputManagement/InputEnums.h"
 
+/**
+ * InputComponent Component provides information for Input System
+ * @param playerId Player ID (probably not needed, TODO: check if can be removed)
+ * @param upVelocity velocity on Move_Up input action
+ * @param rightVelocity velocity on Move_Right input action
+ * @param downVelocity velocity on Move_Down input action
+ * @param leftVelocity velocity on Move_Left input action
+*/
 struct InputComponent
 {
 	Input::PlayerID playerId;

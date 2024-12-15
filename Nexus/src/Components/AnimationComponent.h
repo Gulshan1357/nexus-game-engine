@@ -1,14 +1,18 @@
 #pragma once
 
+/**
+ * Animation Component provides information for Animation System
+ * @param bIsActive Set this to true if you want the animation system to play this entity's animation. 
+ * @param animationLength Total number of frames in the animation
+ * @param bIsLooping If set to false, the Animation System will set bIsActive to false after the animation is completed.
+ * @param animationFramesRow Specifies the row of the sprite sheet to use for animation. Changing this value switches to a different animation row.
+ * @param playFromBeginning  Determines whether the animation should start playing from the beginning. Set this to true to restart the animation.
+*/
 struct AnimationComponent
 {
-	// Set this to true if you want the animation system to play this entity's animation. 
 	bool bIsActive;
-	// Total number of frames in the animation
 	int animationLength;
-	// Animation system deactivate this animation after it reaches the end of animation
 	bool bIsLooping;
-	// row number of the animation sprite. For player animation, input system modify this value so that animation system can play different animations for different actions
 	int animationFramesRow;
 	bool playFromBeginning;
 
