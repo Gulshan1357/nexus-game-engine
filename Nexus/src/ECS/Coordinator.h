@@ -164,19 +164,20 @@ void Coordinator::AddComponent(const Entity entity, TArgs&& ...args)
 
 		if (m_entityComponentSignatures[entityId].test(componentId))
 		{
-			Logger::Log(
-				"Component id = " + std::to_string(componentId) +
-				" was added to entity id " + std::to_string(entityId));
+			// Logger::Log(
+			// 	"Component id = " + std::to_string(componentId) +
+			// 	" was added to entity id " + std::to_string(entityId));
 			// std::cout <<  typeid(TComponent).name() << " Pool with Component id: " << componentId << "--- Pool Size: " << componentPool->GetSize() << "\n";
-		// std::cout <<
-		// 	"Component name = " <<
-		// 	typeid(TComponent).name() <<
-		// 	" Component id = " <<
-		// 	std::to_string(componentId) <<
-		// 	" was added to entity id " <<
-		// 	std::to_string(entityId) <<
-		// 	" --- Pool Size: " <<
-		// 	componentPool->GetSize() << "\n";
+
+			// std::cout <<
+			// 	"Component name = " <<
+			// 	typeid(TComponent).name() <<
+			// 	" Component id = " <<
+			// 	std::to_string(componentId) <<
+			// 	" was added to entity id " <<
+			// 	std::to_string(entityId) <<
+			// 	" --- Pool Size: " <<
+			// 	componentPool->GetSize() << "\n";
 		}
 		else
 		{
@@ -197,7 +198,6 @@ void Coordinator::RemoveComponent(const Entity entity)
 	// Check if component exist
 	if (const auto entityId = entity.GetId(); m_entityComponentSignatures[entityId].test(componentId))
 	{
-
 		// Remove the component from the component list for that entity
 		std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(m_componentPools[componentId]);
 		componentPool->Remove(entityId);

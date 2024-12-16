@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-
+#include <cmath>
 // TODO: Check this for optimization => https://www.reddit.com/r/cpp_questions/comments/190rmzc/code_review_vector2/
 
 struct Vector2

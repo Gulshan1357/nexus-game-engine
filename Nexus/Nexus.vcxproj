@@ -217,6 +217,8 @@
     <ClInclude Include="src\EventManagement\EventCallback.h" />
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
+    <ClInclude Include="src\Physics\Constants.h" />
+    <ClInclude Include="src\Physics\PhysicsEngine.h" />
     <ClInclude Include="src\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
@@ -250,6 +252,7 @@
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\InputManagement\InputManager.cpp" />
+    <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -263,6 +266,8 @@
     <Content Include="src\Utils\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Sprites\ball_blue_small.bmp" />
+    <Image Include="Assets\Sprites\ball_red_small.bmp" />
     <Image Include="Assets\Sprites\Test.bmp" />
     <Image Include="Assets\Sprites\tilesheet.bmp" />
     <Image Include="Assets\Sprites\tilesheet2X.bmp" />

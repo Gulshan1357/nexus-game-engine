@@ -74,6 +74,8 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->AddSprite("player1-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
 	m_assetManager->AddSprite("player2-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
 	m_assetManager->AddSprite("tile-map", R"(.\Assets\Sprites\tilesheet.bmp)", 21, 8);
+	m_assetManager->AddSprite("blue-ball", R"(.\Assets\Sprites\ball_blue_small.bmp)", 1, 1);
+	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
 
 	// Print TileMaps
 	PrintTiles("tile-map", static_cast<float>(0.8), R"(.\Assets\Sprites\test2.map)", 20, 20);
@@ -85,7 +87,7 @@ void TestApp::LoadLevel(int level)
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
 	test.AddComponent<SpriteComponent>("player1-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 2); // Only prints a default sprite
 	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
-	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 0.018f, 0.018f, 0.018f, 0.018f);
+	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 18.f, 18.0f, 18.f, 18.f);
 	test.AddComponent<AnimationComponent>(false, 8, true);
 	test.Tag("Player1");
 	test.Group("Player");
@@ -101,7 +103,7 @@ void TestApp::LoadLevel(int level)
 	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
 	test2.AddComponent<SpriteComponent>("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 2);
 	test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
-	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 0.018f, 0.018f, 0.018f, 0.018f);
+	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
 	test2.AddComponent<AnimationComponent>(false, 8, true);
 	test2.Tag("Player2");
 	test2.Group("Player");
@@ -111,15 +113,6 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_LEFT, 1.0f / 15.0f, { 8,9,10,11,12,13,14,15 });
 	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
 	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
-
-
-	Entity uiTextHello = m_coordinator->CreateEntity();
-	uiTextHello.AddComponent<UITextComponent>("New Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18);
-
-	// test2.RemoveComponent<TransformComponent>();
-	// test2.AddComponent<TransformComponent>(Vector2(450.f, 250.f), Vector2(1.f, 1.f));
-
-	// m_coordinator->KillEntity(test);
 
 	// Add Key bindings for players
 	// Player 1
@@ -134,6 +127,16 @@ void TestApp::LoadLevel(int level)
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
 
+	// Entity uiTextHello = m_coordinator->CreateEntity();
+	// uiTextHello.AddComponent<UITextComponent>("New Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18);
+
+	// Test
+	Entity redBall = m_coordinator->CreateEntity();
+	redBall.AddComponent<SpriteComponent>("red-ball");
+	redBall.AddComponent<TransformComponent>(Vector2(450.f, 650.f), Vector2(1.f, 1.f));
+	// Multiplying the acceleration with Physics::PIXEL_PER_METER 
+	redBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, -2.0f), Vector2(0.0f * Physics::PIXEL_PER_METER, -9.8f * Physics::PIXEL_PER_METER), true);
+	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
