@@ -9,7 +9,7 @@
 Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float dt)
 {
 	// Increment the original acceleration based on the applied forces and mass of the object (F = ma => a = F/m)
-	rigidBodyComponent.acceleration += rigidBodyComponent.m_sumForces / rigidBodyComponent.mass;
+	rigidBodyComponent.acceleration += rigidBodyComponent.m_sumForces * rigidBodyComponent.m_inverseOfMass;
 
 	// Calculating velocity by integrating acceleration
 	rigidBodyComponent.velocity += rigidBodyComponent.acceleration * dt;

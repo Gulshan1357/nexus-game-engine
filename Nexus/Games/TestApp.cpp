@@ -75,7 +75,9 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->AddSprite("player2-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
 	m_assetManager->AddSprite("tile-map", R"(.\Assets\Sprites\tilesheet.bmp)", 21, 8);
 	m_assetManager->AddSprite("blue-ball", R"(.\Assets\Sprites\ball_blue_small.bmp)", 1, 1);
+	m_assetManager->AddSprite("blue-ball-large", R"(.\Assets\Sprites\ball_blue_large.bmp)", 1, 1);
 	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
+	m_assetManager->AddSprite("red-ball-large", R"(.\Assets\Sprites\ball_red_large.bmp)", 1, 1);
 
 	// Print TileMaps
 	PrintTiles("tile-map", static_cast<float>(0.8), R"(.\Assets\Sprites\test2.map)", 20, 20);
@@ -134,15 +136,28 @@ void TestApp::LoadLevel(int level)
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball");
 	redBall.AddComponent<TransformComponent>(Vector2(450.f, 650.f), Vector2(1.f, 1.f));
-	// Multiplying the acceleration with Physics::PIXEL_PER_METER 
 	redBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 
+	Entity redBigBall = m_coordinator->CreateEntity();
+	redBigBall.AddComponent<SpriteComponent>("red-ball-large");
+	redBigBall.AddComponent<TransformComponent>(Vector2(450.f, 750.f), Vector2(1.f, 1.f));
+	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true, 2.f);
+	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball-large"), m_assetManager->GetSpriteHeight("red-ball-large"), Vector2());
+
 	// Add Forces
+
+	// Weight = Force Due to Gravity = Mass * Acceleration due to Gravity
+	float accelerationDueToGravity = -9.8f;
+	Vector2 weight = Vector2(.0f, redBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
+	redBall.GetComponent<RigidBodyComponent>().AddForce(weight);
+	weight = Vector2(.0f, redBigBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
+	redBigBall.GetComponent<RigidBodyComponent>().AddForce(weight);
+
+	// Wind
 	Vector2 wind = Vector2(2.0f * Physics::PIXEL_PER_METER, 0.0f);
-	Vector2 gravity = Vector2(.0f, -9.8f * Physics::PIXEL_PER_METER);
 	redBall.GetComponent<RigidBodyComponent>().AddForce(wind);
-	redBall.GetComponent<RigidBodyComponent>().AddForce(gravity);
+	redBigBall.GetComponent<RigidBodyComponent>().AddForce(wind);
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)

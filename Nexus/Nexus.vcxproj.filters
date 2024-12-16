@@ -34,6 +34,7 @@
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\InputManagement\InputManager.cpp" />
     <ClCompile Include="src\AssetManagement\AssetManager.cpp" />
+    <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -101,6 +102,8 @@
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Events\ActionChangeEvent.h" />
+    <ClInclude Include="src\Physics\Constants.h" />
+    <ClInclude Include="src\Physics\PhysicsEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
@@ -123,10 +126,13 @@
     <Text Include="Assets\Sprites\License.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\Sprites\allTiles_sheet.bmp" />
     <Image Include="Assets\Sprites\Test.bmp" />
     <Image Include="Assets\Sprites\tilesheet.bmp" />
     <Image Include="Assets\Sprites\tilesheet2X.bmp" />
+    <Image Include="Assets\Sprites\ball_blue_small.bmp" />
+    <Image Include="Assets\Sprites\ball_red_small.bmp" />
+    <Image Include="Assets\Sprites\ball_blue_large.bmp" />
+    <Image Include="Assets\Sprites\ball_red_large.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Sprites\test.map" />

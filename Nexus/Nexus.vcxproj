@@ -266,7 +266,9 @@
     <Content Include="src\Utils\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Sprites\ball_blue_large.bmp" />
     <Image Include="Assets\Sprites\ball_blue_small.bmp" />
+    <Image Include="Assets\Sprites\ball_red_large.bmp" />
     <Image Include="Assets\Sprites\ball_red_small.bmp" />
     <Image Include="Assets\Sprites\Test.bmp" />
     <Image Include="Assets\Sprites\tilesheet.bmp" />
