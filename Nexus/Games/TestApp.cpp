@@ -135,8 +135,14 @@ void TestApp::LoadLevel(int level)
 	redBall.AddComponent<SpriteComponent>("red-ball");
 	redBall.AddComponent<TransformComponent>(Vector2(450.f, 650.f), Vector2(1.f, 1.f));
 	// Multiplying the acceleration with Physics::PIXEL_PER_METER 
-	redBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, -2.0f), Vector2(0.0f * Physics::PIXEL_PER_METER, -9.8f * Physics::PIXEL_PER_METER), true);
+	redBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+
+	// Add Forces
+	Vector2 wind = Vector2(2.0f * Physics::PIXEL_PER_METER, 0.0f);
+	Vector2 gravity = Vector2(.0f, -9.8f * Physics::PIXEL_PER_METER);
+	redBall.GetComponent<RigidBodyComponent>().AddForce(wind);
+	redBall.GetComponent<RigidBodyComponent>().AddForce(gravity);
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
