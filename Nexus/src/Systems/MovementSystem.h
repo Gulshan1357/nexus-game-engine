@@ -38,6 +38,10 @@ public:
 				// Integrating all the forces acting on the rigidbody using Physics Engine
 				transform.position += PhysicsEngine::Integrate(rigidBody, dt);
 
+				// Adding Friction force
+				Vector2 friction = PhysicsEngine::GenerateFrictionForce(entity.GetComponent<RigidBodyComponent>(), 1.0 * Physics::PIXEL_PER_METER);
+				entity.GetComponent<RigidBodyComponent>().AddForce(friction);
+
 				// Reversing velocity if the player collides with screen edge
 				if (entity.HasComponent<BoxColliderComponent>())
 				{

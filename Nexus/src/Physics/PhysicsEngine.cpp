@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "PhysicsEngine.h"
 
+#include <iostream>
+
 #include "src/Components/RigidBodyComponent.h"
 
 #include "src/Utils/Vector2.h"
@@ -17,14 +19,14 @@ Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float d
 
 	// Calculating position by integrating velocity
 	const Vector2 position = rigidBodyComponent.velocity * dt;
-
 	ClearForces(rigidBodyComponent);
-
+	// Logger::Warn("Forces resolved");
 	return position;
 }
 
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)
 {
+	// Logger::Warn("Adding force");
 	rigidBodyComponent.m_sumForces += force;
 }
 
@@ -33,21 +35,35 @@ void PhysicsEngine::ClearForces(RigidBodyComponent& rigidBodyComponent)
 	rigidBodyComponent.m_sumForces = Vector2();
 }
 
-Vector2 PhysicsEngine::GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float k)
+Vector2 PhysicsEngine::GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength)
 {
 	const float velocitySquared = rigidBodyComponent.velocity.MagnitudeSquared();
 	if (velocitySquared <= 0.0f)
 	{
 		return {}; // Returning Vector()
 	}
-	// Drag Direction is opposite of velocity unit vector
+	// Drag Direction is opposite to the velocity unit vector
 	const Vector2 dragDirection = -rigidBodyComponent.velocity.UnitVector();
 
 	// Drag magnitude = 1/2 * ρ * K * A * |v|^2, where ρ is density of fluid, K is (Drag Coefficient), A is cross-sectional area and v is Velocity
 	// Since we are simulating for point objects A = 1 and since ρ and K are also constant in our case, the formula becomes
-	// Drag magnitude = k * |v|^2, if combined constant k = 1/2 * ρ * K * A
-	const float dragMagnitude = k * velocitySquared;
-	Logger::Err("Physics engine drag: " + (dragDirection * dragMagnitude).ToString());
+	// Drag magnitude = dragStrength * |v|^2, if combined constant dragStrength = 1/2 * ρ * K * A
+	const float dragMagnitude = dragStrength * velocitySquared;
+	// Logger::Warn("Physics engine drag: " + (dragDirection * dragMagnitude).ToString());
 
 	return dragDirection * dragMagnitude;
+}
+
+Vector2 PhysicsEngine::GenerateFrictionForce(const RigidBodyComponent& rigidBodyComponent, const float frictionStrength)
+{
+	// Return zero vector if velocity is zero or nearly zero
+	// if (rigidBodyComponent.velocity.MagnitudeSquared() <= std::numeric_limits<float>::epsilon())
+	// {
+	// 	return Vector2(0.0f, 0.0f);
+	// }
+
+	// Friction Direction is opposite to the velocity unit vector
+	const Vector2 frictionDirection = -rigidBodyComponent.velocity.UnitVector();
+
+	return frictionDirection * frictionStrength;
 }

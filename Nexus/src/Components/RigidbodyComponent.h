@@ -37,7 +37,7 @@ public:
 	// 	Logger::Log("RigidBody destructor called!");
 	// }
 
-	// Public wrapper to call PhysicsEngine's AddForce
+	// Public wrapper to call PhysicsEngine's AddForce. While adding a force make sure to multiply the values by Physics::PIXEL_PER_METER
 	void AddForce(const Vector2& force)
 	{
 		PhysicsEngine::AddForce(*this, force);

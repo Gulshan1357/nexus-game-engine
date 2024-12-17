@@ -13,6 +13,9 @@ public:
 
 	static void ClearForces(RigidBodyComponent& rigidBodyComponent);
 
-	// Drag Force = k * |v|^2 with direction opposite of velocity. k = 1/2 * ρ * K * A
-	static Vector2 GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, float k);
+	// Drag Force = dragStrength * |v|^2 with direction opposite of velocity, where dragStrength = 1/2 * ρ * K * A
+	static Vector2 GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength);
+
+	// Friction Force = frictionStrength * |v| with direction opposite of velocity,, where frictionStrength = μ
+	static Vector2 GenerateFrictionForce(const RigidBodyComponent& rigidBodyComponent, const float frictionStrength);
 };

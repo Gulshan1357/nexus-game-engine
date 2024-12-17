@@ -129,8 +129,8 @@ void TestApp::LoadLevel(int level)
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball");
-	redBall.AddComponent<TransformComponent>(Vector2(450.f, 850.f), Vector2(1.f, 1.f));
-	redBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true);
+	redBall.AddComponent<TransformComponent>(Vector2(650.f, 650.f), Vector2(1.f, 1.f));
+	redBall.AddComponent<RigidBodyComponent>(Vector2(-0.0f, -100.0f), Vector2(), true);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
 	redBall.Tag("Player2");
@@ -152,15 +152,9 @@ void TestApp::LoadLevel(int level)
 
 	// Weight = Force Due to Gravity = Mass * Acceleration due to Gravity
 	float accelerationDueToGravity = -9.8f;
-	Vector2 weight = Vector2(.0f, redBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
-	redBall.GetComponent<RigidBodyComponent>().AddForce(weight);
-	// weight = Vector2(.0f, redBigBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
-	// redBigBall.GetComponent<RigidBodyComponent>().AddForce(weight);
+	// Vector2 ballWeight = Vector2(.0f, redBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
+	// redBall.GetComponent<RigidBodyComponent>().AddForce(ballWeight);
 
-	// Wind
-	Vector2 wind = Vector2(2.0f * Physics::PIXEL_PER_METER, 0.0f);
-	redBall.GetComponent<RigidBodyComponent>().AddForce(wind);
-	// redBigBall.GetComponent<RigidBodyComponent>().AddForce(wind);
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
@@ -208,7 +202,7 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 					break;
 				case Asset::Tiles::WATER:
 					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::WATER, 0);
-					tile.AddComponent<BoxColliderComponent>(tileWidth / 4, tileHeight / 4, Vector2());
+					// tile.AddComponent<BoxColliderComponent>(tileWidth / 4, tileHeight / 4, Vector2());
 					break;
 				case Asset::Tiles::LAVA:
 					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::LAVA, 0);
