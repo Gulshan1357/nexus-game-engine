@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 
 #include "src/Components/AnimationComponent.h"
@@ -70,54 +71,120 @@ private:
 	// ------------------------------------------------------------------------
 	void PerformMoveUp(Input::PlayerID playerId, const Entity player)
 	{
-		const auto& inputComponent = player.GetComponent<InputComponent>();
-		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-		auto& animationComponent = player.GetComponent<AnimationComponent>();
-		auto& spriteComponent = player.GetComponent<SpriteComponent>();
+		if ((playerId == Input::PlayerID::PLAYER_1 && player.HasTag("Player1")))
+		{
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity.y = inputComponent.upVelocity;
-		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
-		animationComponent.bIsActive = true;
-		spriteComponent.frame = Asset::DemoPlayer::ANIM_FORWARDS;
+			// rigidbody.velocity.y = inputComponent.upVelocity;
+			rigidbody.AddForce(Vector2(0.0f, inputComponent.upVelocity * Physics::PIXEL_PER_METER));
+			animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
+			animationComponent.bIsActive = true;
+			spriteComponent.frame = Asset::DemoPlayer::ANIM_FORWARDS;
+		}
+
+		if ((playerId == Input::PlayerID::PLAYER_2 && player.HasTag("Player2")))
+		{
+			std::cout << "Player 2" << "\n";
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
+
+			// rigidbody.velocity.y = -inputComponent.downVelocity;
+			rigidbody.AddForce(Vector2(0.0f, inputComponent.upVelocity * Physics::PIXEL_PER_METER));
+		}
+
 	}
 
 	void PerformMoveRight(Input::PlayerID playerId, const Entity player)
 	{
-		const auto& inputComponent = player.GetComponent<InputComponent>();
-		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-		auto& animationComponent = player.GetComponent<AnimationComponent>();
-		auto& spriteComponent = player.GetComponent<SpriteComponent>();
+		if ((playerId == Input::PlayerID::PLAYER_1 && player.HasTag("Player1")))
+		{
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity.x = inputComponent.rightVelocity;
-		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_RIGHT;
-		animationComponent.bIsActive = true;
-		spriteComponent.frame = Asset::DemoPlayer::ANIM_RIGHT;
+			// rigidbody.velocity.x = inputComponent.rightVelocity;
+			rigidbody.AddForce(Vector2(inputComponent.rightVelocity * Physics::PIXEL_PER_METER, 0.0f));
+			animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_RIGHT;
+			animationComponent.bIsActive = true;
+			spriteComponent.frame = Asset::DemoPlayer::ANIM_RIGHT;
+		}
+		if ((playerId == Input::PlayerID::PLAYER_2 && player.HasTag("Player2")))
+		{
+			std::cout << "Player 2" << "\n";
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
+
+			// rigidbody.velocity.y = -inputComponent.downVelocity;
+			rigidbody.AddForce(Vector2(inputComponent.rightVelocity * Physics::PIXEL_PER_METER, 0.0f));
+		}
 	}
 
 	void PerformMoveDown(Input::PlayerID playerId, const Entity player)
 	{
-		const auto& inputComponent = player.GetComponent<InputComponent>();
-		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-		auto& animationComponent = player.GetComponent<AnimationComponent>();
-		auto& spriteComponent = player.GetComponent<SpriteComponent>();
+		if ((playerId == Input::PlayerID::PLAYER_1 && player.HasTag("Player1")))
+		{
+			std::cout << "Player 1" << "\n";
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity.y = -inputComponent.downVelocity;
-		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_BACKWARDS;
-		animationComponent.bIsActive = true;
-		spriteComponent.frame = Asset::DemoPlayer::ANIM_BACKWARDS;
+
+			// rigidbody.velocity.y = -inputComponent.downVelocity;
+			rigidbody.AddForce(Vector2(0.0f, -(inputComponent.downVelocity * Physics::PIXEL_PER_METER)));
+			animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_BACKWARDS;
+			animationComponent.bIsActive = true;
+			spriteComponent.frame = Asset::DemoPlayer::ANIM_BACKWARDS;
+		}
+
+		if ((playerId == Input::PlayerID::PLAYER_2 && player.HasTag("Player2")))
+		{
+			std::cout << "Player 2" << "\n";
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
+
+			// rigidbody.velocity.y = -inputComponent.downVelocity;
+			rigidbody.AddForce(Vector2(0.0f, -(inputComponent.downVelocity * Physics::PIXEL_PER_METER)));
+		}
+
 	}
 
 	void PerformMoveLeft(Input::PlayerID playerId, const Entity player)
 	{
-		const auto& inputComponent = player.GetComponent<InputComponent>();
-		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-		auto& animationComponent = player.GetComponent<AnimationComponent>();
-		auto& spriteComponent = player.GetComponent<SpriteComponent>();
+		if ((playerId == Input::PlayerID::PLAYER_1 && player.HasTag("Player1")))
+		{
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
-		rigidbody.velocity.x = -inputComponent.leftVelocity;
-		animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_LEFT;
-		animationComponent.bIsActive = true;
-		spriteComponent.frame = Asset::DemoPlayer::ANIM_LEFT;
+			// rigidbody.velocity.x = -inputComponent.leftVelocity;
+			rigidbody.AddForce(Vector2(-(inputComponent.leftVelocity * Physics::PIXEL_PER_METER), 0.0f));
+			animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_LEFT;
+			animationComponent.bIsActive = true;
+			spriteComponent.frame = Asset::DemoPlayer::ANIM_LEFT;
+		}
+		if ((playerId == Input::PlayerID::PLAYER_2 && player.HasTag("Player2")))
+		{
+			std::cout << "Player 2" << "\n";
+			const auto& inputComponent = player.GetComponent<InputComponent>();
+			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			auto& spriteComponent = player.GetComponent<SpriteComponent>();
+
+			// rigidbody.velocity.y = -inputComponent.downVelocity;
+			rigidbody.AddForce(Vector2(-(inputComponent.leftVelocity * Physics::PIXEL_PER_METER), 0.0f));
+		}
 	}
 
 	void PerformJump(Input::PlayerID playerId, const Entity player)

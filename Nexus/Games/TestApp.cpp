@@ -100,64 +100,65 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->CreateAnimation("player1-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
 	m_assetManager->CreateAnimation("player1-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
 
-	Entity test2 = m_coordinator->CreateEntity();
-	test2.AddComponent<TransformComponent>(Vector2(450.f, 450.f), Vector2(1.f, 1.f));
-	test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
-	test2.AddComponent<SpriteComponent>("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 2);
-	test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
-	test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
-	test2.AddComponent<AnimationComponent>(false, 8, true);
-	test2.Tag("Player2");
-	test2.Group("Player");
+	// Entity test2 = m_coordinator->CreateEntity();
+	// test2.AddComponent<TransformComponent>(Vector2(450.f, 450.f), Vector2(1.f, 1.f));
+	// test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
+	// test2.AddComponent<SpriteComponent>("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 2);
+	// test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
+	// test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
+	// test2.Tag("Player2");
+	// test2.Group("Player");
 
-	// Create animation for test Player 2
-	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 1.0f / 15.0f, { 0,1,2,3,4,5,6,7 });
-	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_LEFT, 1.0f / 15.0f, { 8,9,10,11,12,13,14,15 });
-	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
-	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
-
-	// Add Key bindings for players
-	// Player 1
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'W', Input::PlayerAction::MOVE_UP);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'D', Input::PlayerAction::MOVE_RIGHT);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'S', Input::PlayerAction::MOVE_DOWN);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, 'A', Input::PlayerAction::MOVE_LEFT);
-
-	// Player 2
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_UP, Input::PlayerAction::MOVE_UP);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
+	// // Create animation for test Player 2
+	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 1.0f / 15.0f, { 0,1,2,3,4,5,6,7 });
+	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_LEFT, 1.0f / 15.0f, { 8,9,10,11,12,13,14,15 });
+	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
+	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
+	//
+	// Add Key bindings for player 1
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_UP, Input::PlayerAction::MOVE_UP);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
 
 	// Entity uiTextHello = m_coordinator->CreateEntity();
 	// uiTextHello.AddComponent<UITextComponent>("New Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18);
 
-	// Test
+	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball");
 	redBall.AddComponent<TransformComponent>(Vector2(450.f, 650.f), Vector2(1.f, 1.f));
 	redBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
+	redBall.Tag("Player2");
+	redBall.Group("Player");
 
-	Entity redBigBall = m_coordinator->CreateEntity();
-	redBigBall.AddComponent<SpriteComponent>("red-ball-large");
-	redBigBall.AddComponent<TransformComponent>(Vector2(450.f, 750.f), Vector2(1.f, 1.f));
-	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true, 2.f);
-	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball-large"), m_assetManager->GetSpriteHeight("red-ball-large"), Vector2());
+	// Entity redBigBall = m_coordinator->CreateEntity();
+	// redBigBall.AddComponent<SpriteComponent>("red-ball-large");
+	// redBigBall.AddComponent<TransformComponent>(Vector2(450.f, 750.f), Vector2(1.f, 1.f));
+	// redBigBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true, 2.f);
+	// redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball-large"), m_assetManager->GetSpriteHeight("red-ball-large"), Vector2());
 
-	// Add Forces
+	// Add Key bindings for player 2
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'W', Input::PlayerAction::MOVE_UP);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'D', Input::PlayerAction::MOVE_RIGHT);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'S', Input::PlayerAction::MOVE_DOWN);
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
+
+	// Adding Forces
 
 	// Weight = Force Due to Gravity = Mass * Acceleration due to Gravity
 	float accelerationDueToGravity = -9.8f;
 	Vector2 weight = Vector2(.0f, redBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
 	redBall.GetComponent<RigidBodyComponent>().AddForce(weight);
-	weight = Vector2(.0f, redBigBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
-	redBigBall.GetComponent<RigidBodyComponent>().AddForce(weight);
+	// weight = Vector2(.0f, redBigBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
+	// redBigBall.GetComponent<RigidBodyComponent>().AddForce(weight);
 
 	// Wind
 	Vector2 wind = Vector2(2.0f * Physics::PIXEL_PER_METER, 0.0f);
 	redBall.GetComponent<RigidBodyComponent>().AddForce(wind);
-	redBigBall.GetComponent<RigidBodyComponent>().AddForce(wind);
+	// redBigBall.GetComponent<RigidBodyComponent>().AddForce(wind);
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
