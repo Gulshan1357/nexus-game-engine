@@ -35,9 +35,10 @@ public:
 			}
 			else
 			{
-				// Using Physics Engine
+				// Integrating all the forces acting on the rigidbody using Physics Engine
 				transform.position += PhysicsEngine::Integrate(rigidBody, dt);
 
+				// Reversing velocity if the player collides with screen edge
 				if (entity.HasComponent<BoxColliderComponent>())
 				{
 					const BoxColliderComponent& boxColliderComponent = entity.GetComponent<BoxColliderComponent>();

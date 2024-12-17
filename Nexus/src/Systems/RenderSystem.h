@@ -45,6 +45,9 @@ public:
 		const auto entities = GetSystemEntities();
 		renderQueue.reserve(entities.size());
 
+		// Debug
+		std::string text = "For Debug!";
+
 		// Entity& testWaterEntity = entities[0];
 		for (const auto& entity : entities)
 		{
@@ -53,6 +56,12 @@ public:
 				&entity.GetComponent<SpriteComponent>(),
 				entity.HasComponent<AnimationComponent>()
 				});
+
+			// Debug
+			if (entity.HasTag("Player2"))
+			{
+				text = "Player2 velocity: " + entity.GetComponent<RigidBodyComponent>().velocity.ToString();
+			}
 		}
 
 		// Sort the vector by z-index. If the entity order turned out to be important later, then use stable_sort()
@@ -84,5 +93,8 @@ public:
 
 			sprite->Draw();
 		}
+
+		// Debug
+		App::Print(50.f, 50.f, text.c_str(), 1, 0, 0, GLUT_BITMAP_HELVETICA_12);
 	}
 };

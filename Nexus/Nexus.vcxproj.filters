@@ -104,6 +104,7 @@
     <ClInclude Include="src\Events\ActionChangeEvent.h" />
     <ClInclude Include="src\Physics\Constants.h" />
     <ClInclude Include="src\Physics\PhysicsEngine.h" />
+    <ClInclude Include="src\Systems\PhysicsSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

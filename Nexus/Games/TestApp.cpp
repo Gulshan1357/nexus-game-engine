@@ -27,6 +27,7 @@
 #include "src/Systems/RenderTextSystem.h"
 #include "src/Systems/InputSystem.h"
 #include "src/Systems/RenderDebugSystem.h"
+#include "src/Systems/PhysicsSystem.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
@@ -38,7 +39,7 @@
 
 TestApp::TestApp()
 {
-	bIsDebug = false;
+	bIsDebug = true;
 
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_unique<EventManager>();
@@ -69,6 +70,7 @@ void TestApp::LoadLevel(int level)
 	m_coordinator->AddSystem<InputSystem>();
 	m_coordinator->AddSystem<RenderDebugSystem>();
 	m_coordinator->AddSystem<AnimationSystem>();
+	m_coordinator->AddSystem<PhysicsSystem>();
 
 	// Add assets to the asset manager
 	m_assetManager->AddSprite("player1-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
@@ -127,7 +129,7 @@ void TestApp::LoadLevel(int level)
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball");
-	redBall.AddComponent<TransformComponent>(Vector2(450.f, 650.f), Vector2(1.f, 1.f));
+	redBall.AddComponent<TransformComponent>(Vector2(450.f, 850.f), Vector2(1.f, 1.f));
 	redBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
@@ -206,7 +208,7 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 					break;
 				case Asset::Tiles::WATER:
 					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::WATER, 0);
-					// tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
+					tile.AddComponent<BoxColliderComponent>(tileWidth / 4, tileHeight / 4, Vector2());
 					break;
 				case Asset::Tiles::LAVA:
 					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::LAVA, 0);
@@ -214,7 +216,7 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 				case Asset::Tiles::LOCK:
 					// Higher z-index for Lock tiles
 					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::LOCK, 1);
-					tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
+					// tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
 					break;
 				case Asset::Tiles::KEY:
 					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::KEY, 1);
@@ -238,6 +240,7 @@ void TestApp::Update(float deltaTime)
 	// Perform the subscription of the events for all systems
 	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
+	m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager);
 
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
