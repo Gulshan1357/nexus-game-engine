@@ -80,7 +80,7 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->AddSprite("red-ball-large", R"(.\Assets\Sprites\ball_red_large.bmp)", 1, 1);
 
 	// Print TileMaps
-	PrintTiles("tile-map", static_cast<float>(0.8), R"(.\Assets\Sprites\test2.map)", 20, 20);
+	PrintTiles("tile-map", static_cast<float>(0.7), R"(.\Assets\Sprites\test2.map)", 20, 20);
 
 	// Animation SystemLimitation: If one player is animating then all should animation component otherwise different player sprite start animating on different player's input
 	// Add Entities and Components
@@ -88,7 +88,7 @@ void TestApp::LoadLevel(int level)
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
 	test.AddComponent<SpriteComponent>("player1-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 2); // Only prints a default sprite
-	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
+	// test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 18.f, 18.0f, 18.f, 18.f);
 	test.AddComponent<AnimationComponent>(false, 8, true);
 	test.Tag("Player1");
@@ -198,13 +198,29 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 			// Set different components for different tiles
 			switch (frame)
 			{
+				case Asset::Tiles::GRASS:
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::GRASS, 0);
+					break;
+				case Asset::Tiles::DESERT:
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::DESERT, 0);
+					break;
+				case Asset::Tiles::WATER:
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::WATER, 0);
+					// tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
+					break;
+				case Asset::Tiles::LAVA:
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::LAVA, 0);
+					break;
 				case Asset::Tiles::LOCK:
 					// Higher z-index for Lock tiles
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, frame, 1);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::LOCK, 1);
 					tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
 					break;
+				case Asset::Tiles::KEY:
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::KEY, 1);
+					break;
 				default:
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, frame, 0);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::GRASS, 0);
 					break;
 			}
 		}

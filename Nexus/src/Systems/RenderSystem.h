@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm> // For sorting
+#include <iostream>
 
 #include "../App/app.h"
 #include "../App/SimpleSprite.h"
@@ -8,6 +9,7 @@
 #include "src/ECS/Entity.h"
 #include "src/ECS/System.h"
 #include "src/AssetManagement/AssetManager.h"
+#include "src/Components/AnimationComponent.h"
 
 #include "src/Components/SpriteComponent.h"
 #include "src/Components/TransformComponent.h"
@@ -34,6 +36,8 @@ public:
 		{
 			const TransformComponent* transformComponent;
 			const SpriteComponent* spriteComponent;
+			// Need this to decided if the render system should handle setting the frame or animation system
+			bool bHasAnimationComponent; // TODO: Refactor this.
 		};
 
 		std::vector<RenderableEntity> renderQueue;
@@ -41,11 +45,13 @@ public:
 		const auto entities = GetSystemEntities();
 		renderQueue.reserve(entities.size());
 
+		// Entity& testWaterEntity = entities[0];
 		for (const auto& entity : entities)
 		{
 			renderQueue.emplace_back(RenderableEntity{
 				&entity.GetComponent<TransformComponent>(),
-				&entity.GetComponent<SpriteComponent>()
+				&entity.GetComponent<SpriteComponent>(),
+				entity.HasComponent<AnimationComponent>()
 				});
 		}
 
@@ -60,7 +66,7 @@ public:
 		);
 
 		// Finally render the entities based on sorted renderQueue
-		for (const auto& [transformComponent, spriteComponent] : renderQueue)
+		for (const auto& [transformComponent, spriteComponent, bHasAnimationComponent] : renderQueue)
 		{
 			// const auto& transformComponent = *transformComponent;
 			// const auto& spriteComponent = *spriteComponent;
@@ -69,6 +75,13 @@ public:
 			sprite->SetPosition(transformComponent->position.x, transformComponent->position.y);
 			sprite->SetAngle(transformComponent->rotation);
 			sprite->SetScale(transformComponent->scale.x);
+
+			// Usually the animation component handles which frame to render from the sprite but in absence of it setting the frame here
+			if (!bHasAnimationComponent)
+			{
+				sprite->SetFrame(spriteComponent->frame);
+			}
+
 			sprite->Draw();
 		}
 	}
