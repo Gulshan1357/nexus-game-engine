@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "src/Components/RigidBodyComponent.h"
+#include "src/Components/TransformComponent.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
@@ -82,4 +83,18 @@ Vector2 PhysicsEngine::GenerateGravitationalForce(const RigidBodyComponent& rigi
 	const float attractionMagnitude = gravitationalStrength * (rigidBodyA.mass * rigidBodyB.mass) / distanceSquared;
 
 	return attractionDirection * attractionMagnitude;
+}
+
+Vector2 PhysicsEngine::GenerateSpringForce(const TransformComponent& transformComponent, const Vector2 anchor, const float restLength, const float springForceStrength)
+{
+	// Distance between anchor and the object
+	const Vector2 l = transformComponent.position - anchor;
+
+	// Δl = current length - original length
+	const float displacement = l.Magnitude() - restLength;
+
+	// Spring Force = - k * Δl * direction vector = - springForceStrength * displacement * springDirection
+	const Vector2 springDirection = l.UnitVector();
+	const float springMagnitude = -springForceStrength * displacement;
+	return springDirection * springMagnitude;
 }

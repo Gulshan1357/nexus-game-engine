@@ -40,39 +40,27 @@ public:
 				// Integrating all the forces acting on the rigidbody using Physics Engine
 				transform.position += PhysicsEngine::Integrate(rigidBody, dt);
 
-				// Adding Friction force
-				Vector2 friction = PhysicsEngine::GenerateFrictionForce(entity.GetComponent<RigidBodyComponent>(), 1.0 * Physics::PIXEL_PER_METER);
-				entity.GetComponent<RigidBodyComponent>().AddForce(friction);
-
-				// Adding Gravitational Attraction force
-				// Hacky way to find the other ball.
-				// TODO: Don't calculate the attaction force twice, since it is the same for both object but with opposite direction.
+				// Tracking the location of anchor (Player2) so that we can attach Big ball with spring force
+				static Vector2 anchorPosition = Vector2();
 				if (entity.HasTag("Player2"))
 				{
-					std::cout << "Entity A is Player 2\n";
-					for (auto entity2 : GetSystemEntities())
+					anchorPosition = transform.position;
+				}
+				if (entity.HasTag("BigBall"))
+				{
+					// Adding Drag force
+					Vector2 drag = PhysicsEngine::GenerateDragForce(entity.GetComponent<RigidBodyComponent>(), 0.001f);
+					rigidBody.AddForce(drag);
+
+					// Adding weight force
+					Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
+					rigidBody.AddForce(weight);
+
+					// Adding spring force
+					if (anchorPosition != Vector2())
 					{
-
-						if (entity2.HasTag("BigBall"))
-						{
-							std::cout << "Entity B is a BigBall\n";
-							std::cout << "Entity A id: " << entity.GetId() << " Entity B id: " << entity2.GetId() << "\n";
-
-							if (entity.GetId() != entity2.GetId())
-							{
-								std::cout << "Entity A != B \n";
-								std::cout << "Found Gravitational force targets\n";
-								Vector2 attraction = PhysicsEngine::GenerateGravitationalForce(
-									entity.GetComponent<RigidBodyComponent>(),
-									entity2.GetComponent<RigidBodyComponent>(),
-									entity2.GetComponent<TransformComponent>().position - entity.GetComponent<TransformComponent>().position,
-									1000.0,
-									5,
-									100);
-								entity.GetComponent<RigidBodyComponent>().AddForce(attraction);
-								entity2.GetComponent<RigidBodyComponent>().AddForce(-attraction);
-							}
-						}
+						Vector2 springForce = PhysicsEngine::GenerateSpringForce(transform, anchorPosition, 200, 50);
+						rigidBody.AddForce(springForce);
 					}
 				}
 
