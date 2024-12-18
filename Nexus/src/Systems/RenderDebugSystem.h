@@ -44,6 +44,28 @@ public:
 			App::DrawLine(colliderCenterX + halfWidth, bottomLeftY, colliderCenterX + halfWidth, colliderCenterY + halfHeight, 1.0f, 0.0f, 0.0f);
 			App::DrawLine(colliderCenterX + halfWidth, colliderCenterY + halfHeight, bottomLeftX, colliderCenterY + halfHeight, 1.0f, 0.0f, 0.0f);
 			App::DrawLine(bottomLeftX, colliderCenterY + halfHeight, bottomLeftX, bottomLeftY, 1.0f, 0.0f, 0.0f);
+
+			// Debug
+			static std::string text;
+			// Draw line around player2 and Bigball for spring
+			static Vector2 player1Position;
+			static Vector2 bigBallPosition;
+			if (entity.HasTag("Player2"))
+			{
+				text = "Player2 velocity: " + entity.GetComponent<RigidBodyComponent>().velocity.ToString();
+				player1Position = transform.position;
+			}
+			else if (entity.HasTag("BigBall"))
+			{
+				bigBallPosition = transform.position;
+			}
+
+			App::Print(50.f, 80.f, text.c_str(), 1, 0, 0, GLUT_BITMAP_HELVETICA_12);
+
+			if (player1Position != Vector2() && bigBallPosition != Vector2())
+			{
+				App::DrawLine(bigBallPosition.x, bigBallPosition.y, player1Position.x, player1Position.y, 1.0f, 1.0f, 0.0f);
+			}
 		}
 	}
 };
