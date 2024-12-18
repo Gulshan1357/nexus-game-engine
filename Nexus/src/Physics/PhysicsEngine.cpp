@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PhysicsEngine.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include "src/Components/RigidBodyComponent.h"
@@ -26,7 +27,7 @@ Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float d
 
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)
 {
-	// Logger::Warn("Adding force");
+	Logger::Warn("Adding force");
 	rigidBodyComponent.m_sumForces += force;
 }
 
@@ -66,4 +67,19 @@ Vector2 PhysicsEngine::GenerateFrictionForce(const RigidBodyComponent& rigidBody
 	const Vector2 frictionDirection = -rigidBodyComponent.velocity.UnitVector();
 
 	return frictionDirection * frictionStrength;
+}
+
+Vector2 PhysicsEngine::GenerateGravitationalForce(const RigidBodyComponent& rigidBodyA,
+	const RigidBodyComponent& rigidBodyB, const Vector2 distanceBMinusA, const float gravitationalStrength, float minDistance, float maxDistance)
+{
+	float distanceSquared = distanceBMinusA.MagnitudeSquared();
+
+	// Clamping the value of distanceSquared
+	distanceSquared = std::clamp(distanceSquared, minDistance, maxDistance);
+
+	const Vector2 attractionDirection = distanceBMinusA.UnitVector();
+
+	const float attractionMagnitude = gravitationalStrength * (rigidBodyA.mass * rigidBodyB.mass) / distanceSquared;
+
+	return attractionDirection * attractionMagnitude;
 }

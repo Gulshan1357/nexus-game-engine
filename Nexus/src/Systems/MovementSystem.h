@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "src/ECS/Entity.h"
 #include "src/ECS/System.h"
 
@@ -41,6 +43,38 @@ public:
 				// Adding Friction force
 				Vector2 friction = PhysicsEngine::GenerateFrictionForce(entity.GetComponent<RigidBodyComponent>(), 1.0 * Physics::PIXEL_PER_METER);
 				entity.GetComponent<RigidBodyComponent>().AddForce(friction);
+
+				// Adding Gravitational Attraction force
+				// Hacky way to find the other ball.
+				// TODO: Don't calculate the attaction force twice, since it is the same for both object but with opposite direction.
+				if (entity.HasTag("Player2"))
+				{
+					std::cout << "Entity A is Player 2\n";
+					for (auto entity2 : GetSystemEntities())
+					{
+
+						if (entity2.HasTag("BigBall"))
+						{
+							std::cout << "Entity B is a BigBall\n";
+							std::cout << "Entity A id: " << entity.GetId() << " Entity B id: " << entity2.GetId() << "\n";
+
+							if (entity.GetId() != entity2.GetId())
+							{
+								std::cout << "Entity A != B \n";
+								std::cout << "Found Gravitational force targets\n";
+								Vector2 attraction = PhysicsEngine::GenerateGravitationalForce(
+									entity.GetComponent<RigidBodyComponent>(),
+									entity2.GetComponent<RigidBodyComponent>(),
+									entity2.GetComponent<TransformComponent>().position - entity.GetComponent<TransformComponent>().position,
+									1000.0,
+									5,
+									100);
+								entity.GetComponent<RigidBodyComponent>().AddForce(attraction);
+								entity2.GetComponent<RigidBodyComponent>().AddForce(-attraction);
+							}
+						}
+					}
+				}
 
 				// Reversing velocity if the player collides with screen edge
 				if (entity.HasComponent<BoxColliderComponent>())

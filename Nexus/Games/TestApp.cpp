@@ -130,17 +130,18 @@ void TestApp::LoadLevel(int level)
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball");
 	redBall.AddComponent<TransformComponent>(Vector2(650.f, 650.f), Vector2(1.f, 1.f));
-	redBall.AddComponent<RigidBodyComponent>(Vector2(-0.0f, -100.0f), Vector2(), true);
-	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+	redBall.AddComponent<RigidBodyComponent>(Vector2(-100.0f, -50.0f), Vector2(), true);
+	// redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
 	redBall.Tag("Player2");
 	redBall.Group("Player");
 
-	// Entity redBigBall = m_coordinator->CreateEntity();
-	// redBigBall.AddComponent<SpriteComponent>("red-ball-large");
-	// redBigBall.AddComponent<TransformComponent>(Vector2(450.f, 750.f), Vector2(1.f, 1.f));
-	// redBigBall.AddComponent<RigidBodyComponent>(Vector2(-200.0f, 0.0f), Vector2(), true, 2.f);
+	Entity redBigBall = m_coordinator->CreateEntity();
+	redBigBall.AddComponent<SpriteComponent>("red-ball-large");
+	redBigBall.AddComponent<TransformComponent>(Vector2(450.f, 650.f), Vector2(1.f, 1.f));
+	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 20.f);
 	// redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball-large"), m_assetManager->GetSpriteHeight("red-ball-large"), Vector2());
+	redBigBall.Tag("BigBall");
 
 	// Add Key bindings for player 2
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'W', Input::PlayerAction::MOVE_UP);
