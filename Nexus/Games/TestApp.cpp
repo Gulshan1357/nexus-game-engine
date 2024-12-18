@@ -89,7 +89,7 @@ void TestApp::LoadLevel(int level)
 	Entity test = m_coordinator->CreateEntity();
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
-	test.AddComponent<SpriteComponent>("player1-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 2); // Only prints a default sprite
+	test.AddComponent<SpriteComponent>("player1-test-image", 2, Asset::DemoPlayer::ANIM_BACKWARDS); // Only prints a default sprite
 	// test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 18.f, 18.0f, 18.f, 18.f);
 	test.AddComponent<AnimationComponent>(false, 8, true);
@@ -105,7 +105,7 @@ void TestApp::LoadLevel(int level)
 	// Entity test2 = m_coordinator->CreateEntity();
 	// test2.AddComponent<TransformComponent>(Vector2(450.f, 450.f), Vector2(1.f, 1.f));
 	// test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
-	// test2.AddComponent<SpriteComponent>("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 2);
+	// test2.AddComponent<SpriteComponent>("player2-test-image", 2, Asset::DemoPlayer::ANIM_FORWARDS);
 	// test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
 	// test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
 	// test2.Tag("Player2");
@@ -128,7 +128,7 @@ void TestApp::LoadLevel(int level)
 
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
-	redBall.AddComponent<SpriteComponent>("red-ball");
+	redBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBall.AddComponent<TransformComponent>(Vector2(650.f, 650.f), Vector2(1.f, 1.f));
 	redBall.AddComponent<RigidBodyComponent>(Vector2(-100.0f, -50.0f), Vector2(), true);
 	// redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
@@ -137,7 +137,7 @@ void TestApp::LoadLevel(int level)
 	redBall.Group("Player");
 
 	Entity redBigBall = m_coordinator->CreateEntity();
-	redBigBall.AddComponent<SpriteComponent>("red-ball-large");
+	redBigBall.AddComponent<SpriteComponent>("red-ball-large", 2);
 	redBigBall.AddComponent<TransformComponent>(Vector2(450.f, 650.f), Vector2(1.f, 1.f));
 	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 20.f);
 	// redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball-large"), m_assetManager->GetSpriteHeight("red-ball-large"), Vector2());
@@ -196,28 +196,28 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 			switch (frame)
 			{
 				case Asset::Tiles::GRASS:
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::GRASS, 0);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::GRASS);
 					break;
 				case Asset::Tiles::DESERT:
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::DESERT, 0);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::DESERT);
 					break;
 				case Asset::Tiles::WATER:
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::WATER, 0);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::WATER);
 					// tile.AddComponent<BoxColliderComponent>(tileWidth / 4, tileHeight / 4, Vector2());
 					break;
 				case Asset::Tiles::LAVA:
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::LAVA, 0);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::LAVA);
 					break;
 				case Asset::Tiles::LOCK:
 					// Higher z-index for Lock tiles
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::LOCK, 1);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::LOCK);
 					// tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
 					break;
 				case Asset::Tiles::KEY:
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::KEY, 1);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::KEY);
 					break;
 				default:
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, Asset::Tiles::GRASS, 0);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::GRASS);
 					break;
 			}
 		}
