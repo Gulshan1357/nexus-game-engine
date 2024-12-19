@@ -41,26 +41,25 @@ public:
 				transform.position += PhysicsEngine::Integrate(rigidBody, dt);
 
 				// Tracking the location of anchor (Player2) so that we can attach Big ball with spring force
-				static Vector2 anchorPosition = Vector2();
 				if (entity.HasTag("Player2"))
 				{
-					anchorPosition = transform.position;
-				}
-				if (entity.HasTag("BigBall"))
-				{
-					// Adding Drag force
-					Vector2 drag = PhysicsEngine::GenerateDragForce(entity.GetComponent<RigidBodyComponent>(), 0.001f);
-					rigidBody.AddForce(drag);
-
-					// Adding weight force
-					Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
-					rigidBody.AddForce(weight);
-
-					// Adding spring force
-					if (anchorPosition != Vector2())
+					// Adding forces to connected spring entities
+					for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
 					{
-						Vector2 springForce = PhysicsEngine::GenerateSpringForce(transform, anchorPosition, 200, 50);
-						rigidBody.AddForce(springForce);
+						TransformComponent& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
+						RigidBodyComponent& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
+
+						// Adding Drag force
+						Vector2 drag = PhysicsEngine::GenerateDragForce(connectedEntityRigidBody, 0.03f);
+						connectedEntityRigidBody.AddForce(drag);
+
+						// Adding weight force
+						Vector2 weight = Vector2(0.0f, connectedEntityRigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
+						connectedEntityRigidBody.AddForce(weight);
+
+						// Adding spring force
+						Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 100);
+						connectedEntityRigidBody.AddForce(springForce);
 					}
 				}
 

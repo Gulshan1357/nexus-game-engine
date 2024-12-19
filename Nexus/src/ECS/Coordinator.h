@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <typeindex>
+#include <utility>
 
 #include "Component.h"
 #include "Entity.h"
@@ -77,6 +78,14 @@ public:
 	void AddEntityToSystems(Entity entity) const;
 	void RemoveEntityFromSystem(Entity entity) const;
 
+	// Entity(one) - Entity(many) Relationship Management
+	void AddRelationship(Entity source, Entity target, const std::string& relationshipTag);
+	void RemoveRelationship(Entity source, Entity target, const std::string& relationshipTag);
+	[[nodiscard]] std::vector<std::pair<Entity, std::string>> GetRelationships(Entity source) const;
+	[[nodiscard]] bool HasRelationship(Entity source, Entity target, const std::string& relationshipTag) const;
+	[[nodiscard]] std::vector<Entity> GetEntitiesByRelationshipTag(const Entity& source, const std::string& relationshipTag) const;
+	void RemoveAllRelationships(Entity entity); // To remove all relationships from an entity
+
 private:
 	size_t m_numEntities = 0;
 
@@ -112,6 +121,9 @@ private:
 
 	// List of free entity ids that were previously removed
 	std::deque<size_t> m_freeIds;
+
+	// Map to manage relationships between entities
+	std::unordered_multimap<Entity, std::pair<Entity, std::string>> m_relationships;
 };
 
 //------------------------------------------------------------------------

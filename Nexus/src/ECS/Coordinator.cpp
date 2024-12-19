@@ -34,15 +34,17 @@ void Coordinator::Update()
 			}
 		}
 
-		// Make the entity id available to be reused
-		m_freeIds.push_back(entity.GetId());
-
 		// Remove any traces of that entity from the tag/group maps
 		RemoveEntityTag(entity);
 		RemoveEntityGroup(entity);
+
+		// Remove all relationships
+		RemoveAllRelationships(entity);
+
+		// Make the entity id available to be reused
+		m_freeIds.push_back(entity.GetId());
 	}
 	m_entitiesToBeKilled.clear();
-
 }
 
 Entity Coordinator::CreateEntity()
@@ -94,30 +96,6 @@ void Coordinator::KillEntity(const Entity entity)
 	Logger::Log("Entity " + std::to_string(entity.GetId()) + " was killed!");
 }
 
-void Coordinator::AddEntityToSystems(const Entity entity) const
-{
-	const auto entityId = entity.GetId();
-
-	const auto& entityComponentSignature = m_entityComponentSignatures[entityId];
-
-	for (const auto& [type, system] : m_systems)
-	{
-		// If interested
-		if (const auto& systemComponentSignature = system->GetComponentSignature(); (entityComponentSignature & systemComponentSignature) == systemComponentSignature)
-		{
-			system->AddEntityToSystem(entity);
-		}
-	}
-}
-
-void Coordinator::RemoveEntityFromSystem(Entity entity) const
-{
-	for (const auto& [type, system] : m_systems)
-	{
-		system->RemoveEntityFromSystem(entity);
-	}
-}
-
 //------------------------------------------------------------------------
 // Tag Management
 //------------------------------------------------------------------------
@@ -129,11 +107,8 @@ void Coordinator::TagEntity(Entity entity, const std::string& tag)
 
 bool Coordinator::EntityHasTag(Entity entity, const std::string& tag) const
 {
-	if (m_tagPerEntity.find(entity.GetId()) == m_tagPerEntity.end())
-	{
-		return false;
-	}
-	return m_entityPerTag.find(tag)->second == entity;
+	const auto it = m_entityPerTag.find(tag);
+	return (it != m_entityPerTag.end() && it->second == entity);
 }
 
 Entity Coordinator::GetEntityByTag(const std::string& tag) const
@@ -192,5 +167,138 @@ void Coordinator::RemoveEntityGroup(Entity entity)
 			}
 		}
 		m_groupPerEntity.erase(groupedEntity);
+	}
+}
+
+//------------------------------------------------------------------------
+// Check the component signature of an entity and add the entity to the systems that are interested in it
+//------------------------------------------------------------------------
+void Coordinator::AddEntityToSystems(const Entity entity) const
+{
+	const auto entityId = entity.GetId();
+
+	const auto& entityComponentSignature = m_entityComponentSignatures[entityId];
+
+	for (const auto& [type, system] : m_systems)
+	{
+		// If interested
+		if (const auto& systemComponentSignature = system->GetComponentSignature(); (entityComponentSignature & systemComponentSignature) == systemComponentSignature)
+		{
+			system->AddEntityToSystem(entity);
+		}
+	}
+}
+
+void Coordinator::RemoveEntityFromSystem(Entity entity) const
+{
+	for (const auto& [type, system] : m_systems)
+	{
+		system->RemoveEntityFromSystem(entity);
+	}
+}
+
+
+//------------------------------------------------------------------------
+// Relationship Management
+//------------------------------------------------------------------------
+void Coordinator::AddRelationship(Entity source, Entity target, const std::string& relationshipTag)
+{
+	m_relationships.emplace(source, std::make_pair(target, relationshipTag));
+	Logger::Log("Added relationship: " + relationshipTag +
+		" from entity " + std::to_string(source.GetId()) +
+		" to entity " + std::to_string(target.GetId()));
+}
+
+void Coordinator::RemoveRelationship(Entity source, Entity target, const std::string& relationshipTag)
+{
+	const auto [first, last] = m_relationships.equal_range(source);
+	for (auto it = first; it != last; ++it)
+	{
+		// it = [entity, relationshipPair<entity, relationshipTag>] = [leader, <follower, relationship>]
+		if (it->second.first == target && it->second.second == relationshipTag)
+		{
+			m_relationships.erase(it);
+			Logger::Log("Removed relationship: " + relationshipTag +
+				" from entity " + std::to_string(source.GetId()) +
+				" to entity " + std::to_string(target.GetId()));
+			return;
+		}
+	}
+	Logger::Err("Failed to remove relationship: Not found");
+}
+
+std::vector<std::pair<Entity, std::string>> Coordinator::GetRelationships(Entity source) const
+{
+	std::vector<std::pair<Entity, std::string>> relationships;
+	const auto [first, last] = m_relationships.equal_range(source);
+	for (auto it = first; it != last; ++it)
+	{
+		// it = [entity, relationshipPair<entity, relationshipTag>] = [leader, <follower, relationship>]
+		// Push <follower, relationship> to relationships vector
+		relationships.push_back(it->second);
+	}
+	return relationships;
+}
+
+bool Coordinator::HasRelationship(Entity source, Entity target, const std::string& relationshipTag) const
+{
+	const auto [first, last] = m_relationships.equal_range(source);
+	for (auto it = first; it != last; ++it)
+	{
+		// // it = [entity, relationshipPair<entity, relationshipTag>] = [leader, <follower, relationship>]
+		if (it->second.first == target && it->second.second == relationshipTag)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+std::vector<Entity> Coordinator::GetEntitiesByRelationshipTag(const Entity& source, const std::string& relationshipTag) const
+{
+	std::vector<Entity> entities;
+
+	// Iterate through all relationships in the map
+	const auto [first, last] = m_relationships.equal_range(source);  // Get the relationships for the source entity
+	for (auto it = first; it != last; ++it)
+	{
+		// it = [entity, relationshipPair<entity, relationshipTag>] = [leader, <follower, relationship>]
+		if (it->second.second == relationshipTag)
+		{
+			entities.push_back(it->second.first);
+		}
+	}
+	return entities;
+}
+
+void Coordinator::RemoveAllRelationships(Entity entity)
+{
+	for (auto it = m_relationships.begin(); it != m_relationships.end(); )
+	{
+		bool removed = false;
+
+		// Check if the entity is the leader (source)
+		if (it->first == entity)
+		{
+			Logger::Log("Removed relationship: " + it->second.second +
+				" from entity " + std::to_string(entity.GetId()) +
+				" to entity " + std::to_string(it->second.first.GetId()));
+			it = m_relationships.erase(it); // erase and move to the next element
+			removed = true;
+		}
+		// Check if the entity is the follower (target)
+		else if (it->second.first == entity)
+		{
+			Logger::Log("Removed relationship: " + it->second.second +
+				" from entity " + std::to_string(it->first.GetId()) +
+				" to entity " + std::to_string(entity.GetId()));
+			it = m_relationships.erase(it); // erase and move to the next element
+			removed = true;
+		}
+
+		if (!removed)
+		{
+			++it;
+		}
 	}
 }

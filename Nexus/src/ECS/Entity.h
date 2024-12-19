@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 class Coordinator;
 
@@ -29,7 +30,14 @@ public:
 	void Group(const std::string& group) const;
 	[[nodiscard]] bool BelongsToGroup(const std::string& group) const;
 
-	/// Manage direct Entity to Component interactions rather than via Coordinator
+	// Helper functions to manage Entity to Entity relationship via coordinator
+	void AddRelationship(Entity target, const std::string& relationshipTag) const; // Add a relationship with the target entity
+	void RemoveRelationship(Entity target, const std::string& relationshipTag) const; // Remove a relationship with target entity
+	[[nodiscard]] std::vector<std::pair<Entity, std::string>> GetRelationships() const; // Returns a vector<Entity, relationshipTag> containing all the related entities
+	[[nodiscard]] bool HasRelationship(Entity target, const std::string& relationshipTag) const; // Check if there exist a relationship with target entity
+	[[nodiscard]] std::vector<Entity> GetEntitiesByRelationshipTag(const std::string& relationshipTag) const; // Return a vector of related entities that match relationship tag
+
+	// Helper functions to manage Entity to Component interactions via coordinator
 	template <typename TComponent, typename ...TArgs>
 	void AddComponent(TArgs&& ...args);
 	template <typename TComponent>
@@ -65,4 +73,17 @@ template <typename TComponent>
 TComponent& Entity::GetComponent() const
 {
 	return coordinator->GetComponent<TComponent>(*this);
+}
+
+// Specialize std::hash for Entity so that we can use Entity as a key for unordered_multimap for entity-entity relationship
+namespace std
+{
+	template<>
+	struct hash<Entity>
+	{
+		std::size_t operator()(const Entity& entity) const noexcept
+		{
+			return std::hash<size_t>()(entity.GetId());
+		}
+	};
 }

@@ -143,6 +143,9 @@ void TestApp::LoadLevel(int level)
 	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball-large"), m_assetManager->GetSpriteHeight("red-ball-large"), Vector2());
 	redBigBall.Tag("BigBall");
 
+	//m_coordinator->AddRelationship(redBall, redBigBall, "Spring");
+	redBall.AddRelationship(redBigBall, "Spring");
+
 	// Add Key bindings for player 2
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'W', Input::PlayerAction::MOVE_UP);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'D', Input::PlayerAction::MOVE_RIGHT);
@@ -155,7 +158,8 @@ void TestApp::LoadLevel(int level)
 	// float accelerationDueToGravity = -9.8f;
 	// Vector2 ballWeight = Vector2(.0f, redBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
 	// redBall.GetComponent<RigidBodyComponent>().AddForce(ballWeight);
-
+	// redBigBall.Kill();
+	// redBall.Kill();
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)

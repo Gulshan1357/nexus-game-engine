@@ -15,3 +15,8 @@
 1. Packed Entities: Reusing entity ids of deleted entity so that the are packed. This make sure that there is less data fragmentation in component pools.
 2. Tags and Groups: Entities have groups and tags with average lookup speed of O(1) both ways (Entity <-> Tag/Group).
 3. Packed Component Pools: When a component is deleted the last component of the vector will be moved to the empty position.
+4. Entity-Entity Relationships: One to many relationship between entities. Create relationship using `leaderEntity->AddRelationship(followerEntity, "relationshipName")`.
+
+
+## TODO:
+1. Scenarios where all the entities of a particular tag are deleted. What should happen with that tag?
