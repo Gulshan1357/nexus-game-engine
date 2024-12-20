@@ -129,22 +129,19 @@ void TestApp::LoadLevel(int level)
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
-	redBall.AddComponent<TransformComponent>(Vector2(750.f, 650.f), Vector2(1.f, 1.f));
-	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true);
+	redBall.AddComponent<TransformComponent>(Vector2(100.f, 300.f), Vector2(1.f, 1.f));
+	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
-	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
+	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 218.f, 218.0f, 218.f, 218.f);
 	redBall.Tag("Player2");
 	redBall.Group("Player");
 
 	Entity redBigBall = m_coordinator->CreateEntity();
-	redBigBall.AddComponent<SpriteComponent>("red-ball-large", 2);
-	redBigBall.AddComponent<TransformComponent>(Vector2(750.f, 550.f), Vector2(1.f, 1.f));
-	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 2.f);
-	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball-large"), m_assetManager->GetSpriteHeight("red-ball-large"), Vector2());
+	redBigBall.AddComponent<SpriteComponent>("red-ball", 3);
+	redBigBall.AddComponent<TransformComponent>(Vector2(300.f, 300.f), Vector2(1.f, 1.f));
+	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 50.f);
+	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	redBigBall.Tag("BigBall");
-
-	//m_coordinator->AddRelationship(redBall, redBigBall, "Spring");
-	redBall.AddRelationship(redBigBall, "Spring");
 
 	// Add Key bindings for player 2
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'W', Input::PlayerAction::MOVE_UP);
@@ -152,14 +149,30 @@ void TestApp::LoadLevel(int level)
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'S', Input::PlayerAction::MOVE_DOWN);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
 
-	// Adding Forces
+	// Spring entities
+	Entity ball3 = m_coordinator->CreateEntity();
+	ball3.AddComponent<SpriteComponent>("red-ball", 3);
+	ball3.AddComponent<TransformComponent>(Vector2(300.f, 100.f), Vector2(1.f, 1.f));
+	ball3.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
+	ball3.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+	ball3.Group("Anchor");
 
-	// Weight = Force Due to Gravity = Mass * Acceleration due to Gravity
-	// float accelerationDueToGravity = -9.8f;
-	// Vector2 ballWeight = Vector2(.0f, redBall.GetComponent<RigidBodyComponent>().mass * accelerationDueToGravity * Physics::PIXEL_PER_METER);
-	// redBall.GetComponent<RigidBodyComponent>().AddForce(ballWeight);
-	// redBigBall.Kill();
-	// redBall.Kill();
+	Entity ball4 = m_coordinator->CreateEntity();
+	ball4.AddComponent<SpriteComponent>("red-ball", 3);
+	ball4.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f));
+	ball4.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
+	ball4.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+	ball4.Group("Anchor");
+
+	// Relationships
+	redBall.AddRelationship(redBigBall, "Spring");
+	redBigBall.AddRelationship(ball3, "Spring");
+	ball3.AddRelationship(ball4, "Spring");
+	redBall.AddRelationship(ball4, "Spring");
+
+	redBall.AddRelationship(ball3, "Spring");
+	redBigBall.AddRelationship(ball4, "Spring");
+
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
@@ -214,7 +227,7 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 					break;
 				case Asset::Tiles::LOCK:
 					// Higher z-index for Lock tiles
-					tile.AddComponent<SpriteComponent>(tileMapAssetId, 0, Asset::Tiles::LOCK);
+					tile.AddComponent<SpriteComponent>(tileMapAssetId, 1, Asset::Tiles::LOCK);
 					// tile.AddComponent<BoxColliderComponent>(tileWidth, tileHeight, Vector2());
 					break;
 				case Asset::Tiles::KEY:

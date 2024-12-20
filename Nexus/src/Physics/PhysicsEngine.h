@@ -23,6 +23,9 @@ public:
 	// Gravitational Force = G * ma * mb / |d|^2 with direction →d, where ma and mb is mass of two objects, d is distance and G is gravitational constant/strength
 	static Vector2 GenerateGravitationalForce(const RigidBodyComponent& rigidBodyA, const RigidBodyComponent& rigidBodyB, const Vector2 distanceBMinusA, const float gravitationalStrength, float minDistance, float maxDistance);
 
-	// Spring Force = -k * Δl, where k is spring constant(springForceStrength) and Δl is change in spring length
+	// Spring Force between an entity and anchor = -k * Δl, where k is spring constant(springForceStrength) and Δl is change in spring length
 	static Vector2 GenerateSpringForce(const TransformComponent& transformComponent, Vector2 anchor, float restLength, float springForceStrength);
+
+	// Spring Force between two entities = -k * Δl, where k is spring constant(springForceStrength) and Δl is change in spring length
+	static Vector2 GenerateSpringForce(const TransformComponent& transformA, const TransformComponent& transformB, float restLength, float springForceStrength);
 };

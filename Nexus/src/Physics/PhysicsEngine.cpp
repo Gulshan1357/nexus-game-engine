@@ -28,7 +28,7 @@ Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float d
 
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)
 {
-	Logger::Warn("Adding force");
+	// Logger::Warn("Adding force");
 	rigidBodyComponent.m_sumForces += force;
 }
 
@@ -89,6 +89,21 @@ Vector2 PhysicsEngine::GenerateSpringForce(const TransformComponent& transformCo
 {
 	// Distance between anchor and the object
 	const Vector2 l = transformComponent.position - anchor;
+
+	// Δl = current length - original length
+	const float displacement = l.Magnitude() - restLength;
+
+	// Spring Force = - k * Δl * direction vector = - springForceStrength * displacement * springDirection
+	const Vector2 springDirection = l.UnitVector();
+	const float springMagnitude = -springForceStrength * displacement;
+	return springDirection * springMagnitude;
+}
+
+Vector2 PhysicsEngine::GenerateSpringForce(const TransformComponent& transformA, const TransformComponent& transformB,
+	float restLength, float springForceStrength)
+{
+	// Distance between entities
+	const Vector2 l = transformA.position - transformB.position;
 
 	// Δl = current length - original length
 	const float displacement = l.Magnitude() - restLength;

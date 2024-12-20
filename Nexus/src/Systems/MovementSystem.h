@@ -40,8 +40,7 @@ public:
 				// Integrating all the forces acting on the rigidbody using Physics Engine
 				transform.position += PhysicsEngine::Integrate(rigidBody, dt);
 
-				// Tracking the location of anchor (Player2) so that we can attach Big ball with spring force
-				if (entity.HasTag("Player2"))
+				if (entity.HasTag("Player2") || entity.HasTag("BigBall") || entity.BelongsToGroup("Anchor"))
 				{
 					// Adding forces to connected spring entities
 					for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
@@ -50,16 +49,17 @@ public:
 						RigidBodyComponent& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
 
 						// Adding Drag force
-						Vector2 drag = PhysicsEngine::GenerateDragForce(connectedEntityRigidBody, 0.03f);
+						Vector2 drag = PhysicsEngine::GenerateDragForce(connectedEntityRigidBody, 0.008f);
 						connectedEntityRigidBody.AddForce(drag);
+
+						// Adding spring force
+						Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 1500);
+						connectedEntityRigidBody.AddForce(springForce);
+						rigidBody.AddForce(-springForce);
 
 						// Adding weight force
 						Vector2 weight = Vector2(0.0f, connectedEntityRigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
 						connectedEntityRigidBody.AddForce(weight);
-
-						// Adding spring force
-						Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 100);
-						connectedEntityRigidBody.AddForce(springForce);
 					}
 				}
 
@@ -71,23 +71,23 @@ public:
 					if (transform.position.x - (boxColliderComponent.width / 2) <= 0)
 					{
 						transform.position.x = boxColliderComponent.width / 2;
-						rigidBody.velocity.x *= -0.9f;
+						rigidBody.velocity.x *= -0.5f;
 					}
 					else if (transform.position.x + (boxColliderComponent.width / 2) >= Physics::SCREEN_WIDTH)
 					{
 						transform.position.x = Physics::SCREEN_WIDTH - boxColliderComponent.width / 2;
-						rigidBody.velocity.x *= -0.9f;
+						rigidBody.velocity.x *= -0.5f;
 					}
 
 					if (transform.position.y - (boxColliderComponent.height / 2) <= 0)
 					{
 						transform.position.y = boxColliderComponent.height / 2;
-						rigidBody.velocity.y *= -0.9f;
+						rigidBody.velocity.y *= -0.5f;
 					}
 					else if (transform.position.y + (boxColliderComponent.height / 2) >= Physics::SCREEN_HEIGHT)
 					{
 						transform.position.y = Physics::SCREEN_HEIGHT - boxColliderComponent.height / 2;
-						rigidBody.velocity.y *= -0.9f;
+						rigidBody.velocity.y *= -0.5f;
 					}
 				}
 			}
