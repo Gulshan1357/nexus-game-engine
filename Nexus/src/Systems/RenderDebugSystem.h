@@ -47,24 +47,18 @@ public:
 
 			// Debug
 			static std::string text;
-			// Draw line around player2 and Bigball for spring
-			static Vector2 player1Position;
-			static Vector2 bigBallPosition;
 			if (entity.HasTag("Player2"))
 			{
 				text = "Player2 velocity: " + entity.GetComponent<RigidBodyComponent>().velocity.ToString();
-				player1Position = transform.position;
-			}
-			else if (entity.HasTag("BigBall"))
-			{
-				bigBallPosition = transform.position;
 			}
 
 			App::Print(50.f, 80.f, text.c_str(), 1, 0, 0, GLUT_BITMAP_HELVETICA_12);
 
-			if (player1Position != Vector2() && bigBallPosition != Vector2())
+			// Debug lines for Spring relationship
+			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
 			{
-				App::DrawLine(bigBallPosition.x, bigBallPosition.y, player1Position.x, player1Position.y, 1.0f, 1.0f, 0.0f);
+				const auto& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
+				App::DrawLine(connectedEntityTransform.position.x, connectedEntityTransform.position.y, transform.position.x, transform.position.y, 1.0f, 1.0f, 0.0f);
 			}
 		}
 	}
