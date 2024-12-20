@@ -138,13 +138,14 @@ void Coordinator::GroupEntity(Entity entity, const std::string& group)
 
 bool Coordinator::EntityBelongsToGroup(Entity entity, const std::string& group) const
 {
-	if (m_entitiesPerGroup.find(group) == m_entitiesPerGroup.end())
+	// Check if the entity exists in m_groupPerEntity
+	const auto it = m_groupPerEntity.find(entity.GetId());
+	if (it == m_groupPerEntity.end())
 	{
-		return false;
+		return false; // Entity is not part of any group
 	}
-	// auto groupEntities = m_entitiesPerGroup.at(group);
-	// return groupEntities.find(entity.GetId()) != groupEntities.end();
-	return m_groupPerEntity.find(entity.GetId())->second == group;
+	// Check if the entity's group matches the provided group
+	return it->second == group;
 }
 
 std::vector<Entity> Coordinator::GetEntitiesByGroup(const std::string& group) const
