@@ -200,6 +200,7 @@
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
+    <ClInclude Include="src\Components\ColliderTypeComponent.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
     <ClInclude Include="src\Components\RigidBodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />

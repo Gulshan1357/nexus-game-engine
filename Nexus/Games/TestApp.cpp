@@ -36,6 +36,7 @@
 #include <src/Systems/AnimationSystem.h>
 
 #include "src/Events/ActionChangeEvent.h"
+#include "src/Components/ColliderTypeComponent.h"
 
 TestApp::TestApp()
 {
@@ -131,6 +132,7 @@ void TestApp::LoadLevel(int level)
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBall.AddComponent<TransformComponent>(Vector2(100.f, 300.f), Vector2(1.f, 1.f));
 	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
+	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 218.f, 218.0f, 218.f, 218.f);
 	redBall.Tag("Player2");
@@ -140,6 +142,7 @@ void TestApp::LoadLevel(int level)
 	redBigBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBigBall.AddComponent<TransformComponent>(Vector2(300.f, 300.f), Vector2(1.f, 1.f));
 	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 50.f);
+	redBigBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	redBigBall.Tag("BigBall");
 
@@ -154,6 +157,7 @@ void TestApp::LoadLevel(int level)
 	ball3.AddComponent<SpriteComponent>("red-ball", 3);
 	ball3.AddComponent<TransformComponent>(Vector2(300.f, 100.f), Vector2(1.f, 1.f));
 	ball3.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
+	ball3.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	ball3.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	ball3.Group("Anchor");
 
@@ -161,6 +165,7 @@ void TestApp::LoadLevel(int level)
 	ball4.AddComponent<SpriteComponent>("red-ball", 3);
 	ball4.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f));
 	ball4.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
+	ball4.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	ball4.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	ball4.Group("Anchor");
 
