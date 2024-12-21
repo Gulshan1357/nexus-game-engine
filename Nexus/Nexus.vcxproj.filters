@@ -106,6 +106,8 @@
     <ClInclude Include="src\Physics\PhysicsEngine.h" />
     <ClInclude Include="src\Systems\PhysicsSystem.h" />
     <ClInclude Include="src\Components\ColliderTypeComponent.h" />
+    <ClInclude Include="src\Components\CircleColliderComponent.h" />
+    <ClInclude Include="src\Components\PolygonColliderComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

@@ -16,9 +16,12 @@
 
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
-#include "src/Components/BoxColliderComponent.h"
 #include "src/Components/UITextComponent.h"
 #include "src/Components/InputComponent.h"
+#include "src/Components/ColliderTypeComponent.h"
+#include "src/Components/BoxColliderComponent.h"
+#include "src/Components/CircleColliderComponent.h"
+#include "src/Components/PolygonColliderComponent.h"
 
 #include "src/Systems/MovementSystem.h"
 #include "src/Systems/RenderSystem.h"
@@ -28,15 +31,14 @@
 #include "src/Systems/InputSystem.h"
 #include "src/Systems/RenderDebugSystem.h"
 #include "src/Systems/PhysicsSystem.h"
+#include "src/Systems/AnimationSystem.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
 
 #include "src/Components/AnimationComponent.h"
-#include <src/Systems/AnimationSystem.h>
 
 #include "src/Events/ActionChangeEvent.h"
-#include "src/Components/ColliderTypeComponent.h"
 
 TestApp::TestApp()
 {
@@ -168,6 +170,24 @@ void TestApp::LoadLevel(int level)
 	ball4.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	ball4.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	ball4.Group("Anchor");
+
+	Entity ball5 = m_coordinator->CreateEntity();
+	ball5.AddComponent<SpriteComponent>("red-ball", 3);
+	ball5.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f));
+	ball5.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	ball5.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
+
+	Entity ball6 = m_coordinator->CreateEntity();
+	ball6.AddComponent<SpriteComponent>("red-ball", 3);
+	ball6.AddComponent<TransformComponent>(Vector2(100.f, 200.f), Vector2(1.f, 1.f));
+	ball6.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+	std::vector<Vector2> vertices;
+	vertices.emplace_back(10.f, 10.f);
+	vertices.emplace_back(10.f, 50.f);
+	vertices.emplace_back(30.f, 70.f);
+	vertices.emplace_back(50.f, 50.f);
+	vertices.emplace_back(50.f, 10.f);
+	ball5.AddComponent<PolygonColliderComponent>(vertices);
 
 	// Relationships
 	redBall.AddRelationship(redBigBall, "Spring");

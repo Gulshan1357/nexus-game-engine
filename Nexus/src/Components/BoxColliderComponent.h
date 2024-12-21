@@ -4,9 +4,9 @@
 
 /**
  * BoxColliderComponent Component provides information for Collision System
- * @param width Width of the BoxCollider
- * @param height Height of the BoxCollider
- * @param offset Offset
+ * @param width (float)  of the BoxCollider
+ * @param height (float) of the BoxCollider
+ * @param offset (Vector2)
 */
 struct BoxColliderComponent
 {
