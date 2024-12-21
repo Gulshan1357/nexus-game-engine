@@ -72,10 +72,10 @@ public:
 		const float bottomLeftY = colliderCenterY - halfHeight;
 
 		// Draw a rectangle around the collider
-		App::DrawLine(bottomLeftX, bottomLeftY, colliderCenterX + halfWidth, bottomLeftY, 1.0f, 0.0f, 0.0f);
-		App::DrawLine(colliderCenterX + halfWidth, bottomLeftY, colliderCenterX + halfWidth, colliderCenterY + halfHeight, 1.0f, 0.0f, 0.0f);
-		App::DrawLine(colliderCenterX + halfWidth, colliderCenterY + halfHeight, bottomLeftX, colliderCenterY + halfHeight, 1.0f, 0.0f, 0.0f);
-		App::DrawLine(bottomLeftX, colliderCenterY + halfHeight, bottomLeftX, bottomLeftY, 1.0f, 0.0f, 0.0f);
+		App::DrawLine(bottomLeftX, bottomLeftY, colliderCenterX + halfWidth, bottomLeftY, 1.0f, 1.0f, 1.0f);
+		App::DrawLine(colliderCenterX + halfWidth, bottomLeftY, colliderCenterX + halfWidth, colliderCenterY + halfHeight, 1.0f, 1.0f, 1.0f);
+		App::DrawLine(colliderCenterX + halfWidth, colliderCenterY + halfHeight, bottomLeftX, colliderCenterY + halfHeight, 1.0f, 1.0f, 1.0f);
+		App::DrawLine(bottomLeftX, colliderCenterY + halfHeight, bottomLeftX, bottomLeftY, 1.0f, 1.0f, 1.0f);
 	}
 
 	static void DrawCircle(const Entity& entity)
@@ -105,8 +105,13 @@ public:
 			const float x2 = centerX + radius * cosf(theta2);
 			const float y2 = centerY + radius * sinf(theta2);
 
-			App::DrawLine(x1, y1, x2, y2, 1.0f, 0.0f, 0.0f);
+			App::DrawLine(x1, y1, x2, y2, 1.0f, 1.0f, 1.0f);
 		}
+
+		// For rotation line, using rotation angle to find the circle's edge
+		const float outlineX = radius * cos(transform.rotation) + centerX;
+		const float outlineY = radius * sin(transform.rotation) + centerY;
+		App::DrawLine(centerX, centerY, outlineX, outlineY, 1.0f, 1.0f, 1.0f);
 	}
 
 	static void DrawPolygon(const Entity& entity)
@@ -123,7 +128,7 @@ public:
 			const auto& v1 = vertices[i];
 			const auto& v2 = vertices[(i + 1) % vertices.size()];
 
-			App::DrawLine(v1.x + offsetX, v1.y + offsetY, v2.x + offsetX, v2.y + offsetY, 1.0f, 0.0f, 0.0f);
+			App::DrawLine(v1.x + offsetX, v1.y + offsetY, v2.x + offsetX, v2.y + offsetY, 1.0f, 1.0f, 1.0f);
 		}
 	}
 };

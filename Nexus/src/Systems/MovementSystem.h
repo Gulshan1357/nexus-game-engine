@@ -90,6 +90,32 @@ public:
 						rigidBody.velocity.y *= -0.5f;
 					}
 				}
+				else if (entity.HasComponent<CircleColliderComponent>())
+				{
+					const CircleColliderComponent& circleColliderComponent = entity.GetComponent<CircleColliderComponent>();
+
+					if (transform.position.x - circleColliderComponent.radius <= 0)
+					{
+						transform.position.x = circleColliderComponent.radius;
+						rigidBody.velocity.x *= -0.5f;
+					}
+					else if (transform.position.x + circleColliderComponent.radius >= Physics::SCREEN_WIDTH)
+					{
+						transform.position.x = Physics::SCREEN_WIDTH - circleColliderComponent.radius;
+						rigidBody.velocity.x *= -0.5f;
+					}
+
+					if (transform.position.y - circleColliderComponent.radius <= 0)
+					{
+						transform.position.y = circleColliderComponent.radius;
+						rigidBody.velocity.y *= -0.5f;
+					}
+					else if (transform.position.y + circleColliderComponent.radius >= Physics::SCREEN_HEIGHT)
+					{
+						transform.position.y = Physics::SCREEN_HEIGHT - circleColliderComponent.radius;
+						rigidBody.velocity.y *= -0.5f;
+					}
+				}
 			}
 		}
 	}
