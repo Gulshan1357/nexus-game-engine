@@ -16,7 +16,7 @@ Systems maintain a list of relevant entity IDs and, during each update(), iterat
    - _InputSystem_: The system is subscribed to KeyPressEvent. When this event is fired it triggers the necessary action based on the event data.
 7. **RenderDebugSystem**: Supposed to render multiple useful info. Currently renders outlines for various collider shapes (Box, sphere and polygon).
 8. **Animation System**: Animate all the entities whose AnimationComponent's IsActive value is set to true. If bIsLooping is set to false, it only play the animation once. This value is supposed to be changed by other systems.
-9. **Physics System**: This system subscribe to collision events so that it know when to add drag force to the player.
+9. **Physics System**: This system calculates the inverse mass, angular mass and inverse angular mass of entities with RigidBody at the end of game::Initialize().
 
 ## TODO:
 **Physics System**: Listening to collisions is very expensive. Use a different method to detect player's position.

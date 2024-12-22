@@ -4,17 +4,21 @@
 #include <algorithm>
 #include <iostream>
 
+#include "src/ECS/Entity.h"
+#include "src/ECS/Coordinator.h"
+
 #include "src/Components/RigidBodyComponent.h"
 #include "src/Components/TransformComponent.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
+#include <src/Components/ColliderTypeComponent.h>
 
 // TODO: Currently using the Implicit Euler Integration technique. Try Verlet Integration or RK4.
 Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float dt)
 {
 	// Increment the original acceleration based on the applied forces and mass of the object (F = ma => a = F/m)
-	rigidBodyComponent.acceleration = rigidBodyComponent.m_sumForces * rigidBodyComponent.m_inverseOfMass;
+	rigidBodyComponent.acceleration = rigidBodyComponent.sumForces * rigidBodyComponent.inverseOfMass;
 
 	// Calculating velocity by integrating acceleration
 	rigidBodyComponent.velocity += rigidBodyComponent.acceleration * dt;
@@ -29,12 +33,29 @@ Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float d
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)
 {
 	// Logger::Warn("Adding force");
-	rigidBodyComponent.m_sumForces += force;
+	rigidBodyComponent.sumForces += force;
 }
 
 void PhysicsEngine::ClearForces(RigidBodyComponent& rigidBodyComponent)
 {
-	rigidBodyComponent.m_sumForces = Vector2();
+	rigidBodyComponent.sumForces = Vector2();
+}
+
+float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
+{
+	const auto& collider = entity.GetComponent<ColliderTypeComponent>();
+
+	/*switch (collider.type)
+	{
+		case ColliderType::Circle:
+			return 0.5f * mass * collider.radius * collider.radius;
+		case ColliderType::Rectangle:
+			return (1.0f / 12.0f) * mass * (collider.width * collider.width + collider.height * collider.height);
+		default:
+			return 0.0f;
+	}*/
+	std::cout << "CalculateMomentOfInertia()\n";
+	return 0.0f;
 }
 
 Vector2 PhysicsEngine::GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength)

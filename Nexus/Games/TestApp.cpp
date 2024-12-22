@@ -60,6 +60,12 @@ void TestApp::Initialize()
 	Logger::Log("TestApp::Initialize()");
 
 	LoadLevel(1);
+
+
+	// Before the main Update loop is started add the entities to the systems. 
+	m_coordinator->Update();
+	// Calculate inverse mass, angular mass and inverse angular mass of entities with rigidbody
+	m_coordinator->GetSystem<PhysicsSystem>().InitializeEntityPhysics();
 }
 
 void TestApp::LoadLevel(int level)
@@ -202,6 +208,7 @@ void TestApp::LoadLevel(int level)
 	redBall.AddRelationship(ball3, "Spring");
 	redBigBall.AddRelationship(ball4, "Spring");
 
+
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
@@ -281,7 +288,6 @@ void TestApp::Update(float deltaTime)
 	// Perform the subscription of the events for all systems
 	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
-	m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager);
 
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();

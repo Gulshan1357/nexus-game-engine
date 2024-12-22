@@ -3,6 +3,7 @@
 struct TransformComponent;
 class RigidBodyComponent;
 struct Vector2;
+class Entity;
 
 class PhysicsEngine
 {
@@ -13,6 +14,8 @@ public:
 	static void AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force);
 
 	static void ClearForces(RigidBodyComponent& rigidBodyComponent);
+
+	static float CalculateMomentOfInertia(const Entity& entity);
 
 	// Drag Force = dragStrength * |v|^2 with direction opposite of velocity, where dragStrength = 1/2 * ρ * K * A
 	static Vector2 GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength);
