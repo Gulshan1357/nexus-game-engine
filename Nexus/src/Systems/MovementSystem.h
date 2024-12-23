@@ -37,8 +37,9 @@ public:
 			}
 			else
 			{
-				// Integrating all the forces acting on the rigidbody using Physics Engine
-				transform.position += PhysicsEngine::Integrate(rigidBody, dt);
+				// Integrating all the forces and torque acting on the RigidBody using Physics Engine
+				transform.position += PhysicsEngine::IntegrateLinear(rigidBody, dt);
+				transform.rotation += PhysicsEngine::IntegrateAngular(rigidBody, dt);
 
 				if (entity.HasTag("Player2") || entity.HasTag("BigBall") || entity.BelongsToGroup("Anchor"))
 				{

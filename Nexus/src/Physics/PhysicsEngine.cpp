@@ -14,8 +14,12 @@
 #include "src/Utils/Logger.h"
 #include <src/Components/ColliderTypeComponent.h>
 
+#include "src/Components/BoxColliderComponent.h"
+#include "src/Components/CircleColliderComponent.h"
+#include "src/Components/PolygonColliderComponent.h"
+
 // TODO: Currently using the Implicit Euler Integration technique. Try Verlet Integration or RK4.
-Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float dt)
+Vector2 PhysicsEngine::IntegrateLinear(RigidBodyComponent& rigidBodyComponent, float dt)
 {
 	// Increment the original acceleration based on the applied forces and mass of the object (F = ma => a = F/m)
 	rigidBodyComponent.acceleration = rigidBodyComponent.sumForces * rigidBodyComponent.inverseOfMass;
@@ -30,6 +34,21 @@ Vector2 PhysicsEngine::Integrate(RigidBodyComponent& rigidBodyComponent, float d
 	return position;
 }
 
+float PhysicsEngine::IntegrateAngular(RigidBodyComponent& rigidBodyComponent, float dt)
+{
+	// Increment the angular acceleration based on the applied forces and angular mass(Moment of inertia or I) of the object (τ = Iα => α = τ / I)
+	rigidBodyComponent.angularAcceleration = rigidBodyComponent.sumTorque * rigidBodyComponent.inverseOfAngularMass;
+
+	// Calculating angular velocity by integrating angular acceleration
+	rigidBodyComponent.angularVelocity += rigidBodyComponent.angularAcceleration * dt;
+
+	// Calculating rotation by integrating angular velocity
+	const float rotation = rigidBodyComponent.angularVelocity * dt;
+	ClearTorque(rigidBodyComponent);
+	Logger::Warn("Torque resolved");
+	return rotation;
+}
+
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)
 {
 	// Logger::Warn("Adding force");
@@ -41,20 +60,49 @@ void PhysicsEngine::ClearForces(RigidBodyComponent& rigidBodyComponent)
 	rigidBodyComponent.sumForces = Vector2();
 }
 
+void PhysicsEngine::AddTorque(RigidBodyComponent& rigidBodyComponent, const float torque)
+{
+	Logger::Warn("Adding Torque");
+	rigidBodyComponent.sumTorque += torque;
+}
+
+void PhysicsEngine::ClearTorque(RigidBodyComponent& rigidBodyComponent)
+{
+	rigidBodyComponent.sumTorque = 0.0f;
+}
+
 float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
 {
 	const auto& collider = entity.GetComponent<ColliderTypeComponent>();
+	const auto& rigidbody = entity.GetComponent<RigidBodyComponent>();
 
-	/*switch (collider.type)
+	switch (collider.type)
 	{
 		case ColliderType::Circle:
-			return 0.5f * mass * collider.radius * collider.radius;
-		case ColliderType::Rectangle:
-			return (1.0f / 12.0f) * mass * (collider.width * collider.width + collider.height * collider.height);
-		default:
-			return 0.0f;
-	}*/
-	std::cout << "CalculateMomentOfInertia()\n";
+			if (entity.HasComponent<CircleColliderComponent>())
+			{
+				// For circle I = 1/2 * radius^2 * mass
+				const auto& circleCollider = entity.GetComponent<CircleColliderComponent>();
+				return 0.5f * rigidbody.mass * circleCollider.radius * circleCollider.radius;
+			}
+			break;
+		case ColliderType::Box:
+			if (entity.HasComponent<BoxColliderComponent>())
+			{
+				// For rectangle I = 1/12 * (width^2 + height^2) * mass
+				const auto& boxCollider = entity.GetComponent<BoxColliderComponent>();
+				return 0.083333f * rigidbody.mass * (boxCollider.width * boxCollider.width + boxCollider.height * boxCollider.height);
+			}
+			break;
+		case ColliderType::Polygon:
+			if (entity.HasComponent<PolygonColliderComponent>())
+			{
+				const auto& polygonCollider = entity.GetComponent<PolygonColliderComponent>();
+				// TODO: ...
+				return 0.0f;
+			}
+	}
+	Logger::Err("Couldn't calculate the Moment Of Inertia!");
 	return 0.0f;
 }
 

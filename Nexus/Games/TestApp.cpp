@@ -64,7 +64,7 @@ void TestApp::Initialize()
 
 	// Before the main Update loop is started add the entities to the systems. 
 	m_coordinator->Update();
-	// Calculate inverse mass, angular mass and inverse angular mass of entities with rigidbody
+	// Calculate inverse mass, angular mass and inverse angular mass of entities with RigidBody
 	m_coordinator->GetSystem<PhysicsSystem>().InitializeEntityPhysics();
 }
 
@@ -183,21 +183,15 @@ void TestApp::LoadLevel(int level)
 	ball5.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
 	ball5.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	ball5.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
+
 	// Adding weight force
 	Vector2 weight = Vector2(0.0f, ball5.GetComponent<RigidBodyComponent>().mass * -9.8f * Physics::PIXEL_PER_METER);
 	ball5.GetComponent<RigidBodyComponent>().AddForce(weight);
 
-	/*Entity ball6 = m_coordinator->CreateEntity();
-	ball6.AddComponent<SpriteComponent>("red-ball", 3);
-	ball6.AddComponent<TransformComponent>(Vector2(100.f, 200.f), Vector2(1.f, 1.f));
-	ball6.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
-	std::vector<Vector2> vertices;
-	vertices.emplace_back(10.f, 10.f);
-	vertices.emplace_back(10.f, 50.f);
-	vertices.emplace_back(30.f, 70.f);
-	vertices.emplace_back(50.f, 50.f);
-	vertices.emplace_back(50.f, 10.f);
-	ball5.AddComponent<PolygonColliderComponent>(vertices);*/
+	// Adding Torque
+	float torque = 2000;
+	ball5.GetComponent<RigidBodyComponent>().AddTorque(torque);
+	ball5.Tag("Debug");
 
 	// Relationships
 	redBall.AddRelationship(redBigBall, "Spring");
@@ -207,7 +201,6 @@ void TestApp::LoadLevel(int level)
 
 	redBall.AddRelationship(ball3, "Spring");
 	redBigBall.AddRelationship(ball4, "Spring");
-
 
 }
 

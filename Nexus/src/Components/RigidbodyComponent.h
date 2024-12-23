@@ -45,13 +45,18 @@ public:
 		angularAcceleration(angularAcceleration)
 	{}
 
+
+	/// Helper functions
+
+	// Add Force
 	void AddForce(const Vector2& force)
 	{
 		PhysicsEngine::AddForce(*this, force);
 	}
 
-	// void AddTorque(const float torque)
-	// {
-	// 	PhysicsEngine::AddTorque(*this, torque);
-	// }
+	// Add Torque
+	void AddTorque(const float torque)
+	{
+		PhysicsEngine::AddTorque(*this, torque);
+	}
 };

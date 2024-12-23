@@ -8,10 +8,13 @@
 ## Contains
 
 1. **PhysicsEngine**: This engine contains helper function to add Forces and Integrate with respect to delta time. MovementSystem uses these functions to add stimulate Newtonian physics.
+   - `IntegrateLinear()`: Returns a new position by integrating the RigidBody's velocity and acceleration.
+   - `IntegrateAngular()`: Returns a new rotation by integrating the RigidBody's angular velocity and angular acceleration.
+   - `CalculateMomentOfInertia()`: Calculates the moment of Inertia. Can calculate moment of inertia for box and circle. Needs ColliderType component.
    - `GenerateDragForce()`: For drag due to different mediums like Air, water etc.
    - `GenerateFrictionForce()`: For frictional force.
-   - `GenerateGravitationalForce()`: For Gravitational attraction between two bodies with mass. Need rigibody of the other entity to apply the opposite force.
-   - `GenerateSpringForce()`: For Spring force between an anchor and a body. Need the transform component of the anchor.
+   - `GenerateGravitationalForce()`: For Gravitational attraction between two bodies with mass. Need RigidBody of the other entity to apply the opposite force.
+   - `GenerateSpringForce()`: For Spring force between an anchor point and a body or between two entities.
 2. **Constants**: Some constant value related to Physics.
 
 ## TODO

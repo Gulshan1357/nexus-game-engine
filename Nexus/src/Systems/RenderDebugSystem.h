@@ -40,11 +40,11 @@ public:
 					break;
 			}
 
-			// Debug player 2 velocity
+			// Debug rotation
 			static std::string text;
-			if (entity.HasTag("Player2"))
+			if (entity.HasTag("Debug"))
 			{
-				text = "Player2 velocity: " + entity.GetComponent<RigidBodyComponent>().velocity.ToString();
+				text = "Player2 rotation: " + std::to_string(entity.GetComponent<TransformComponent>().rotation);
 			}
 			App::Print(50.f, 80.f, text.c_str(), 1, 0, 0, GLUT_BITMAP_HELVETICA_12);
 

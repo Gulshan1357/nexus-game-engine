@@ -9,11 +9,18 @@ class PhysicsEngine
 {
 public:
 	// Returns a new position by integrating the RigidBody's velocity and acceleration.
-	static Vector2 Integrate(RigidBodyComponent& rigidBodyComponent, float dt);
+	static Vector2 IntegrateLinear(RigidBodyComponent& rigidBodyComponent, float dt);
+
+	// Returns a new rotation by integrating the RigidBody's angular velocity and angular acceleration.
+	static float IntegrateAngular(RigidBodyComponent& rigidBodyComponent, float dt);
 
 	static void AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force);
 
 	static void ClearForces(RigidBodyComponent& rigidBodyComponent);
+
+	static void AddTorque(RigidBodyComponent& rigidBodyComponent, const float torque);
+
+	static void ClearTorque(RigidBodyComponent& rigidBodyComponent);
 
 	static float CalculateMomentOfInertia(const Entity& entity);
 
