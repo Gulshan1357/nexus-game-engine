@@ -1,6 +1,23 @@
-# Utilities
+# Utilities  
 
-# Contains:
+---
 
-1. **Logger**: Logger has three functions, Log(), Warn() and Err() which print text to console in Green, Yellow and Red color respectively. It doesn't work in VS2022 because it is not a Console App but a Windows App but this works in Rider.
-2. **Vector2**: A struct for two floats (x, y), along with some helper overloads for comparison and basic vector calculation.
+## Contains  
+
+1. **Logger**  
+   - Purpose: Provides logging functionality for different levels of messages.  
+   - Functions:  
+     - `Log()`: Prints text in green.  
+     - `Warn()`: Prints text in yellow.  
+     - `Err()`: Prints text in red.  
+   - Note:  
+     - This doesn't work in Visual Studio 2022 as it is a Windows App and not a Console App. However, it works in Rider.
+
+2. **Vector2**  
+   - Purpose: A struct representing a 2D vector with two floats (`x`, `y`).  
+   - Features:  
+     - Includes helper overloads for comparison and basic vector calculations.  
+     - Supports operations such as Dot product, Cross product, and normalization.  
+     - Provides methods for vector addition, subtraction, scalar multiplication, and magnitude calculation.  
+
+---

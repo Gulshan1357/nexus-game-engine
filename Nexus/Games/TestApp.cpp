@@ -62,7 +62,7 @@ void TestApp::Initialize()
 	LoadLevel(1);
 
 
-	// Before the main Update loop is started add the entities to the systems. 
+	// Before the main Update loop is started add the entities to the systems. So that system's entities are populate and we can call the InitializeEntityPhysics()
 	m_coordinator->Update();
 	// Calculate inverse mass, angular mass and inverse angular mass of entities with RigidBody
 	m_coordinator->GetSystem<PhysicsSystem>().InitializeEntityPhysics();

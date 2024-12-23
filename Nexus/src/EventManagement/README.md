@@ -1,11 +1,31 @@
-# Event
-The event system that I implemented here is a blocking type. This means that as soon as something emits an event the game will be blocked until all the listener callbacks are executed first.
+# Event System
 
-## Contains
+The event system implemented here is a **blocking type**, meaning the game is paused whenever an event is emitted until all listener callbacks are executed.
 
-1. **IEvent**: An interface for event. New events can be created by inheriting from this.
-2. **EventCallback**: A container for callback functions.
-3. **EventManager**: Contains an m_subscribers map. This map will contain event as key and a list of callback functions as Values
+---
 
-## Limitation
-Currently the game's update() function clears and resubscribe all event callback over and over. Possibility of optimization: A buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
+## Contains:
+
+1. **IEvent**  
+   - An interface for events.  
+   - New events can be created by inheriting from this.
+
+2. **EventCallback**  
+   - A container for callback functions.  
+
+3. **EventManager**  
+   - Manages subscriptions and event dispatching.  
+   - Includes an `m_subscribers` map, where:  
+     - Keys: Event types.  
+     - Values: Lists of associated callback functions.
+
+---
+
+## Limitation:
+
+- **Current Behavior**  
+  The `game.Update()` function clears and resubscribes all event callbacks repeatedly.  
+
+- **Possible Optimization?**  
+  Implement a buffer for subscriptions to add or remove callbacks only during specific "events" or for a given object ID.  
+  Example: When an entity is removed, automatically delete all events associated with that entity.

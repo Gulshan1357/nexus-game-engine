@@ -1,25 +1,57 @@
 # Components
 
-They store data.
+Components store data and define the properties of entities in the game.
 
 ## Contains
 
-1. **Transform Component**: Stores position, Scale and Rotation
-2. **RigidBody Component**: Stores information like velocity, acceleration, mass and bUsePhysics. If bUsePhysics is false then we are directly integrating acceleration to increment velocity but if bUsePhysics is true then we are using the forces to change the acceleration.
-3. **Sprite Component**: Should store location of sprite, zIndex (higher index entities will be rendered on top of lower indexed entities) and frame (frame to render when not animating).
-4. **ColliderType Component**: A component which tells Collision system the shape of collider. Possible values are Box, Circle and Polygon. Always add this component along with the shape collider component.
-   - **Box Collider Component**: Stores width, height and Offset for Box Collider
-   - **Circle Collider Component**: Stores radius and Offset for Circle Collider
-   - **Polygon Collider Component**: Stores lis of vertices and Offset for Polygon Collider
-5. **UI Text Component**: A component to store UI text info like text string, position, color and font type.
-6. **Animation Component**: A component to store info like:
-   - \*bIsActive\*\*: Animation system will only play this if this is true
-   - _animationLength_: Number of frames on the animation
-   - _bIsLooping_: Is the animation looping, if not then the animation system will switch the bIsActive to false after the current frame reaches the end of animation
-   - _animationFramesRow_: A single sprite usually contains multiple animation, this value represents which animation is currently active.
-   - _playFromBeginning_: If the animation was stopped before it reaches the end, then if it is re-activated, should the animation start from beginning or continue from where it was before.
-7. **Input Component**: This component store information for player input. It store information like which player this is (Input::PlayerID playerId) and what should be the input values like upVelocity, rightVelocity, downVelocity and leftVelocity.
+1. **Transform Component**  
+   - Stores position, scale, and rotation.
 
-## Additional info regarding RigidBody
+2. **RigidBody Component**  
+   - Stores information such as velocity, acceleration, mass, and `bUsePhysics`.  
+   - If `bUsePhysics` is `false`, acceleration is directly integrated to increment velocity.  
+   - If `bUsePhysics` is `true`, forces are used to calculate acceleration.
 
-Beside RigidBody Component all the other components are struct. RigidBody is a class because it end up needing a bit more functionality. Like Unity3D game engine, I wanted the capability to add forces direclty from rigidbody like `rigidbody.AddForce(weight)`. So I made turned it to a class. And I created a wrapper to call `PhysicsEngine::AddForce(*this, force)` function Also, it made sense to store all the unapplied forces in rigidbody.
+3. **Sprite Component**  
+   - Stores:  
+     - Location of the sprite.  
+     - `zIndex` (higher index entities are rendered on top of lower indexed entities).  
+     - `frame` (the frame to render when not animating).
+
+4. **ColliderType Component**  
+   - Informs the collision system of the collider's shape. Possible values: `Box`, `Circle`, and `Polygon`.  
+   - Always add this component along with a shape collider component.  
+     - **Box Collider Component**: Stores width, height, and offset for box colliders.  
+     - **Circle Collider Component**: Stores radius and offset for circle colliders.  
+     - **Polygon Collider Component**: Stores a list of vertices and offset for polygon colliders.
+
+5. **UI Text Component**  
+   - Stores UI text information such as:  
+     - Text string.  
+     - Position.  
+     - Color.  
+     - Font type.
+
+6. **Animation Component**  
+   - Stores animation-related data:  
+     - **`bIsActive`**: The animation system only plays this if `true`.  
+     - **`animationLength`**: Number of frames in the animation.  
+     - **`bIsLooping`**: Determines if the animation loops. If `false`, the animation system sets `bIsActive` to `false` when the animation ends.  
+     - **`animationFramesRow`**: Indicates the active animation in a sprite containing multiple animations.  
+     - **`playFromBeginning`**: If an animation is stopped before completion, this determines whether it starts from the beginning or resumes where it left off when reactivated.
+
+7. **Input Component**  
+   - Stores player input information, such as:  
+     - Player identifier (`Input::PlayerID playerId`).  
+     - Input values, e.g., `upVelocity`, `rightVelocity`, `downVelocity`, and `leftVelocity`.
+
+---
+
+## Additional Information Regarding RigidBody
+
+Most components are implemented as structs, but the `RigidBody` component is implemented as a class due to its additional functionality.  
+
+Like in Unity3D, the `RigidBody` class provides capabilities such as:  
+- Adding forces directly using methods like `rigidbody.AddForce(weight)` and `rigidBody.AddTorque()`.  
+- Wrapping functionality to call `PhysicsEngine::AddForce(*this, force)` internally.  
+- Storing unapplied forces directly within the `RigidBody` class.  

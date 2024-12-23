@@ -1,3 +1,8 @@
 # AssetManager
 
-Rather than creating a new CSimpleSprite for each entity, I decided to create a CSimpleSprite for each sprite and then the render system can get CSimpleSprite for an entity based on m_sprites['sprite-name'], set the CSimpleSprite->Setlocation(entity.transform) and CSimpleSprite->Draw();
+The **AssetManager** stores all the sprites.
+
+The **Render System** utilizes the `AssetManager` by:  
+1. Retrieving the appropriate `CSimpleSprite` for an entity using `m_sprites['sprite-name']`.  
+2. Setting the sprite's location using `CSimpleSprite->SetLocation(entity.transform)`.  
+3. Drawing the sprite with `CSimpleSprite->Draw()`.

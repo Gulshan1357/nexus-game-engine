@@ -2,11 +2,29 @@
 
 ## Contains
 
-1. [**Utilities**](Utils/): Logger and Vector2
-2. [**ECS**](ECS/): Contains Entity, Component and System classes along with Coordinator to manage everything.
-3. [**Components**](Components/): Contain components like: Rigidbody, boxCollider, Sprite etc.
-4. [**Systems**](Systems/): Contain systems like: Movement System, Render System, Input System etc.
-5. [**Event Management**](EventManagement/): Blocking type event system. EventManager acts as an intermediate between pub-subs.
-6. **Events**: Contain events like CollisionEvent, KeyPressEvent. They implement IEvent interface.
-7. [**Input Management**](InputManagement/): Piggybacking on Event Management System, InputManager listens to keypress events and trigger the appropriate action.
-8. [**AssetManagement**](AssetManagement/): It stores all the CSimpleSprite in a map<'tile-map', CSimpleSprite>, and provide helper function like AddSprite(), GetSprite so that the game can reuse it.
+1. [**Utilities**](Utils/)  
+   - Includes `Logger` and `Vector2`.
+
+2. [**ECS**](ECS/)  
+   - Contains `Entity`, `Component`, and `System` classes, along with the `Coordinator` to manage everything.
+
+3. [**Components**](Components/)  
+   - Contains components such as `RigidBody`, `BoxCollider`, `Sprite`, etc.
+
+4. [**Systems**](Systems/)  
+   - Includes systems such as `MovementSystem`, `RenderSystem`, `InputSystem`, etc.
+
+5. [**Event Management**](EventManagement/)  
+   - Implements a blocking-type event system. `EventManager` acts as an intermediary between publishers and subscribers.
+
+6. **Events**  
+   - Contains events like `CollisionEvent` and `KeyPressEvent`. These implement the `IEvent` interface.
+
+7. [**Input Management**](InputManagement/)  
+   - Built on top of the Event Management System. `InputManager` listens to keypress events and triggers appropriate actions.
+
+8. [**Asset Management**](AssetManagement/)  
+   - Stores all `CSimpleSprite` objects in a map `<tile-map, CSimpleSprite>`. Provides helper functions like `AddSprite()` and `GetSprite()` to enable reuse of sprites in the game.
+
+9. [**Physics**](Physics/)  
+   - Contains the Physics Engine, which provides functions to generate various forces and torques and integrate them into position and rotation.

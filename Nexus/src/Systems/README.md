@@ -1,22 +1,54 @@
-# Systems
+# Systems  
 
-Systems maintain a list of relevant entity IDs and, during each update(), iterate through them to perform calculations based on the values of the required components.
+Systems maintain a list of relevant entity IDs and, during each `update()`, iterate through them to perform calculations based on the values of the required components.
 
-## Contains:
+---
 
-1. **Movement System**: Require Rigidbody and Transform component
-2. **Render System**: Require Transform and Sprite Component.
-3. **Collision System**: Require Transform and BoxCollider Component.
-4. **Damage System**: Require BoxCollider Component. It doesn't update on every frame, rather it has an onCollision function which can be called by other system/events as callback. Currently it kill the collided entities.
-5. **Render Text System**: It encapsulates the App::Print() function to render text.
-6. **Input System**: The input system allows multiple players to control entities simultaneously. It consist of:
-   - _InputEnum_: Where Enums for PlayerAction(like Jump, Move_up, Attack) and PlayerId(currently only has Player_1, Player_2) exist.
-   - _KeyBindings_: This file stores all the keys and their corresponding action and provide some function to add/retrieve them.
-   - _KeyPressEvent_: Contains playerId, action, player entity.
-   - _InputSystem_: The system is subscribed to KeyPressEvent. When this event is fired it triggers the necessary action based on the event data.
-7. **RenderDebugSystem**: Supposed to render multiple useful info. Currently renders outlines for various collider shapes (Box, sphere and polygon).
-8. **Animation System**: Animate all the entities whose AnimationComponent's IsActive value is set to true. If bIsLooping is set to false, it only play the animation once. This value is supposed to be changed by other systems.
-9. **Physics System**: This system calculates the inverse mass, angular mass and inverse angular mass of entities with RigidBody at the end of game::Initialize().
+## Contains  
 
-## TODO:
-**Physics System**: Listening to collisions is very expensive. Use a different method to detect player's position.
+1. **Movement System**  
+   - Requires: `RigidBody` and `Transform` components  
+   - Purpose: Handles movement logic by updating the entity's position based on its velocity and acceleration.  
+
+2. **Render System**  
+   - Requires: `Transform` and `Sprite` components  
+   - Purpose: Responsible for rendering entities on the screen by updating their position and drawing their associated sprite.  
+
+3. **Collision System**  
+   - Requires: `Transform` and `BoxCollider` components  
+   - Purpose: Detects collisions between entities using their colliders and triggers the appropriate reactions.  
+
+4. **Damage System**  
+   - Requires: `BoxCollider` component  
+   - Purpose: Handles damage logic on collision.  
+     - It doesn't update every frame. Instead, it has an `onCollision` function that is triggered by other systems/events as a callback.  
+     - Currently, it kills the collided entities.  
+
+5. **Render Text System**  
+   - Purpose: Encapsulates the `App::Print()` function to render text on screen.  
+
+6. **Input System**  
+   - The input system enables multiple players to control entities simultaneously. It consists of:  
+     - **`InputEnum`**: Contains Enums for `PlayerAction` (e.g., `Jump`, `Move_up`, `Attack`) and `PlayerId` (currently only `Player_1`, `Player_2`).  
+     - **`KeyBindings`**: Stores all key mappings and their corresponding actions, along with functions to add and retrieve key bindings.  
+     - **`KeyPressEvent`**: Contains `playerId`, `action`, and `player entity` data.  
+     - **`InputSystem`**: Subscribed to the `KeyPressEvent`. When the event is triggered, it executes the necessary actions based on the event data.  
+
+7. **Render Debug System**  
+   - Purpose: Renders various debug information.  
+     - Currently renders outlines for different collider shapes (Box, Sphere, Polygon).  
+
+8. **Animation System**  
+   - Purpose: Animates entities with an `AnimationComponent` that has `IsActive` set to `true`.  
+     - If `bIsLooping` is set to `false`, the animation is played only once.  
+     - The animation system controls these values based on other systems.  
+
+9. **Physics System**  
+   - Purpose: Calculates inverse mass, angular mass, and inverse angular mass for entities with a `RigidBody` at the start of `game::Initialize()`.  
+
+---
+
+## TODO  
+
+- **Physics System**:  
+   - Listening to collisions is very expensive. Use a different method to detect player's position. 

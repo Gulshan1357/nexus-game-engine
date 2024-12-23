@@ -1,23 +1,60 @@
-# Physics
+# Physics System  
 
-2D physics implementation
+**2D Physics Implementation**  
 
-- To add physics to any entity, it should have a RigidBody component with Boolean bUsePhysics sets to true. The default mass is set to 1.0f but can be changed accordingly. Adding collider is optional but strongly recommended
-- To add a Force to an entity, use `rigidbody.AddForce(Vector2())`. Multiply the x and y values of force with `Physics::PIXEL_PER_METER` for proper scaling with respect to screen.
+---
 
-## Contains
+## Overview  
 
-1. **PhysicsEngine**: This engine contains helper function to add Forces and Integrate with respect to delta time. MovementSystem uses these functions to add stimulate Newtonian physics.
-   - `IntegrateLinear()`: Returns a new position by integrating the RigidBody's velocity and acceleration.
-   - `IntegrateAngular()`: Returns a new rotation by integrating the RigidBody's angular velocity and angular acceleration.
-   - `CalculateMomentOfInertia()`: Calculates the moment of Inertia. Can calculate moment of inertia for box and circle. Needs ColliderType component.
-   - `GenerateDragForce()`: For drag due to different mediums like Air, water etc.
-   - `GenerateFrictionForce()`: For frictional force.
-   - `GenerateGravitationalForce()`: For Gravitational attraction between two bodies with mass. Need RigidBody of the other entity to apply the opposite force.
-   - `GenerateSpringForce()`: For Spring force between an anchor point and a body or between two entities.
-2. **Constants**: Some constant value related to Physics.
+- To enable physics for an entity:  
+  - Add a **RigidBody** component and set the boolean `bUsePhysics` to `true`.  
+  - The default mass is set to `1.0f`, but it can be adjusted as needed.  
+  - Adding a collider is optional but strongly recommended for accurate physics interactions. The Physics System calculate the Inverse Mass, Moment of Inertia (angular mass) and inverse angular mass using ColliderType component (along with components like BoxCollider, SphereCollider etc. for actual dimensions)  
 
-## TODO
+- To apply a force to an entity:  
+  - Use:  
+    ```cpp
+    rigidbody.AddForce(Vector2());
+    ```  
+  - Multiply the x and y components of the force by `Physics::PIXEL_PER_METER` to ensure proper scaling with respect to the screen.  
 
-1. Currently using the Implicit Euler Integration technique. Try Verlet Integration or RK4.
-2. Create helper functions for different forces so that they can be accessed via RigidBody.
+---
+
+## Contains  
+
+1. **PhysicsEngine**  
+   - The core of the physics system. Contains helper functions for applying forces and integrating motion with respect to delta time.  
+   - **Functions:**  
+     - `IntegrateLinear()`  
+       - Calculates a new position by integrating the RigidBody's velocity and acceleration.  
+     - `IntegrateAngular()`  
+       - Calculates a new rotation by integrating the RigidBody's angular velocity and angular acceleration.  
+     - `CalculateMomentOfInertia()`  
+       - Computes the moment of inertia for entities.  
+       - Supports box and circle shapes and requires the `ColliderType` component.  
+     - `GenerateDragForce()`  
+       - Simulates drag forces due to mediums like air or water.  
+     - `GenerateFrictionForce()`  
+       - Simulates frictional forces.  
+     - `GenerateGravitationalForce()`  
+       - Calculates gravitational attraction between two bodies with mass.  
+       - Applies opposite forces to each body and requires the other entity’s RigidBody.  
+     - `GenerateSpringForce()`  
+       - Calculates spring force:  
+         - Between an anchor point and a body, or  
+         - Between two entities.  
+
+2. **Constants**  
+   - Stores constants related to physics calculations.  
+
+---
+
+## TODO  
+
+1. **Improve Integration Technique**  
+   - Currently using **Implicit Euler Integration**. Switch to:  
+     - **Verlet Integration** or (Leaning towards this)  
+     - **RK4 (Runge-Kutta 4th Order)** for better accuracy.  
+
+2. **Force Helper Functions**  
+   - Add helper functions to the `RigidBody` class for easier access to different force generation methods.  
