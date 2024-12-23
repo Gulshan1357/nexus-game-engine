@@ -17,7 +17,7 @@
 5. [**Event Management**](EventManagement/)  
    - Implements a blocking-type event system. `EventManager` acts as an intermediary between publishers and subscribers.
 
-6. **Events**(Events/)    
+6. [**Events**](Events/)    
    - Contains events like `CollisionEvent` and `KeyPressEvent`. These implement the `IEvent` interface.
 
 7. [**Input Management**](InputManagement/)  
