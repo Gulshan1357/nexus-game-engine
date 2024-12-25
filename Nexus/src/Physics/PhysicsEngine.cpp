@@ -189,3 +189,74 @@ Vector2 PhysicsEngine::GenerateSpringForce(const TransformComponent& transformA,
 	const float springMagnitude = -springForceStrength * displacement;
 	return springDirection * springMagnitude;
 }
+
+bool PhysicsEngine::IsAABBCollision(const double aX, const double aY, const double aW, const double aH, const double bX, const double bY, const double bW, const double bH)
+{
+	return (
+		aX < bX + bW &&
+		aX + aW > bX &&
+		aY < bY + bH &&
+		aY + aH > bY
+		);
+}
+
+bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB)
+{
+	// The goal is to find a separating axis. If found then the entities are not colliding.
+
+	// Generate all potential separating axes from both polygons by calculating the perpendicular using Vector2.Normal()
+	std::vector<Vector2> axes;
+
+	for (size_t i = 0; i < verticesA.size(); ++i)
+	{
+		Vector2 edge = verticesA[(i + 1) % verticesA.size()] - verticesA[i];
+		axes.push_back(edge.Normal().Normalize());
+	}
+
+	for (size_t i = 0; i < verticesB.size(); ++i)
+	{
+		Vector2 edge = verticesB[(i + 1) % verticesB.size()] - verticesB[i];
+		axes.push_back(edge.Normal().Normalize());
+	}
+
+	// Lambda function to check if there is an overlap. This function will be called for each axis.
+	auto checkAxisOverlap = [](const Vector2& axis, const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB)
+		{
+			float minA = FLT_MAX, maxA = -FLT_MAX;
+			float minB = FLT_MAX, maxB = -FLT_MAX;
+
+			// Loop through all the vertices to find the minimum and maximum projection by each polygon's vertices on the axis.
+
+			for (const auto& vertex : verticesA)
+			{
+				float projection = axis.Dot(vertex);
+				minA = std::min(minA, projection);
+				maxA = std::max(maxA, projection);
+			}
+
+			for (const auto& vertex : verticesB)
+			{
+				float projection = axis.Dot(vertex);
+				minB = std::min(minB, projection);
+				maxB = std::max(maxB, projection);
+			}
+
+			// The axis has no overlap. This means the two convex polygons are not colliding
+			if (maxA < minB || maxB < minA)
+			{
+				return false;
+			}
+
+			return true;
+		};
+
+	// Calling the lambda function for each axis to find the separating axes
+	for (const auto& axis : axes)
+	{
+		if (!checkAxisOverlap(axis, verticesA, verticesB))
+		{
+			return false; // Separating axis found, no collision
+		}
+	}
+	return true; // No separating axis found, collision occurs
+}

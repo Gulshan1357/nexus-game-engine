@@ -9,6 +9,8 @@
 #include "src/EventManagement/EventManager.h"
 #include "src/Events/CollisionEvent.h"
 
+#include "src/Physics/PhysicsEngine.h"
+
 #include "src/Utils/Logger.h"
 
 class CollisionSystem : public System
@@ -34,23 +36,55 @@ public:
 			{
 				Entity b = *j;
 				const auto& bColliderType = b.GetComponent<ColliderTypeComponent>();
-
 				HandleCollision(eventManager, a, b, aColliderType.type, bColliderType.type);
-
 			}
 		}
 	}
 
-	static void HandleCollision(const std::unique_ptr<EventManager>& eventManager, Entity a, Entity b,
-		ColliderType aType, ColliderType bType)
+	static void HandleCollision(const std::unique_ptr<EventManager>& eventManager, Entity a, Entity b, const ColliderType aType, const ColliderType bType)
 	{
-		if (aType == ColliderType::Box && bType == ColliderType::Box)
+		// Circle-Circle collision
+		if (aType == ColliderType::Circle && bType == ColliderType::Circle)
 		{
-			HandleBoxBoxCollision(eventManager, a, b);
+			if (IsCircleCircleCollision(a, b))
+			{
+				Logger::Log("CircleCircleCollision() Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
+				eventManager->EmitEvent<CollisionEvent>(a, b);
+			}
 		}
+		// Box-Box collision
+		else if (aType == ColliderType::Box && bType == ColliderType::Box)
+		{
+			if (IsBoxBoxCollision(a, b))
+			{
+				Logger::Log("BoxBoxCollision(): Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
+				eventManager->EmitEvent<CollisionEvent>(a, b);
+			}
+		}
+		// Polygon-Polygon collision
+		else if (aType == ColliderType::Polygon && bType == ColliderType::Polygon)
+		{
+			if (IsPolygonPolygonCollision(a, b))
+			{
+				Logger::Log("PolygonPolygonCollision(): Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
+				eventManager->EmitEvent<CollisionEvent>(a, b);
+			}
+		}
+		// TODO: collision between entities with different collider types
 	}
 
-	static void HandleBoxBoxCollision(const std::unique_ptr<EventManager>& eventManager, Entity a, Entity b)
+	static bool IsCircleCircleCollision(const Entity a, const Entity b)
+	{
+		const auto& aCircleCollider = a.GetComponent<CircleColliderComponent>();
+		const auto& bCircleCollider = b.GetComponent<CircleColliderComponent>();
+
+		const Vector2 ab = bCircleCollider.globalCenter - aCircleCollider.globalCenter;
+		const float radiusSum = aCircleCollider.radius + bCircleCollider.radius;
+
+		return ab.MagnitudeSquared() <= (radiusSum * radiusSum);
+	}
+
+	static bool IsBoxBoxCollision(const Entity a, const Entity b)
 	{
 		const auto& aTransform = a.GetComponent<TransformComponent>();
 		const auto& aBoxCollider = a.GetComponent<BoxColliderComponent>();
@@ -65,26 +99,18 @@ public:
 		const float bBottomLeftX = bTransform.position.x + bBoxCollider.offset.x - static_cast<float>(bBoxCollider.width) / 2.0f;
 		const float bBottomLeftY = bTransform.position.y + bBoxCollider.offset.y - static_cast<float>(bBoxCollider.height) / 2.0f;
 
-		// Check for Axis-Aligned Bounding Box collision
-		if (CheckAABBCollision(
+		// Check for Axis-Aligned Bounding Box collision and return bool
+		return PhysicsEngine::IsAABBCollision(
 			aBottomLeftX, aBottomLeftY, aBoxCollider.width, aBoxCollider.height,
 			bBottomLeftX, bBottomLeftY, bBoxCollider.width, bBoxCollider.height
-		))
-		{
-			Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
-			eventManager->EmitEvent<CollisionEvent>(a, b);
-		}
+		);
 	}
 
-	// Axis-Aligned Bounding Box Collision Detection
-	static bool CheckAABBCollision(const double aX, const double aY, const double aW, const double aH, const double bX, const double bY, const double bW, const double bH)
+	static bool IsPolygonPolygonCollision(const Entity a, const Entity b)
 	{
-		return (
-			aX < bX + bW &&
-			aX + aW > bX &&
-			aY < bY + bH &&
-			aY + aH > bY
-			);
-	}
+		const auto& aPolygon = a.GetComponent<PolygonColliderComponent>();
+		const auto& bPolygon = b.GetComponent<PolygonColliderComponent>();
 
+		return PhysicsEngine::IsSATCollision(aPolygon.globalVertices, bPolygon.globalVertices);
+	}
 };

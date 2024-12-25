@@ -24,14 +24,15 @@
 
 1. **PhysicsEngine**  
    - The core of the physics system. Contains helper functions for applying forces and integrating motion with respect to delta time.  
-   - **Functions:**  
+   - **Functions related to integrating force and torque:**  
      - `IntegrateLinear()`  
        - Calculates a new position by integrating the RigidBody's velocity and acceleration.  
      - `IntegrateAngular()`  
        - Calculates a new rotation by integrating the RigidBody's angular velocity and angular acceleration.  
      - `CalculateMomentOfInertia()`  
        - Computes the moment of inertia for entities.  
-       - Supports box and circle shapes and requires the `ColliderType` component.  
+       - Supports box and circle shapes and requires the `ColliderType` component.
+   - **Functions to simulate different Forces:**  
      - `GenerateDragForce()`  
        - Simulates drag forces due to mediums like air or water.  
      - `GenerateFrictionForce()`  
@@ -42,7 +43,14 @@
      - `GenerateSpringForce()`  
        - Calculates spring force:  
          - Between an anchor point and a body, or  
-         - Between two entities.  
+         - Between two entities.
+     - `GenerateGravitationalForce()`  
+       - Calculates gravitational attraction between two bodies with mass.
+   - **Functions to check collisions:**  
+     - `IsAABBCollision()`  
+       - Check if two boxes are colliding using Axis-Aligned Bounding Box.
+     - `IsSATCollision()`  
+       - Check if two convex polygons are colliding using the Separating Axis Theorem.
 
 2. **Constants**  
    - Stores constants related to physics calculations.  

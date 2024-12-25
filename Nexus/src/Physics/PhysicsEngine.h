@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 
 struct TransformComponent;
 class RigidBodyComponent;
@@ -8,6 +10,10 @@ class Entity;
 class PhysicsEngine
 {
 public:
+	//------------------------------------------------------------------------
+	// Integrating Force and Torque
+	//------------------------------------------------------------------------
+
 	// Returns a new position by integrating the RigidBody's velocity and acceleration.
 	static Vector2 IntegrateLinear(RigidBodyComponent& rigidBodyComponent, float dt);
 
@@ -24,6 +30,11 @@ public:
 
 	static float CalculateMomentOfInertia(const Entity& entity);
 
+
+	//------------------------------------------------------------------------
+	// Different Forces
+	//------------------------------------------------------------------------
+
 	// Drag Force = dragStrength * |v|^2 with direction opposite of velocity, where dragStrength = 1/2 * ρ * K * A
 	static Vector2 GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength);
 
@@ -38,4 +49,15 @@ public:
 
 	// Spring Force between two entities = -k * Δl, where k is spring constant(springForceStrength) and Δl is change in spring length
 	static Vector2 GenerateSpringForce(const TransformComponent& transformA, const TransformComponent& transformB, float restLength, float springForceStrength);
+
+
+	//------------------------------------------------------------------------
+	// Collision Detection
+	//------------------------------------------------------------------------
+
+	// Axis-Aligned Bounding Box for Collision Detection. Input is the bottom left point of each rectangle along with width and height. Returns true if the two rectangles are colliding.
+	static bool IsAABBCollision(const double aX, const double aY, const double aW, const double aH, const double bX, const double bY, const double bW, const double bH);
+
+	// Separating Axis Theorem for Collision Detection between two convex polygon. Input are the list of vertices for each polygon. Returns true if the two polygons are colliding.
+	static bool IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB);
 };
