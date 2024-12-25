@@ -231,6 +231,7 @@
     <ClInclude Include="src\Systems\RenderSystem.h" />
     <ClInclude Include="src\Systems\RenderTextSystem.h" />
     <ClInclude Include="src\Utils\Color.h" />
+    <ClInclude Include="src\Utils\GraphicsUtils.h" />
     <ClInclude Include="src\Utils\Font.h" />
     <ClInclude Include="src\Utils\Logger.h" />
     <ClInclude Include="src\Utils\Vector2.h" />

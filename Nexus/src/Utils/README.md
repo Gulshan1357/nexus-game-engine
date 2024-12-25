@@ -20,4 +20,9 @@
      - Supports operations such as Dot product, Cross product, and normalization.  
      - Provides methods for vector addition, subtraction, scalar multiplication, and magnitude calculation.  
 
+2. **GraphicsUtils**  
+   - Purpose: Provide helper functions to draw basic shapes.  
+   - Features:  
+     -  Have functions like `Graphics::PrintText()`, `Graphics::DrawLine()`, `Graphics::DrawCircle()` and `Graphics::DrawPolygon()`
+
 ---

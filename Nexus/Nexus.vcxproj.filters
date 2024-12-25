@@ -107,6 +107,7 @@
     <ClInclude Include="src\Components\ColliderTypeComponent.h" />
     <ClInclude Include="src\Components\CircleColliderComponent.h" />
     <ClInclude Include="src\Components\PolygonColliderComponent.h" />
+    <ClInclude Include="src\Utils\GraphicsUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
