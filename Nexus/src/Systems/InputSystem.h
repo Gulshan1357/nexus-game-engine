@@ -14,6 +14,8 @@
 #include "src/Components/InputComponent.h"
 #include "src/Components/RigidBodyComponent.h"
 
+#include "src/Physics/Constants.h"
+
 //------------------------------------------------------------------------
 // The input system listens to Input events (Keyboard key press) and perform necessary action.
 // ------------------------------------------------------------------------

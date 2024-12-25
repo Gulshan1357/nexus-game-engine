@@ -21,8 +21,8 @@ Components store data and define the properties of entities in the game.
 4. **ColliderType Component**  
    - Informs the collision system of the collider's shape. Possible values: `Box`, `Circle`, and `Polygon`.  
    - Always add this component along with a shape collider component.  
-     - **Box Collider Component**: Stores width, height, and offset for box colliders.  
-     - **Circle Collider Component**: Stores radius and offset for circle colliders.  
+     - **Box Collider Component**: Stores width, height, and offset for box colliders. Constructor initialize the local vertices based on width and height.  
+     - **Circle Collider Component**: Stores radius and offset for circle colliders. 
      - **Polygon Collider Component**: Stores a list of vertices and offset for polygon colliders.
 
 5. **UI Text Component**  

@@ -23,7 +23,6 @@
 #include "src/Components/CircleColliderComponent.h"
 #include "src/Components/PolygonColliderComponent.h"
 
-#include "src/Systems/MovementSystem.h"
 #include "src/Systems/RenderSystem.h"
 #include "src/Systems/CollisionSystem.h"
 #include "src/Systems/DamageSystem.h"
@@ -71,7 +70,6 @@ void TestApp::Initialize()
 void TestApp::LoadLevel(int level)
 {
 	// Add Systems
-	m_coordinator->AddSystem<MovementSystem>();
 	m_coordinator->AddSystem<RenderSystem>();
 	m_coordinator->AddSystem<CollisionSystem>();
 	m_coordinator->AddSystem<DamageSystem>();
@@ -160,48 +158,27 @@ void TestApp::LoadLevel(int level)
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'S', Input::PlayerAction::MOVE_DOWN);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
 
-	// Spring entities
-	Entity ball3 = m_coordinator->CreateEntity();
-	ball3.AddComponent<SpriteComponent>("red-ball", 3);
-	ball3.AddComponent<TransformComponent>(Vector2(300.f, 100.f), Vector2(1.f, 1.f));
-	ball3.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
-	ball3.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	ball3.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
-	ball3.Group("Anchor");
-
-	Entity ball4 = m_coordinator->CreateEntity();
-	ball4.AddComponent<SpriteComponent>("red-ball", 3);
-	ball4.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f));
-	ball4.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
-	ball4.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	ball4.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
-	ball4.Group("Anchor");
-
-	Entity ball5 = m_coordinator->CreateEntity();
-	ball5.AddComponent<SpriteComponent>("red-ball", 3);
-	ball5.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f));
-	ball5.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
-	ball5.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	ball5.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
-
-	// Adding weight force
-	Vector2 weight = Vector2(0.0f, ball5.GetComponent<RigidBodyComponent>().mass * -9.8f * Physics::PIXEL_PER_METER);
-	ball5.GetComponent<RigidBodyComponent>().AddForce(weight);
+	Entity ball6 = m_coordinator->CreateEntity();
+	ball6.AddComponent<SpriteComponent>("red-ball", 3);
+	ball6.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f), 0.13f);
+	ball6.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f, 0.f);
+	ball6.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	// std::vector<Vector2> vertices;
+	// // Going clockwise from top left
+	// vertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// vertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// vertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// vertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// ball6.AddComponent<PolygonColliderComponent>(vertices);
+	ball6.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"));
 
 	// Adding Torque
-	float torque = 2000;
-	ball5.GetComponent<RigidBodyComponent>().AddTorque(torque);
-	ball5.Tag("Debug");
+	float torque = 260;
+	ball6.GetComponent<RigidBodyComponent>().AddTorque(torque);
+	ball6.Tag("Debug");
 
 	// Relationships
 	redBall.AddRelationship(redBigBall, "Spring");
-	redBigBall.AddRelationship(ball3, "Spring");
-	ball3.AddRelationship(ball4, "Spring");
-	redBall.AddRelationship(ball4, "Spring");
-
-	redBall.AddRelationship(ball3, "Spring");
-	redBigBall.AddRelationship(ball4, "Spring");
-
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
@@ -286,9 +263,10 @@ void TestApp::Update(float deltaTime)
 	m_coordinator->Update();
 
 	// Invoke all the systems that needs to be updated
-	m_coordinator->GetSystem<MovementSystem>().Update(deltaTime);
+	m_coordinator->GetSystem<PhysicsSystem>().Update(deltaTime);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
+	m_coordinator->GetSystem<PhysicsSystem>().Update(deltaTime);
 }
 
 //------------------------------------------------------------------------

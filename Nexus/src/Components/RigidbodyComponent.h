@@ -7,7 +7,7 @@
  * RigidBody Component is the physics components that provides simulations like velocity and acceleration
  * @param velocity (Vector2): Add this Vector to TransformComponent's position vector every delta time
  * @param acceleration (Vector2): Initial acceleration of the RigidBody. If bUsePhysics = true then the additional forces will change this value.
- * @param bUsePhysics (Bool): Default value is false. If set to true then it uses PhysicsEngine for stimulating forces and mass to drive acceleration. If set to false then the original acceleration remains the same.
+ * @param bUsePhysics (Bool): Default value is false. If set to true then it uses PhysicsEngine for stimulating forces and mass to drive acceleration. If set to false then the original acceleration remains the same. Toggling this value at runtime won't automatically calculate these values.
  * @param mass (Float): Default value is set to 1.
  * @param angularVelocity (Float): Default value is set to 0.
  * @param angularAcceleration (Float): Default value is set to 0.

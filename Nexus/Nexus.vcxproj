@@ -226,7 +226,6 @@
     <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
     <ClInclude Include="src\Systems\InputSystem.h" />
-    <ClInclude Include="src\Systems\MovementSystem.h" />
     <ClInclude Include="src\Systems\PhysicsSystem.h" />
     <ClInclude Include="src\Systems\RenderDebugSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />

@@ -24,19 +24,18 @@ public:
 		for (auto entity : GetSystemEntities())
 		{
 			const auto& transform = entity.GetComponent<TransformComponent>();
-
 			const auto& colliderType = entity.GetComponent<ColliderTypeComponent>();
 
 			switch (colliderType.type)
 			{
 				case ColliderType::Box:
-					DrawBox(entity);
+					DrawBoxCollider(entity);
 					break;
 				case ColliderType::Circle:
-					DrawCircle(entity);
+					DrawCircleCollider(entity);
 					break;
 				case ColliderType::Polygon:
-					DrawPolygon(entity);
+					DrawPolygonCollider(entity);
 					break;
 			}
 
@@ -44,7 +43,7 @@ public:
 			static std::string text;
 			if (entity.HasTag("Debug"))
 			{
-				text = "Player2 rotation: " + std::to_string(entity.GetComponent<TransformComponent>().rotation);
+				text = "Debug rotation: " + std::to_string(entity.GetComponent<TransformComponent>().rotation);
 			}
 			App::Print(50.f, 80.f, text.c_str(), 1, 0, 0, GLUT_BITMAP_HELVETICA_12);
 
@@ -57,28 +56,21 @@ public:
 		}
 	}
 
-	static void DrawBox(const Entity& entity)
+	static void DrawBoxCollider(const Entity& entity)
 	{
-		const auto& transform = entity.GetComponent<TransformComponent>();
 		const auto& collider = entity.GetComponent<BoxColliderComponent>();
+		const auto& vertices = collider.globalVertices;
 
-		const float colliderCenterX = transform.position.x + collider.offset.x;
-		const float colliderCenterY = transform.position.y + collider.offset.y;
+		for (size_t i = 0; i < vertices.size(); ++i)
+		{
+			const auto& v1 = vertices[i];
+			const auto& v2 = vertices[(i + 1) % vertices.size()];
 
-		const float halfWidth = static_cast<float>(collider.width) / 2.0f;
-		const float halfHeight = static_cast<float>(collider.height) / 2.0f;
-
-		const float bottomLeftX = colliderCenterX - halfWidth;
-		const float bottomLeftY = colliderCenterY - halfHeight;
-
-		// Draw a rectangle around the collider
-		App::DrawLine(bottomLeftX, bottomLeftY, colliderCenterX + halfWidth, bottomLeftY, 1.0f, 1.0f, 1.0f);
-		App::DrawLine(colliderCenterX + halfWidth, bottomLeftY, colliderCenterX + halfWidth, colliderCenterY + halfHeight, 1.0f, 1.0f, 1.0f);
-		App::DrawLine(colliderCenterX + halfWidth, colliderCenterY + halfHeight, bottomLeftX, colliderCenterY + halfHeight, 1.0f, 1.0f, 1.0f);
-		App::DrawLine(bottomLeftX, colliderCenterY + halfHeight, bottomLeftX, bottomLeftY, 1.0f, 1.0f, 1.0f);
+			App::DrawLine(v1.x, v1.y, v2.x, v2.y, 1.0f, 1.0f, 1.0f);
+		}
 	}
 
-	static void DrawCircle(const Entity& entity)
+	static void DrawCircleCollider(const Entity& entity)
 	{
 		const auto& transform = entity.GetComponent<TransformComponent>();
 		const auto& collider = entity.GetComponent<CircleColliderComponent>();
@@ -114,21 +106,17 @@ public:
 		App::DrawLine(centerX, centerY, outlineX, outlineY, 1.0f, 1.0f, 1.0f);
 	}
 
-	static void DrawPolygon(const Entity& entity)
+	static void DrawPolygonCollider(const Entity& entity)
 	{
-		const auto& transform = entity.GetComponent<TransformComponent>();
 		const auto& collider = entity.GetComponent<PolygonColliderComponent>();
-		const auto& vertices = collider.vertices;
-
-		const float offsetX = transform.position.x + collider.offset.x;
-		const float offsetY = transform.position.y + collider.offset.y;
+		const auto& vertices = collider.globalVertices;
 
 		for (size_t i = 0; i < vertices.size(); ++i)
 		{
 			const auto& v1 = vertices[i];
 			const auto& v2 = vertices[(i + 1) % vertices.size()];
 
-			App::DrawLine(v1.x + offsetX, v1.y + offsetY, v2.x + offsetX, v2.y + offsetY, 1.0f, 1.0f, 1.0f);
+			App::DrawLine(v1.x, v1.y, v2.x, v2.y, 1.0f, 1.0f, 1.0f);
 		}
 	}
 };

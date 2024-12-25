@@ -37,16 +37,17 @@ Vector2 PhysicsEngine::IntegrateLinear(RigidBodyComponent& rigidBodyComponent, f
 float PhysicsEngine::IntegrateAngular(RigidBodyComponent& rigidBodyComponent, float dt)
 {
 	// Increment the angular acceleration based on the applied forces and angular mass(Moment of inertia or I) of the object (τ = Iα => α = τ / I)
-	rigidBodyComponent.angularAcceleration = rigidBodyComponent.sumTorque * rigidBodyComponent.inverseOfAngularMass;
+	rigidBodyComponent.angularAcceleration += rigidBodyComponent.sumTorque * rigidBodyComponent.inverseOfAngularMass;
 
 	// Calculating angular velocity by integrating angular acceleration
 	rigidBodyComponent.angularVelocity += rigidBodyComponent.angularAcceleration * dt;
 
-	// Calculating rotation by integrating angular velocity
-	const float rotation = rigidBodyComponent.angularVelocity * dt;
+	// Calculating angular displacement by integrating angular velocity
+	float angularDisplacement = rigidBodyComponent.angularVelocity * dt;
+
 	ClearTorque(rigidBodyComponent);
-	Logger::Warn("Torque resolved");
-	return rotation;
+	// Logger::Warn("Torque resolved");
+	return angularDisplacement;
 }
 
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)
@@ -62,7 +63,7 @@ void PhysicsEngine::ClearForces(RigidBodyComponent& rigidBodyComponent)
 
 void PhysicsEngine::AddTorque(RigidBodyComponent& rigidBodyComponent, const float torque)
 {
-	Logger::Warn("Adding Torque");
+	// Logger::Warn("Adding Torque");
 	rigidBodyComponent.sumTorque += torque;
 }
 
@@ -97,6 +98,12 @@ float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
 		case ColliderType::Polygon:
 			if (entity.HasComponent<PolygonColliderComponent>())
 			{
+				auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
+				if (entity.HasTag("Debug"))
+				{
+					std::cout << "Inside MoI function, mass: " << rigidBody.mass << " I: " << rigidBody.angularMass << " inverse of I: " << rigidBody.inverseOfAngularMass << "\n";
+				}
+
 				const auto& polygonCollider = entity.GetComponent<PolygonColliderComponent>();
 				// TODO: ...
 				return 0.0f;

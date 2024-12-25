@@ -14,7 +14,19 @@ struct BoxColliderComponent
 	float height;
 	Vector2 offset;
 
+	std::vector<Vector2> localVertices;  // Vertices in local space
+	std::vector<Vector2> globalVertices; // Transformed vertices in global space
+
 	explicit BoxColliderComponent(const float width = 0, const float height = 0, const Vector2 offset = Vector2())
 		: width(width), height(height), offset(offset)
-	{}
+	{
+		// Initialize local vertices as a box centered around (0, 0) with the given width and height
+		localVertices = {
+			Vector2(-width / 2, -height / 2),
+			Vector2(width / 2, -height / 2),
+			Vector2(width / 2, height / 2),
+			Vector2(-width / 2, height / 2)
+		};
+		globalVertices.resize(localVertices.size());
+	}
 };
