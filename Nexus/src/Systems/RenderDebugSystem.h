@@ -69,14 +69,12 @@ public:
 		const auto& transform = entity.GetComponent<TransformComponent>();
 		const auto& collider = entity.GetComponent<CircleColliderComponent>();
 
-		const Vector2 center = transform.position + collider.offset;
-
-		Graphics::DrawCircle(center, collider.radius, 36, 1.0f, 1.0f, 1.0f);
+		Graphics::DrawCircle(collider.globalCenter, collider.radius, 36, 1.0f, 1.0f, 1.0f);
 
 		// For rotation line, using rotation angle to find the circle's edge
-		const float outlineX = collider.radius * cos(transform.rotation) + center.x;
-		const float outlineY = collider.radius * sin(transform.rotation) + center.y;
-		Graphics::DrawLine(center, Vector2(outlineX, outlineY), 1.0f, 1.0f, 1.0f);
+		const float outlineX = collider.radius * cos(transform.rotation) + collider.globalCenter.x;
+		const float outlineY = collider.radius * sin(transform.rotation) + collider.globalCenter.y;
+		Graphics::DrawLine(collider.globalCenter, Vector2(outlineX, outlineY), 1.0f, 1.0f, 1.0f);
 
 	}
 

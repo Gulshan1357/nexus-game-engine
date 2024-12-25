@@ -97,7 +97,7 @@ void TestApp::LoadLevel(int level)
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
 	test.AddComponent<SpriteComponent>("player1-test-image", 2, Asset::DemoPlayer::ANIM_BACKWARDS); // Only prints a default sprite
-	// test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
+	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 18.f, 18.0f, 18.f, 18.f);
 	test.AddComponent<AnimationComponent>(false, 8, true);
 	test.Tag("Player1");
@@ -162,16 +162,16 @@ void TestApp::LoadLevel(int level)
 	ball6.AddComponent<SpriteComponent>("red-ball", 3);
 	ball6.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f), 0.13f);
 	ball6.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f, 0.f);
-	ball6.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
-	std::vector<Vector2> vertices;
-	// Going clockwise from top left
-	vertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-	vertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-	vertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-	vertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-	ball6.AddComponent<PolygonColliderComponent>(vertices);
+	ball6.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	// std::vector<Vector2> vertices;
+	// // Going clockwise from top left
+	// vertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// vertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// vertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// vertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	// ball6.AddComponent<PolygonColliderComponent>(vertices);
 	/*ball6.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"));*/
-	//ball6.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+	ball6.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
 
 	// Adding Torque
 	float torque = 260;

@@ -65,11 +65,15 @@ public:
 
 				if (entity.HasComponent<BoxColliderComponent>())
 				{
-					UpdateColliderVertices(entity.GetComponent<BoxColliderComponent>(), transform);
+					UpdateBoxColliderVertices(entity.GetComponent<BoxColliderComponent>(), transform);
 				}
 				else if (entity.HasComponent<PolygonColliderComponent>())
 				{
-					UpdateColliderVertices(entity.GetComponent<PolygonColliderComponent>(), transform);
+					UpdatePolygonColliderVertices(entity.GetComponent<PolygonColliderComponent>(), transform);
+				}
+				else if (entity.HasComponent<CircleColliderComponent>())
+				{
+					UpdateCircleColliderCenter(entity.GetComponent<CircleColliderComponent>(), transform);
 				}
 
 				HandleEdgeCollision(entity, transform, rigidBody);
@@ -101,8 +105,14 @@ public:
 		}
 	}
 
+	// Function to update Circle Collider's center based
+	static void UpdateCircleColliderCenter(CircleColliderComponent& circleCollider, const TransformComponent& transform)
+	{
+		circleCollider.globalCenter = transform.position + circleCollider.offset;
+	}
+
 	// Function to update Box Collider Vertices based on transform rotation
-	static void UpdateColliderVertices(BoxColliderComponent& collider, const TransformComponent& transform)
+	static void UpdateBoxColliderVertices(BoxColliderComponent& collider, const TransformComponent& transform)
 	{
 		// Compute global offset
 		const Vector2 globalOffset = transform.position + collider.offset;
@@ -123,7 +133,7 @@ public:
 	}
 
 	// Function to update Polygon Collider Vertices based on transform rotation
-	static void UpdateColliderVertices(PolygonColliderComponent& collider, const TransformComponent& transform)
+	static void UpdatePolygonColliderVertices(PolygonColliderComponent& collider, const TransformComponent& transform)
 	{
 		// Compute global offset
 		const Vector2 globalOffset = transform.position + collider.offset;

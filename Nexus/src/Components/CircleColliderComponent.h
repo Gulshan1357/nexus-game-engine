@@ -11,7 +11,11 @@ struct CircleColliderComponent
 	float radius;
 	Vector2 offset;
 
+	Vector2 globalCenter;
+
 	explicit CircleColliderComponent(const float radius = 1.f, const Vector2 offset = Vector2()) :
 		radius(radius), offset(offset)
-	{}
+	{
+		globalCenter = offset;
+	}
 };
