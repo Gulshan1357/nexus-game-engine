@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "src/ECS/System.h"
 #include "src/ECS/Entity.h"
 
@@ -46,34 +48,38 @@ public:
 		// Circle-Circle collision
 		if (aType == ColliderType::Circle && bType == ColliderType::Circle)
 		{
-			if (IsCircleCircleCollision(a, b))
+			auto collisionInfo = GetCircleCircleCollisionInfo(a, b);
+			if (collisionInfo.has_value())
 			{
 				Logger::Log("CircleCircleCollision() Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
-				eventManager->EmitEvent<CollisionEvent>(a, b);
+				eventManager->EmitEvent<CollisionEvent>(a, b, collisionInfo.value());
 			}
 		}
 		// Box-Box collision
 		else if (aType == ColliderType::Box && bType == ColliderType::Box)
 		{
-			if (IsBoxBoxCollision(a, b))
+			auto collisionInfo = GetBoxBoxCollisionInfo(a, b);
+			if (collisionInfo.has_value())
 			{
 				Logger::Log("BoxBoxCollision(): Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
-				eventManager->EmitEvent<CollisionEvent>(a, b);
+				eventManager->EmitEvent<CollisionEvent>(a, b, collisionInfo.value());
 			}
 		}
 		// Polygon-Polygon collision
 		else if (aType == ColliderType::Polygon && bType == ColliderType::Polygon)
 		{
-			if (IsPolygonPolygonCollision(a, b))
+			auto collisionInfo = GetPolygonPolygonCollisionInfo(a, b);
+			if (collisionInfo.has_value())
 			{
 				Logger::Log("PolygonPolygonCollision(): Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
-				eventManager->EmitEvent<CollisionEvent>(a, b);
+				eventManager->EmitEvent<CollisionEvent>(a, b, collisionInfo.value());
 			}
 		}
 		// TODO: collision between entities with different collider types
 	}
 
-	static bool IsCircleCircleCollision(const Entity a, const Entity b)
+	// If a collision is detected, return the contact information; otherwise, return std::nullopt
+	static std::optional<ContactInfo> GetCircleCircleCollisionInfo(const Entity a, const Entity b)
 	{
 		const auto& aCircleCollider = a.GetComponent<CircleColliderComponent>();
 		const auto& bCircleCollider = b.GetComponent<CircleColliderComponent>();
@@ -81,10 +87,25 @@ public:
 		const Vector2 ab = bCircleCollider.globalCenter - aCircleCollider.globalCenter;
 		const float radiusSum = aCircleCollider.radius + bCircleCollider.radius;
 
-		return ab.MagnitudeSquared() <= (radiusSum * radiusSum);
+		if (ab.MagnitudeSquared() > (radiusSum * radiusSum))
+		{
+			return std::nullopt; // No collision
+		}
+
+		// If there is the collision then calculate and return contact info
+
+		// Start contact point is the point of circle 'b' inside 'a'. So that is the position of b minus the scaled normal. Subtracting because normal ab is from a to b
+		Vector2 startContactPoint = bCircleCollider.globalCenter - (ab * bCircleCollider.radius);
+
+		// End Contact point is the point of circle 'a' inside 'b'. So that is the position of a plus the scaled normal.
+		Vector2 endContactPoint = aCircleCollider.globalCenter + (ab * aCircleCollider.radius);
+
+		float penetrationDepth = (endContactPoint - startContactPoint).Magnitude();
+
+		return ContactInfo(startContactPoint, endContactPoint, ab, penetrationDepth);
 	}
 
-	static bool IsBoxBoxCollision(const Entity a, const Entity b)
+	static std::optional<ContactInfo> GetBoxBoxCollisionInfo(const Entity a, const Entity b)
 	{
 		const auto& aTransform = a.GetComponent<TransformComponent>();
 		const auto& aBoxCollider = a.GetComponent<BoxColliderComponent>();
@@ -100,17 +121,35 @@ public:
 		const float bBottomLeftY = bTransform.position.y + bBoxCollider.offset.y - static_cast<float>(bBoxCollider.height) / 2.0f;
 
 		// Check for Axis-Aligned Bounding Box collision and return bool
-		return PhysicsEngine::IsAABBCollision(
+		if (!PhysicsEngine::IsAABBCollision(
 			aBottomLeftX, aBottomLeftY, aBoxCollider.width, aBoxCollider.height,
 			bBottomLeftX, bBottomLeftY, bBoxCollider.width, bBoxCollider.height
-		);
+		))
+		{
+			return std::nullopt;
+		}
+
+		// TODO: Calculate the Contact info and return that
+		return ContactInfo();
 	}
 
-	static bool IsPolygonPolygonCollision(const Entity a, const Entity b)
+	static std::optional<ContactInfo> GetPolygonPolygonCollisionInfo(const Entity a, const Entity b)
 	{
 		const auto& aPolygon = a.GetComponent<PolygonColliderComponent>();
 		const auto& bPolygon = b.GetComponent<PolygonColliderComponent>();
 
-		return PhysicsEngine::IsSATCollision(aPolygon.globalVertices, bPolygon.globalVertices);
+		float penetration;
+		Vector2 collisionNormal;
+
+		if (!PhysicsEngine::IsSATCollision(aPolygon.globalVertices, bPolygon.globalVertices, penetration, collisionNormal))
+		{
+			return std::nullopt;
+		}
+
+		// TODO: Very simplified contact point calculation (needs improvement)
+		Vector2 startContactPoint = aPolygon.globalVertices[0];
+		Vector2 endContactPoint = bPolygon.globalVertices[0];
+
+		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetration);
 	}
 };

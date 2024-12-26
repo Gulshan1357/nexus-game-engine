@@ -146,9 +146,9 @@ void TestApp::LoadLevel(int level)
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBall.AddComponent<TransformComponent>(Vector2(100.f, 300.f), Vector2(1.f, 1.f));
 	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f);
-	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
-	// redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
-	redBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
+	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+	// redBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
 	redBall.Tag("Player2");
 	redBall.Group("Player");
@@ -171,10 +171,10 @@ void TestApp::LoadLevel(int level)
 	ball6.AddComponent<SpriteComponent>("red-ball", 3);
 	ball6.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f), 0.13f);
 	ball6.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f, 0.f);
-	ball6.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
-	ball6.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
+	ball6.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	// ball6.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
 	/*ball6.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"));*/
-	// ball6.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+	ball6.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
 
 	// Adding Torque
 	float torque = 260;

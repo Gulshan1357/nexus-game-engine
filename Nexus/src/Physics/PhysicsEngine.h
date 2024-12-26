@@ -58,6 +58,6 @@ public:
 	// Axis-Aligned Bounding Box for Collision Detection. Input is the bottom left point of each rectangle along with width and height. Returns true if the two rectangles are colliding.
 	static bool IsAABBCollision(const double aX, const double aY, const double aW, const double aH, const double bX, const double bY, const double bW, const double bH);
 
-	// Separating Axis Theorem for Collision Detection between two convex polygon. Input are the list of vertices for each polygon. Returns true if the two polygons are colliding.
-	static bool IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB);
+	// Separating Axis Theorem for Collision Detection between two convex polygon. Input are the list of vertices for each polygon. Returns true if the two polygons are colliding. It also update the values of minimum penetration and collision normal which can be used for collision resolution
+	static bool IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, float& minPenetration, Vector2& collisionNormal);
 };

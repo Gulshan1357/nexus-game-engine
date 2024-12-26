@@ -200,7 +200,7 @@ bool PhysicsEngine::IsAABBCollision(const double aX, const double aY, const doub
 		);
 }
 
-bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB)
+bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, float& minPenetration, Vector2& collisionNormal)
 {
 	// The goal is to find a separating axis. If found then the entities are not colliding.
 
@@ -219,43 +219,39 @@ bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const 
 		axes.push_back(edge.Normal().Normalize());
 	}
 
-	// Lambda function to check if there is an overlap. This function will be called for each axis.
-	auto checkAxisOverlap = [](const Vector2& axis, const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB)
-		{
-			float minA = FLT_MAX, maxA = -FLT_MAX;
-			float minB = FLT_MAX, maxB = -FLT_MAX;
+	minPenetration = std::numeric_limits<float>::max();
 
-			// Loop through all the vertices to find the minimum and maximum projection by each polygon's vertices on the axis.
-
-			for (const auto& vertex : verticesA)
-			{
-				float projection = axis.Dot(vertex);
-				minA = std::min(minA, projection);
-				maxA = std::max(maxA, projection);
-			}
-
-			for (const auto& vertex : verticesB)
-			{
-				float projection = axis.Dot(vertex);
-				minB = std::min(minB, projection);
-				maxB = std::max(maxB, projection);
-			}
-
-			// The axis has no overlap. This means the two convex polygons are not colliding
-			if (maxA < minB || maxB < minA)
-			{
-				return false;
-			}
-
-			return true;
-		};
-
-	// Calling the lambda function for each axis to find the separating axes
+	// Looping all the axis to check if there exist a separating axis
 	for (const auto& axis : axes)
 	{
-		if (!checkAxisOverlap(axis, verticesA, verticesB))
+		float minA = FLT_MAX, maxA = -FLT_MAX;
+		float minB = FLT_MAX, maxB = -FLT_MAX;
+
+		// Loop through all the vertices to find the minimum and maximum projection by each polygon's vertices on the axis.
+		for (const auto& vertex : verticesA)
+		{
+			float projection = axis.Dot(vertex);
+			minA = std::min(minA, projection);
+			maxA = std::max(maxA, projection);
+		}
+		for (const auto& vertex : verticesB)
+		{
+			float projection = axis.Dot(vertex);
+			minB = std::min(minB, projection);
+			maxB = std::max(maxB, projection);
+		}
+
+		// The axis has no overlap. This means the two convex polygons are not colliding
+		if (maxA < minB || maxB < minA)
 		{
 			return false; // Separating axis found, no collision
+		}
+
+		float currentPenetration = std::min(maxA, maxB) - std::max(minA, minB);
+		if (currentPenetration < minPenetration)
+		{
+			minPenetration = currentPenetration;
+			collisionNormal = axis;
 		}
 	}
 	return true; // No separating axis found, collision occurs
