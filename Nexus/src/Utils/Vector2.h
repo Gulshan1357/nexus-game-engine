@@ -38,7 +38,7 @@ struct Vector2
 
 	[[nodiscard]] Vector2 UnitVector() const;				// Return a new vector.Normalize() unit vector
 	[[nodiscard]] Vector2& Normalize();						// Turn the vector into a unit vector
-	[[nodiscard]] Vector2 Normal() const;					// Return a perpendicular vector. x becomes y and y becomes x
+	[[nodiscard]] Vector2 Normal() const;					// Return a normalized perpendicular vector. x becomes y and y becomes x
 
 	[[nodiscard]] float Dot(const Vector2& vector) const;	// Return a dot product. A vectors projection onto another 
 	[[nodiscard]] float Cross(const Vector2& vector) const;	// Return the magnitude of a perpendicular imaginary z-axis vector that is pointing inside/outside the screen. 
