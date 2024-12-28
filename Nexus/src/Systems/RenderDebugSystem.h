@@ -51,7 +51,7 @@ public:
 			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
 			{
 				const auto& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
-				Graphics::DrawLine(connectedEntityTransform.position, transform.position, 1.0f, 1.0f, 0.0f);
+				Graphics::DrawLine(connectedEntityTransform.position, transform.position);
 			}
 		}
 	}
@@ -69,18 +69,18 @@ public:
 		const auto& transform = entity.GetComponent<TransformComponent>();
 		const auto& collider = entity.GetComponent<CircleColliderComponent>();
 
-		Graphics::DrawCircle(collider.globalCenter, collider.radius, 36, 1.0f, 1.0f, 1.0f);
+		Graphics::DrawCircle(collider.globalCenter, collider.radius, 36);
 
 		// For rotation line, using rotation angle to find the circle's edge
 		const float outlineX = collider.radius * cos(transform.rotation) + collider.globalCenter.x;
 		const float outlineY = collider.radius * sin(transform.rotation) + collider.globalCenter.y;
-		Graphics::DrawLine(collider.globalCenter, Vector2(outlineX, outlineY), 1.0f, 1.0f, 1.0f);
+		Graphics::DrawLine(collider.globalCenter, Vector2(outlineX, outlineY));
 
 	}
 
 	static void DrawPolygonCollider(const Entity& entity)
 	{
 		const auto& collider = entity.GetComponent<PolygonColliderComponent>();
-		Graphics::DrawPolygon(collider.globalVertices, 1.0f, 1.0f, 1.0f);
+		Graphics::DrawPolygon(collider.globalVertices);
 	}
 };

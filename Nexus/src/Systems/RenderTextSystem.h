@@ -8,6 +8,7 @@
 #include "src/Components/UITextComponent.h"
 
 #include "src/Utils/Font.h"
+#include "src/Utils/GraphicsUtils.h"
 
 class RenderTextSystem : public System
 {
@@ -22,7 +23,7 @@ public:
 		for (auto entity : GetSystemEntities())
 		{
 			const UITextComponent& uiText = entity.GetComponent<UITextComponent>();
-			App::Print(uiText.position.x, uiText.position.y, uiText.text.c_str(), uiText.color.r, uiText.color.g, uiText.color.b, FontUtils::GetFontPointer(uiText.font));
+			Graphics::PrintText(uiText.text, uiText.position, uiText.color);
 		}
 	}
 };
