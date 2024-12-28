@@ -215,68 +215,85 @@ Vector2 PhysicsEngine::GenerateSpringForce(const TransformComponent& transformA,
 
 bool PhysicsEngine::IsAABBCollision(const double aX, const double aY, const double aW, const double aH, const double bX, const double bY, const double bW, const double bH)
 {
-	return (
-		aX < bX + bW &&
-		aX + aW > bX &&
-		aY < bY + bH &&
-		aY + aH > bY
-		);
+	const bool isOverlappingX = aX < bX + bW && aX + aW > bX; // Are the x-axis projections of the bodies overlapping
+	const bool isOverlappingY = aY < bY + bH && aY + aH > bY; // Are the y-axis projections of the bodies overlapping
+	return 	isOverlappingX && isOverlappingY;
 }
 
-bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, float& minPenetration, Vector2& collisionNormal)
+bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, Vector2& outStartContactPoint, Vector2& outEndContactPoint, Vector2& outCollisionNormalAxis, float& outMinPenetration)
 {
-	// The goal is to find a separating axis. If found then the entities are not colliding.
+	// The goal is to find a separating axis. If there exist an axis where the projection of the polygons are separated, then the polygons are not colliding.
 
-	// Generate all potential separating axes from both polygons by calculating the perpendicular using Vector2.Normal()
-	std::vector<Vector2> axes;
+	// Helper function to calculate the minimum separation between two sets of vertices.
+	auto findMinSeparation = [](const std::vector<Vector2>& primaryVertices, const std::vector<Vector2>& secondaryVertices, Vector2& outEdgeAxis, Vector2& outContactPoint)
+		{
+			float maxSeparation = std::numeric_limits<float>::lowest();
 
-	for (size_t i = 0; i < verticesA.size(); ++i)
+			// Loop through all edges of the primary polygon.
+			for (size_t i = 0; i < primaryVertices.size(); ++i)
+			{
+				Vector2 vertexA = primaryVertices[i];
+				Vector2 edgeA = primaryVertices[(i + 1) % primaryVertices.size()] - vertexA;
+				Vector2 edgeNormal = edgeA.Normal();  // Get perpendicular (normal) to the edge
+
+				// Find the minimum projection distance for the secondary polygon onto this edge normal.
+				float minProjection = std::numeric_limits<float>::max();
+				Vector2 closestVertex;
+
+				// Loop through all the vertices of the secondary polygon.
+				for (auto vertexB : secondaryVertices)
+				{
+					// Calculate the projection of the vector from the vertexA to the vertexB onto the edge normal.
+					float projection = (vertexB - vertexA).Dot(edgeNormal);
+					if (projection < minProjection)
+					{
+						minProjection = projection;
+						closestVertex = vertexB; // Track the vertex causing the minimum separation.
+					}
+				}
+
+				// Update the maximum separation along the current edge normal.
+				if (minProjection > maxSeparation)
+				{
+					maxSeparation = minProjection;
+					outEdgeAxis = primaryVertices[(i + 1) % primaryVertices.size()] - vertexA;
+					outContactPoint = closestVertex;
+				}
+			}
+			return maxSeparation;
+		};
+
+	Vector2 aAxis, bAxis;
+	Vector2 aContactPoint, bContactPoint;
+
+	const float abSeparation = findMinSeparation(verticesA, verticesB, aAxis, aContactPoint);
+	if (abSeparation >= 0)
 	{
-		Vector2 edge = verticesA[(i + 1) % verticesA.size()] - verticesA[i];
-		axes.push_back(edge.Normal().Normalize());
+		return false; // Separating axis found, no collision.
 	}
 
-	for (size_t i = 0; i < verticesB.size(); ++i)
+	const float baSeparation = findMinSeparation(verticesB, verticesA, bAxis, bContactPoint);
+	if (baSeparation >= 0)
 	{
-		Vector2 edge = verticesB[(i + 1) % verticesB.size()] - verticesB[i];
-		axes.push_back(edge.Normal().Normalize());
+		return false; // Separating axis found, no collision.
 	}
 
-	minPenetration = std::numeric_limits<float>::max();
-
-	// Looping all the axis to check if there exist a separating axis
-	for (const auto& axis : axes)
+	// Determine the collision normal and penetration based on the smallest separation.
+	if (abSeparation > baSeparation)
 	{
-		float minA = FLT_MAX, maxA = -FLT_MAX;
-		float minB = FLT_MAX, maxB = -FLT_MAX;
-
-		// Loop through all the vertices to find the minimum and maximum projection by each polygon's vertices on the axis.
-		for (const auto& vertex : verticesA)
-		{
-			float projection = axis.Dot(vertex);
-			minA = std::min(minA, projection);
-			maxA = std::max(maxA, projection);
-		}
-		for (const auto& vertex : verticesB)
-		{
-			float projection = axis.Dot(vertex);
-			minB = std::min(minB, projection);
-			maxB = std::max(maxB, projection);
-		}
-
-		// The axis has no overlap. This means the two convex polygons are not colliding
-		if (maxA < minB || maxB < minA)
-		{
-			return false; // Separating axis found, no collision
-		}
-
-		float currentPenetration = std::min(maxA, maxB) - std::max(minA, minB);
-		if (currentPenetration < minPenetration)
-		{
-			minPenetration = currentPenetration;
-			collisionNormal = axis;
-		}
+		outMinPenetration = -abSeparation;
+		outCollisionNormalAxis = aAxis.Normal();
+		outStartContactPoint = aContactPoint;
+		outEndContactPoint = aContactPoint + outCollisionNormalAxis * outMinPenetration;
 	}
+	else
+	{
+		outMinPenetration = -baSeparation;
+		outCollisionNormalAxis = -bAxis.Normal();
+		outStartContactPoint = bContactPoint - outCollisionNormalAxis * outMinPenetration;
+		outEndContactPoint = bContactPoint;
+	}
+
 	return true; // No separating axis found, collision occurs
 }
 

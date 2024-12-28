@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <limits>
 
 #include "src/ECS/System.h"
 #include "src/ECS/Entity.h"
@@ -38,12 +39,12 @@ public:
 			{
 				Entity b = *j;
 				const auto& bColliderType = b.GetComponent<ColliderTypeComponent>();
-				HandleCollision(eventManager, a, b, aColliderType.type, bColliderType.type);
+				CheckAndHandleCollision(eventManager, a, b, aColliderType.type, bColliderType.type);
 			}
 		}
 	}
 
-	static void HandleCollision(const std::unique_ptr<EventManager>& eventManager, Entity a, Entity b, const ColliderType aType, const ColliderType bType)
+	static void CheckAndHandleCollision(const std::unique_ptr<EventManager>& eventManager, Entity a, Entity b, const ColliderType aType, const ColliderType bType)
 	{
 		// Circle-Circle collision
 		if (aType == ColliderType::Circle && bType == ColliderType::Circle)
@@ -123,16 +124,26 @@ public:
 		const float bBottomLeftY = bTransform.position.y + bBoxCollider.offset.y - static_cast<float>(bBoxCollider.height) / 2.0f;
 
 		// Check for Axis-Aligned Bounding Box collision and return bool
-		if (!PhysicsEngine::IsAABBCollision(
-			aBottomLeftX, aBottomLeftY, aBoxCollider.width, aBoxCollider.height,
-			bBottomLeftX, bBottomLeftY, bBoxCollider.width, bBoxCollider.height
-		))
+		// if (!PhysicsEngine::IsAABBCollision(
+		// 	aBottomLeftX, aBottomLeftY, aBoxCollider.width, aBoxCollider.height,
+		// 	bBottomLeftX, bBottomLeftY, bBoxCollider.width, bBoxCollider.height
+		// ))
+		// {
+		// 	return std::nullopt;
+		// }
+
+		// Values will be calculated by IsSATCollision()
+		Vector2 startContactPoint = {};
+		Vector2 endContactPoint = {};
+		float penetration = std::numeric_limits<float>::infinity();
+		Vector2 collisionNormal;
+
+		if (!PhysicsEngine::IsSATCollision(aBoxCollider.globalVertices, bBoxCollider.globalVertices, startContactPoint, endContactPoint, collisionNormal, penetration))
 		{
 			return std::nullopt;
 		}
 
-		// TODO: Calculate the Contact info and return that
-		return ContactInfo();
+		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetration);
 	}
 
 	static std::optional<ContactInfo> GetPolygonPolygonCollisionInfo(const Entity a, const Entity b)
@@ -140,17 +151,16 @@ public:
 		const auto& aPolygon = a.GetComponent<PolygonColliderComponent>();
 		const auto& bPolygon = b.GetComponent<PolygonColliderComponent>();
 
-		float penetration;
+		// Values will be calculated by IsSATCollision()
+		Vector2 startContactPoint = {};
+		Vector2 endContactPoint = {};
+		float penetration = std::numeric_limits<float>::infinity();
 		Vector2 collisionNormal;
 
-		if (!PhysicsEngine::IsSATCollision(aPolygon.globalVertices, bPolygon.globalVertices, penetration, collisionNormal))
+		if (!PhysicsEngine::IsSATCollision(aPolygon.globalVertices, bPolygon.globalVertices, startContactPoint, endContactPoint, collisionNormal, penetration))
 		{
 			return std::nullopt;
 		}
-
-		// TODO: Very simplified contact point calculation (needs improvement)
-		Vector2 startContactPoint = aPolygon.globalVertices[0];
-		Vector2 endContactPoint = bPolygon.globalVertices[0];
 
 		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetration);
 	}

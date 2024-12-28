@@ -145,9 +145,10 @@ void TestApp::LoadLevel(int level)
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBall.AddComponent<TransformComponent>(Vector2(310.f, 300.f), Vector2(1.f, 1.f));
-	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 40.f, 0.0f, 0.0f, 0.9f);
-	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 40.f, 0.4f, 0.0f, 0.9f);
+	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	// redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	// redBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
 	redBall.Tag("Player2");
@@ -155,11 +156,12 @@ void TestApp::LoadLevel(int level)
 
 	Entity redBigBall = m_coordinator->CreateEntity();
 	redBigBall.AddComponent<SpriteComponent>("red-ball", 3);
-	redBigBall.AddComponent<TransformComponent>(Vector2(300.f, 300.f), Vector2(1.f, 1.f));
-	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 5.0f, 0.0f, 0.0f, 0.9f);
-	redBigBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	// redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
-	redBigBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+	redBigBall.AddComponent<TransformComponent>(Vector2(200.f, 300.f), Vector2(1.f, 1.f));
+	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 5.0f, 0.1f, 0.0f, 0.9f);
+	redBigBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+	// redBigBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+	// redBigBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
 
 	redBigBall.Tag("BigBall");
 
