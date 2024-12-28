@@ -84,7 +84,7 @@ public:
 		const auto& aCircleCollider = a.GetComponent<CircleColliderComponent>();
 		const auto& bCircleCollider = b.GetComponent<CircleColliderComponent>();
 
-		const Vector2 ab = bCircleCollider.globalCenter - aCircleCollider.globalCenter;
+		Vector2 ab = bCircleCollider.globalCenter - aCircleCollider.globalCenter;
 		const float radiusSum = aCircleCollider.radius + bCircleCollider.radius;
 
 		if (ab.MagnitudeSquared() > (radiusSum * radiusSum))
@@ -92,17 +92,19 @@ public:
 			return std::nullopt; // No collision
 		}
 
-		// If there is the collision then calculate and return contact info
+		// If there is a collision then calculate and return contact info
+
+		Vector2 collisionNormal = ab.Normalize();
 
 		// Start contact point is the point of circle 'b' inside 'a'. So that is the position of b minus the scaled normal. Subtracting because normal ab is from a to b
-		Vector2 startContactPoint = bCircleCollider.globalCenter - (ab * bCircleCollider.radius);
+		Vector2 startContactPoint = bCircleCollider.globalCenter - (collisionNormal * bCircleCollider.radius);
 
 		// End Contact point is the point of circle 'a' inside 'b'. So that is the position of a plus the scaled normal.
-		Vector2 endContactPoint = aCircleCollider.globalCenter + (ab * aCircleCollider.radius);
+		Vector2 endContactPoint = aCircleCollider.globalCenter + (collisionNormal * aCircleCollider.radius);
 
 		float penetrationDepth = (endContactPoint - startContactPoint).Magnitude();
 
-		return ContactInfo(startContactPoint, endContactPoint, ab, penetrationDepth);
+		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 	}
 
 	static std::optional<ContactInfo> GetBoxBoxCollisionInfo(const Entity a, const Entity b)
