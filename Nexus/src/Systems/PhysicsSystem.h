@@ -42,6 +42,27 @@ public:
 		}
 	}
 
+	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
+	{
+		using CallbackType = std::function<void(PhysicsSystem*, CollisionEvent&)>;
+		const CallbackType callback = [this](auto&&, auto&& placeholder2) { onCollision(std::forward<decltype(placeholder2)>(placeholder2)); };
+		eventManager->SubscribeToEvent<CollisionEvent>(this, callback);
+		//  std::placeholders::_2 tells std::bind that the second argument (the event) will be provided when the resulting function is called. This allows us to create a callable object that matches the required function signature of SubscribeToEvent, where the first argument is the instance (PhysicsSystem*), and the second argument is the event (CollisionEvent&).
+	}
+
+	void onCollision(const CollisionEvent& event)
+	{
+		// Collision Resolution
+		PhysicsEngine::ResolveCollision(
+			event.contact.penetrationDepth,
+			event.contact.collisionNormal,
+			event.a.GetComponent<RigidBodyComponent>(),
+			event.b.GetComponent<RigidBodyComponent>(),
+			event.a.GetComponent<TransformComponent>(),
+			event.b.GetComponent<TransformComponent>()
+		);
+	}
+
 	void Update(const float deltaTime)
 	{
 		// Delta time is in milliseconds so dividing by 1000 to convert it into seconds
@@ -63,6 +84,10 @@ public:
 				transform.position += PhysicsEngine::IntegrateLinear(rigidBody, dt);
 				transform.rotation += PhysicsEngine::IntegrateAngular(rigidBody, dt);
 
+				//------------------------------------------------------------------------
+				// Update entity's collider (Example circleCollider.globalCenter)
+				//------------------------------------------------------------------------
+
 				if (entity.HasComponent<BoxColliderComponent>())
 				{
 					UpdateBoxColliderVertices(entity.GetComponent<BoxColliderComponent>(), transform);
@@ -76,42 +101,59 @@ public:
 					UpdateCircleColliderCenter(entity.GetComponent<CircleColliderComponent>(), transform);
 				}
 
+				//------------------------------------------------------------------------
+				// Apply constantly acting forces like gravity, drag etc.
+				//------------------------------------------------------------------------
+
+				// Adding Drag force
+				Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, 0.008f);
+				rigidBody.AddForce(drag);
+
+				// Adding weight force
+				// Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
+				// rigidBody.AddForce(weight);
+
+
+				//------------------------------------------------------------------------
+				// Apply forces to connected Entities
+				//------------------------------------------------------------------------
+
+				// if (entity.HasTag("Player2") || entity.HasTag("BigBall") || entity.BelongsToGroup("Anchor"))
+				// {
+				// 	// Adding forces to connected spring entities
+				// 	for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
+				// 	{
+				// 		TransformComponent& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
+				// 		RigidBodyComponent& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
+				//
+				// 		// Adding Drag force
+				// 		Vector2 drag = PhysicsEngine::GenerateDragForce(connectedEntityRigidBody, 0.008f);
+				// 		connectedEntityRigidBody.AddForce(drag);
+				//
+				// 		// // Adding spring force
+				// 		Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 1500);
+				// 		connectedEntityRigidBody.AddForce(springForce);
+				// 		rigidBody.AddForce(-springForce);
+				//
+				// 		// Adding weight force
+				// 		Vector2 weight = Vector2(0.0f, connectedEntityRigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
+				// 		connectedEntityRigidBody.AddForce(weight);
+				// 	}
+				// }
+
 				HandleEdgeCollision(entity, transform, rigidBody);
-
-				if (entity.HasTag("Player2") || entity.HasTag("BigBall") || entity.BelongsToGroup("Anchor"))
-				{
-					// Adding forces to connected spring entities
-					for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
-					{
-						TransformComponent& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
-						RigidBodyComponent& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
-
-						// Adding Drag force
-						Vector2 drag = PhysicsEngine::GenerateDragForce(connectedEntityRigidBody, 0.008f);
-						connectedEntityRigidBody.AddForce(drag);
-
-						// Adding spring force
-						Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 1500);
-						connectedEntityRigidBody.AddForce(springForce);
-						rigidBody.AddForce(-springForce);
-
-						// Adding weight force
-						Vector2 weight = Vector2(0.0f, connectedEntityRigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
-						connectedEntityRigidBody.AddForce(weight);
-					}
-				}
 
 			}
 		}
 	}
 
-	// Function to update Circle Collider's center based
+	// Function to update Circle-Collider's center
 	static void UpdateCircleColliderCenter(CircleColliderComponent& circleCollider, const TransformComponent& transform)
 	{
 		circleCollider.globalCenter = transform.position + circleCollider.offset;
 	}
 
-	// Function to update Box Collider Vertices based on transform rotation
+	// Function to update Box-Collider's Vertices based on transform rotation
 	static void UpdateBoxColliderVertices(BoxColliderComponent& collider, const TransformComponent& transform)
 	{
 		// Compute global offset
@@ -132,7 +174,7 @@ public:
 		}
 	}
 
-	// Function to update Polygon Collider Vertices based on transform rotation
+	// Function to update Polygon-Collider's Vertices based on transform rotation
 	static void UpdatePolygonColliderVertices(PolygonColliderComponent& collider, const TransformComponent& transform)
 	{
 		// Compute global offset

@@ -124,6 +124,18 @@ float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
 	return 0.0f;
 }
 
+// Momentum P = mass * velocity
+// Impulse is the change in momentum, J = ΔP = m*Δv
+// Therefore, the change in velocity Δv = Impulse / mass
+void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse)
+{
+	if (rigidbody.IsStatic())
+	{
+		return;
+	}
+	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
+}
+
 Vector2 PhysicsEngine::GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength)
 {
 	const float velocitySquared = rigidBodyComponent.velocity.MagnitudeSquared();
@@ -280,4 +292,33 @@ void PhysicsEngine::ResolvePenetration(const float depth, const Vector2 collisio
 
 	aTransform.position -= collisionNormal * displacementA;
 	bTransform.position += collisionNormal * displacementB;
+}
+
+// (1) New Relative velocity along the collision normal =  - elasticity(E) (Relative velocity along collision normal)
+// Since, Impulse = change in momentum, where momentum is the product of mass and velocity
+// (2) => New Velocity = old velocity + (Impulse along collision normal / Mass)
+// (3) Also, New Relative velocity along collision normal = (New velocity of A - New Velocity of B) along collision normal
+// (From 2 & 3) New relative velocity = (Va - Vb) + (Impulse along collision normal/Ma + Impulse along collision normal/Mb)
+// After substituting (1), Impulse = - (1 + E) * (vRelative . collisionNormal) / (1/Ma + 1/Mb)
+void PhysicsEngine::ResolveCollision(const float depth, const Vector2 collisionNormal, RigidBodyComponent& aRigidbody, RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform)
+{
+	// Apply position correction using the projection method
+	ResolvePenetration(depth, collisionNormal, aRigidbody, bRigidbody, aTransform, bTransform);
+
+	// Resultant elasticity is the minimum coefficient of restitution among the two rigid-bodies.
+	const float e = std::min(aRigidbody.restitution, bRigidbody.restitution);
+
+	// Relative velocity between the two objects
+	const Vector2 vRel = aRigidbody.velocity - bRigidbody.velocity;
+
+	// Relative velocity along the collision normal vector
+	const float vRelDotNormal = vRel.Dot(collisionNormal);
+
+	// Collision Impulse = - (1 + E) * vRelDotNormal / (1/Ma + 1/Mb)
+	const Vector2 impulseDirection = collisionNormal;
+	const float impulseMagnitude = -(1 + e) * vRelDotNormal / (aRigidbody.inverseOfMass + bRigidbody.inverseOfMass);
+	Vector2 impulse = impulseDirection * impulseMagnitude;
+
+	aRigidbody.ApplyImpulse(impulse);
+	bRigidbody.ApplyImpulse(-impulse);
 }

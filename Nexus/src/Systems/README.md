@@ -42,8 +42,9 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
 8. **Physics System**
    - Requires: `RigidBody` and `Transform` components
    - Purpose:
-     - Calculates inverse mass, angular mass, and inverse angular mass for entities with a `RigidBody` at the start of `game::Initialize()`.
-     - Handles movement logic by updating the entity's position based on its velocity and acceleration and also by resolving applied forces and torque.
+     - Calculates inverse mass, angular mass, and inverse angular mass for entities with a `RigidBody` at the start of `game::Initialize()`.  
+     - Handles movement logic by updating the entity's position based on its velocity and acceleration and also by resolving applied forces and torque.  
+     - Listens to collision events and resolves collisions. 
 
 ---
 

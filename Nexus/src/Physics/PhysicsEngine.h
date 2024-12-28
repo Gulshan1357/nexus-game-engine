@@ -32,6 +32,10 @@ public:
 
 	static float CalculateMomentOfInertia(const Entity& entity);
 
+	// Impulse is the instantaneous change in velocity,
+	// Δv = Impulse / mass
+	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse);
+
 
 	//------------------------------------------------------------------------
 	// Different Forces
@@ -71,4 +75,8 @@ public:
 	// Displacement for a = depth * (mb) / (ma + mb) = depth * (1/ma) / (1/ma + 1/mb) where 'ma' is mass of 'a' and 'mb' is mass of 'b'
 	// This function changes the position
 	static void ResolvePenetration(const float depth, const Vector2 collisionNormal, const RigidBodyComponent& aRigidbody, const RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform);
+
+	// This method executes the ResolvePenetration() method, calculate impulse and apply it to the two rigid-bodies.
+	// J = -(1 + minimum elasticity) * Relative velocity along collision normal / (1 / Mass of A) + (1 / Mass of B), along the direction of collision normal
+	static void ResolveCollision(const float depth, const Vector2 collisionNormal, RigidBodyComponent& aRigidbody, RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform);
 };

@@ -46,11 +46,16 @@
          - Between two entities.
      - `GenerateGravitationalForce()`  
        - Calculates gravitational attraction between two bodies with mass.
-   - **Functions to check collisions:**  
+   - **Functions to detect collisions:**  
      - `IsAABBCollision()`  
        - Check if two boxes are colliding using Axis-Aligned Bounding Box.
      - `IsSATCollision()`  
        - Check if two convex polygons are colliding using the Separating Axis Theorem.
+   - **Functions to resolve collisions:**  
+     - `ResolvePenetration()`  
+       - The projection method adjusts the position so that the colliding bodies are just in contact. This is useful because if the bodies are moving very fast, it’s possible that they touch between frames, and in the current frame, one body might be inside another.  
+     - `ResolveCollision()`  
+       - Executes the `ResolvePenetration()` method, then calculates the impulse and applies it to the two rigid bodies in opposite directions. Mass and the body's coefficient of restitution (elasticity) significantly affect the impulse.  
 
 2. **Constants**  
    - Stores constants related to physics calculations.  

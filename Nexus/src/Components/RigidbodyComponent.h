@@ -11,6 +11,7 @@
  * @param mass (Float): Default value is set to 1. If mass is 0 then object is static and it won't move (like floor)
  * @param angularVelocity (Float): Default value is set to 0.
  * @param angularAcceleration (Float): Default value is set to 0.
+ * @param restitution (Float value between 0.0 - 1.0): Elasticity. Default is 1.0f
 */
 class RigidBodyComponent
 {
@@ -27,28 +28,40 @@ public:
 	float angularVelocity;
 	float angularAcceleration;
 
-	// Initialized later by Physics System
-	float angularMass = 0.0f; // Moment of Inertia (angularMass)
-	Vector2 sumForces = Vector2(); // Tracks accumulated linear forces.
-	float sumTorque = 0.0f; // Tracks accumulated angular forces (Torque).
-	float inverseOfMass = 1.0f; // Keeping track of 1/Mass to avoid doing this costly calculation multiple times
-	float inverseOfAngularMass = 0.0f; // Keeping track of 1/AngularMass to avoid doing this costly calculation multiple times
+	// Coefficient of restitution (elasticity)
+	float restitution;
 
-	explicit RigidBodyComponent(const Vector2 velocity = Vector2(), const Vector2 acceleration = Vector2(),
-		const bool bUsesPhysics = false, const float mass = 1.0f,
-		const float angularVelocity = 0.0f, const float angularAcceleration = 0.0f) :
+	// Initialized later by Physics System
+	float angularMass = 0.0f;			// Moment of Inertia (angularMass)
+	Vector2 sumForces = Vector2();		// Tracks accumulated linear forces.
+	float sumTorque = 0.0f;				// Tracks accumulated angular forces (Torque).
+	float inverseOfMass = 1.0f;			// Keeping track of 1/Mass to avoid doing this costly calculation multiple times
+	float inverseOfAngularMass = 0.0f;	// Keeping track of 1/AngularMass to avoid doing this costly calculation multiple times
+
+	explicit RigidBodyComponent(
+		const Vector2 velocity = Vector2(),
+		const Vector2 acceleration = Vector2(),
+		const bool bUsesPhysics = false,
+		const float mass = 1.0f,
+		const float angularVelocity = 0.0f,
+		const float angularAcceleration = 0.0f,
+		const float restitution = 1.0f
+	) :
 		velocity(velocity),
 		acceleration(acceleration),
 		bUsePhysics(bUsesPhysics),
 		mass(mass),
 		angularVelocity(angularVelocity),
-		angularAcceleration(angularAcceleration)
+		angularAcceleration(angularAcceleration),
+		restitution(restitution)
 	{}
 
 
-	/// Helper functions
+	//------------------------------------------------------------------------
+	// Helper functions
+	//------------------------------------------------------------------------
 
-	// Checks if inverse of mass is zero. If return is true, the body have infinite mass
+	// Checks if inverse of mass is zero. If return is true this means the body have infinite mass
 	[[nodiscard]] bool IsStatic() const
 	{
 		return fabs(inverseOfMass - 0.0f) < FLT_EPSILON;
@@ -64,5 +77,11 @@ public:
 	void AddTorque(const float torque)
 	{
 		PhysicsEngine::AddTorque(*this, torque);
+	}
+
+	// Apply impulse to the RigidBody. Change in Velocity, Δv = Impulse / mass
+	void ApplyImpulse(const Vector2 impulse)
+	{
+		PhysicsEngine::ApplyImpulse(*this, impulse);
 	}
 };
