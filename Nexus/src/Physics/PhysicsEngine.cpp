@@ -21,21 +21,32 @@
 // TODO: Currently using the Implicit Euler Integration technique. Try Verlet Integration or RK4.
 Vector2 PhysicsEngine::IntegrateLinear(RigidBodyComponent& rigidBodyComponent, float dt)
 {
+	// If the body have infinite mass, return 0 displacement
+	if (rigidBodyComponent.IsStatic())
+	{
+		return {};
+	}
 	// Increment the original acceleration based on the applied forces and mass of the object (F = ma => a = F/m)
 	rigidBodyComponent.acceleration = rigidBodyComponent.sumForces * rigidBodyComponent.inverseOfMass;
 
 	// Calculating velocity by integrating acceleration
 	rigidBodyComponent.velocity += rigidBodyComponent.acceleration * dt;
 
-	// Calculating position by integrating velocity
-	const Vector2 position = rigidBodyComponent.velocity * dt;
+	// Calculating displacement by integrating velocity
+	const Vector2 displacement = rigidBodyComponent.velocity * dt;
 	ClearForces(rigidBodyComponent);
 	// Logger::Warn("Forces resolved");
-	return position;
+	return displacement;
 }
 
 float PhysicsEngine::IntegrateAngular(RigidBodyComponent& rigidBodyComponent, float dt)
 {
+	// If the body have infinite mass return 0 angular displacement
+	if (rigidBodyComponent.IsStatic())
+	{
+		return {};
+	}
+
 	// Increment the angular acceleration based on the applied forces and angular mass(Moment of inertia or I) of the object (τ = Iα => α = τ / I)
 	rigidBodyComponent.angularAcceleration += rigidBodyComponent.sumTorque * rigidBodyComponent.inverseOfAngularMass;
 
@@ -255,4 +266,18 @@ bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const 
 		}
 	}
 	return true; // No separating axis found, collision occurs
+}
+
+void PhysicsEngine::ResolvePenetration(const float depth, const Vector2 collisionNormal, const RigidBodyComponent& aRigidbody, const RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform)
+{
+	if (aRigidbody.IsStatic() && bRigidbody.IsStatic())
+	{
+		return;
+	}
+
+	const float displacementA = depth / (aRigidbody.inverseOfMass + bRigidbody.inverseOfMass) * aRigidbody.inverseOfMass;
+	const float displacementB = depth / (aRigidbody.inverseOfMass + bRigidbody.inverseOfMass) * bRigidbody.inverseOfMass;
+
+	aTransform.position -= collisionNormal * displacementA;
+	bTransform.position += collisionNormal * displacementB;
 }

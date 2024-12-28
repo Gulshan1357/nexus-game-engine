@@ -156,7 +156,7 @@ void TestApp::LoadLevel(int level)
 	Entity redBigBall = m_coordinator->CreateEntity();
 	redBigBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBigBall.AddComponent<TransformComponent>(Vector2(300.f, 300.f), Vector2(1.f, 1.f));
-	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 50.f);
+	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 0.0f);
 	redBigBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	redBigBall.Tag("BigBall");
@@ -180,6 +180,10 @@ void TestApp::LoadLevel(int level)
 	float torque = 260;
 	ball6.GetComponent<RigidBodyComponent>().AddTorque(torque);
 	ball6.Tag("Debug");
+
+	// Adding weight force
+	Vector2 weight = Vector2(0.0f, redBigBall.GetComponent<RigidBodyComponent>().mass * -9.8f * Physics::PIXEL_PER_METER);
+	redBigBall.GetComponent<RigidBodyComponent>().AddForce(weight);
 	
 }
 

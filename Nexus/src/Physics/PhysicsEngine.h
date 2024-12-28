@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+#include "src/Components/TransformComponent.h"
+
 
 struct TransformComponent;
 class RigidBodyComponent;
@@ -60,4 +62,13 @@ public:
 
 	// Separating Axis Theorem for Collision Detection between two convex polygon. Input are the list of vertices for each polygon. Returns true if the two polygons are colliding. It also update the values of minimum penetration and collision normal which can be used for collision resolution
 	static bool IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, float& minPenetration, Vector2& collisionNormal);
+
+	//------------------------------------------------------------------------
+	// Collision Resolution
+	//------------------------------------------------------------------------
+
+	// The Projection method just changes the position so that the colliding bodies are just in contact.
+	// Displacement for a = depth * (mb) / (ma + mb) = depth * (1/ma) / (1/ma + 1/mb) where 'ma' is mass of 'a' and 'mb' is mass of 'b'
+	// This function changes the position
+	static void ResolvePenetration(const float depth, const Vector2 collisionNormal, const RigidBodyComponent& aRigidbody, const RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform);
 };
