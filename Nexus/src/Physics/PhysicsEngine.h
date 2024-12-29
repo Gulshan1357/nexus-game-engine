@@ -32,11 +32,6 @@ public:
 
 	static float CalculateMomentOfInertia(const Entity& entity);
 
-	// Impulse is the instantaneous change in velocity,
-	// Δv = Impulse / mass
-	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse);
-
-
 	//------------------------------------------------------------------------
 	// Different Forces
 	//------------------------------------------------------------------------
@@ -55,6 +50,14 @@ public:
 
 	// Spring Force between two entities = -k * Δl, where k is spring constant(springForceStrength) and Δl is change in spring length
 	static Vector2 GenerateSpringForce(const TransformComponent& transformA, const TransformComponent& transformB, float restLength, float springForceStrength);
+
+
+	//------------------------------------------------------------------------
+	// Impulse. An instantaneous change in velocity. Δv = Impulse / mass
+	//------------------------------------------------------------------------
+
+	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse); // Apply linear impulse at the Center of Mass
+	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r); // Apply impulse at a certain point which is at distance 'r' from Center of Mass
 
 
 	//------------------------------------------------------------------------
@@ -78,7 +81,8 @@ public:
 	// This function changes the position
 	static void ResolvePenetration(const float depth, const Vector2 collisionNormal, const RigidBodyComponent& aRigidbody, const RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform);
 
+	// Resolve collision using Impulse Method.
 	// This method executes the ResolvePenetration() method, calculate impulse and apply it to the two rigid-bodies.
 	// J = -(1 + minimum elasticity) * Relative velocity along collision normal / (1 / Mass of A) + (1 / Mass of B), along the direction of collision normal
-	static void ResolveCollision(const float depth, const Vector2 collisionNormal, RigidBodyComponent& aRigidbody, RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform);
+	static void ResolveCollision(Vector2 startContactPoint, Vector2 endContactPoint, const float depth, const Vector2 collisionNormal, RigidBodyComponent& aRigidbody, RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform);
 };

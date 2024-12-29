@@ -36,7 +36,7 @@ public:
 	Vector2 sumForces = Vector2();		// Tracks accumulated linear forces.
 	float sumTorque = 0.0f;				// Tracks accumulated angular forces (Torque).
 	float inverseOfMass = 1.0f;			// Keeping track of 1/Mass to avoid doing this costly calculation multiple times
-	float inverseOfAngularMass = 0.0f;	// Keeping track of 1/AngularMass to avoid doing this costly calculation multiple times
+	float inverseOfAngularMass = 0.0f;	// Or inverse of Moment of Inertia. Keeping track of 1/AngularMass  to avoid doing this costly calculation multiple times
 
 	explicit RigidBodyComponent(
 		const Vector2 velocity = Vector2(),
@@ -79,9 +79,15 @@ public:
 		PhysicsEngine::AddTorque(*this, torque);
 	}
 
-	// Apply impulse to the RigidBody. Change in Velocity, Δv = Impulse / mass
+	// Apply linear impulse to the RigidBody's center of mass. Change in Velocity, Δv = Impulse / mass
 	void ApplyImpulse(const Vector2 impulse)
 	{
 		PhysicsEngine::ApplyImpulse(*this, impulse);
+	}
+
+	// Apply linear + angular impulse to the point at a certain distance from RigidBody's center of mass.
+	void ApplyImpulse(const Vector2 impulse, const Vector2& distanceFromCenter)
+	{
+		PhysicsEngine::ApplyImpulse(*this, impulse, distanceFromCenter);
 	}
 };

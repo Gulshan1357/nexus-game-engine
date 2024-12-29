@@ -136,6 +136,16 @@ void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& i
 	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
 }
 
+void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r)
+{
+	if (rigidbody.IsStatic())
+	{
+		return;
+	}
+	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
+	rigidbody.angularVelocity += r.Cross(impulse) * rigidbody.inverseOfAngularMass;
+}
+
 Vector2 PhysicsEngine::GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength)
 {
 	const float velocitySquared = rigidBodyComponent.velocity.MagnitudeSquared();
@@ -316,26 +326,42 @@ void PhysicsEngine::ResolvePenetration(const float depth, const Vector2 collisio
 // (2) => New Velocity = old velocity + (Impulse along collision normal / Mass)
 // (3) Also, New Relative velocity along collision normal = (New velocity of A - New Velocity of B) along collision normal
 // (From 2 & 3) New relative velocity = (Va - Vb) + (Impulse along collision normal/Ma + Impulse along collision normal/Mb)
-// After substituting (1), Impulse = - (1 + E) * (vRelative . collisionNormal) / (1/Ma + 1/Mb)
-void PhysicsEngine::ResolveCollision(const float depth, const Vector2 collisionNormal, RigidBodyComponent& aRigidbody, RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform)
+// After substituting (1), Impulse (linear) = - (1 + E) * (vRelative . collisionNormal) / (1/Ma + 1/Mb)
+// For linear + angular Impulse: https://medium.com/@www.seymour/coding-a-2d-physics-engine-from-scratch-and-using-it-to-simulate-a-pendulum-clock-964b4ac2107a
+void PhysicsEngine::ResolveCollision(const Vector2 startContactPoint, const Vector2 endContactPoint, const float depth, const Vector2 collisionNormal, RigidBodyComponent& aRigidbody, RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform)
 {
 	// Apply position correction using the projection method
 	ResolvePenetration(depth, collisionNormal, aRigidbody, bRigidbody, aTransform, bTransform);
 
+	// Note: Regarding cross product, since we are working in a 2d space, the result of 2D cross product will be
+	// the scalar magnitude of the z-component of the result perpendicular (to the screen) vector. 
+
 	// Resultant elasticity is the minimum coefficient of restitution among the two rigid-bodies.
 	const float e = std::min(aRigidbody.restitution, bRigidbody.restitution);
 
+	Vector2 rA = endContactPoint - aTransform.position; // Distance from the center of 'A' to the point of contact
+	Vector2 rB = startContactPoint - bTransform.position; // Distance from the center of 'B' to the point of contact
+
+	// Calculating the combined linear velocity and angular velocity (ω X r). The X denotes cross product. Since we are working in 2d the ω just a magnitude with positive value means towards the player and negative means inside the screen. For cross product we can consider the ω magnitude as a z- axis component of the hypothetical ω vector with x and y components as 0. 
+	Vector2 vA = aRigidbody.velocity + Vector2(-(aRigidbody.angularVelocity * rA.y), (aRigidbody.angularVelocity * rA.y)); // Combined linear and angular velocity of 'A'
+	Vector2 vB = bRigidbody.velocity + Vector2(-(bRigidbody.angularVelocity * rB.y), (bRigidbody.angularVelocity * rB.y)); // Combined linear and angular velocity of 'B'
+
 	// Relative velocity between the two objects
-	const Vector2 vRel = aRigidbody.velocity - bRigidbody.velocity;
+	const Vector2 vRel = vA - vB;
 
 	// Relative velocity along the collision normal vector
 	const float vRelDotNormal = vRel.Dot(collisionNormal);
 
-	// Collision Impulse = - (1 + E) * vRelDotNormal / (1/Ma + 1/Mb)
-	const Vector2 impulseDirection = collisionNormal;
-	const float impulseMagnitude = -(1 + e) * vRelDotNormal / (aRigidbody.inverseOfMass + bRigidbody.inverseOfMass);
+	// Calculating Impulse
+	const Vector2 impulseDirection = collisionNormal; // Impulse direction is the same as collision normal
+	const float impulseMagnitude =
+		-(1 + e) * vRelDotNormal / (
+			(aRigidbody.inverseOfMass + bRigidbody.inverseOfMass) +
+			(rA.Cross(collisionNormal) * rA.Cross(collisionNormal) * aRigidbody.inverseOfAngularMass) +
+			(rB.Cross(collisionNormal) * rB.Cross(collisionNormal) * bRigidbody.inverseOfAngularMass)
+			); // Magnitude of linear + angular impulse
 	Vector2 impulse = impulseDirection * impulseMagnitude;
 
-	aRigidbody.ApplyImpulse(impulse);
-	bRigidbody.ApplyImpulse(-impulse);
+	aRigidbody.ApplyImpulse(impulse, rA);
+	bRigidbody.ApplyImpulse(-impulse, rB);
 }

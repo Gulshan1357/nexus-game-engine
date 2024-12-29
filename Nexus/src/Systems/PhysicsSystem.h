@@ -54,6 +54,8 @@ public:
 	{
 		// Collision Resolution
 		PhysicsEngine::ResolveCollision(
+			event.contact.startContactPoint,
+			event.contact.endContactPoint,
 			event.contact.penetrationDepth,
 			event.contact.collisionNormal,
 			event.a.GetComponent<RigidBodyComponent>(),

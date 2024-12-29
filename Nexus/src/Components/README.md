@@ -52,6 +52,6 @@ Components store data and define the properties of entities in the game.
 Most components are implemented as structs, but the `RigidBody` component is implemented as a class due to its additional functionality.  
 
 Like in Unity3D, the `RigidBody` class provides capabilities such as:  
-- Adding forces directly using methods like `rigidbody.AddForce(weight)` and `rigidBody.AddTorque()`.  
+- Adding forces, torque and impulse directly using methods like `rigidbody.AddForce(weight)`, `rigidBody.AddTorque()` and `rigidBody.ApplyImpulse()`.  
 - Wrapping functionality to call `PhysicsEngine::AddForce(*this, force)` internally.  
-- Storing unapplied forces directly within the `RigidBody` class.  
+- Storing unapplied forces and torque directly within the `RigidBody` class.  

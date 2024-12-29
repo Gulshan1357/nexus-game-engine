@@ -51,6 +51,9 @@
        - Check if two boxes are colliding using Axis-Aligned Bounding Box.
      - `IsSATCollision()`  
        - Check if two convex polygons are colliding using the Separating Axis Theorem.
+   - **Functions to Apply Impulse:**  
+     - `ApplyImpulse()`  
+       - Either Apply impulse at a center of mass (linear) or at a particular distance from center of mass (linear + angular).
    - **Functions to resolve collisions:**  
      - `ResolvePenetration()`  
        - The projection method adjusts the position so that the colliding bodies are just in contact. This is useful because if the bodies are moving very fast, it’s possible that they touch between frames, and in the current frame, one body might be inside another.  

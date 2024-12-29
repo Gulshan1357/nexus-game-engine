@@ -39,7 +39,11 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 
 4. **Architecture of a System for Reading Input Devices Part 1 (Eugene Solyanov, posted by _Engine_)**  
    - [Link](https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/architecture-of-system-for-reading-input-devices-part-1-r4805/)  
-   - *This article provided useful info while brainstorming the architecture of my input system.*  
+   - *This article provided useful info while brainstorming the architecture of my input system.*
+  
+5. **Coding a 2D physics engine from scratch — and using it to simulate a pendulum clock (William Seymour)**  
+   - [Link](https://medium.com/@www.seymour/coding-a-2d-physics-engine-from-scratch-and-using-it-to-simulate-a-pendulum-clock-964b4ac2107a)  
+   - *In this article, I found the equation to calculate the Impulse imparted by the collision, and subsequently its effect on the linear and angular velocity.*
 
 ### YouTube
 
