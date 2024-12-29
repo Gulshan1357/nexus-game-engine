@@ -336,32 +336,45 @@ void PhysicsEngine::ResolveCollision(const Vector2 startContactPoint, const Vect
 	// Note: Regarding cross product, since we are working in a 2d space, the result of 2D cross product will be
 	// the scalar magnitude of the z-component of the result perpendicular (to the screen) vector. 
 
-	// Resultant elasticity is the minimum coefficient of restitution among the two rigid-bodies.
+	// Resultant elasticity/friction is the minimum coefficient of restitution among the two rigid-bodies.
 	const float e = std::min(aRigidbody.restitution, bRigidbody.restitution);
+	const float f = std::min(aRigidbody.friction, bRigidbody.friction);
 
-	Vector2 rA = endContactPoint - aTransform.position; // Distance from the center of 'A' to the point of contact
-	Vector2 rB = startContactPoint - bTransform.position; // Distance from the center of 'B' to the point of contact
+	const Vector2 rA = endContactPoint - aTransform.position; // Distance from the center of 'A' to the point of contact
+	const Vector2 rB = startContactPoint - bTransform.position; // Distance from the center of 'B' to the point of contact
 
 	// Calculating the combined linear velocity and angular velocity (ω X r). The X denotes cross product. Since we are working in 2d the ω just a magnitude with positive value means towards the player and negative means inside the screen. For cross product we can consider the ω magnitude as a z- axis component of the hypothetical ω vector with x and y components as 0. 
-	Vector2 vA = aRigidbody.velocity + Vector2(-(aRigidbody.angularVelocity * rA.y), (aRigidbody.angularVelocity * rA.y)); // Combined linear and angular velocity of 'A'
-	Vector2 vB = bRigidbody.velocity + Vector2(-(bRigidbody.angularVelocity * rB.y), (bRigidbody.angularVelocity * rB.y)); // Combined linear and angular velocity of 'B'
+	const Vector2 vA = aRigidbody.velocity + Vector2(-(aRigidbody.angularVelocity * rA.y), (aRigidbody.angularVelocity * rA.y)); // Combined linear and angular velocity of 'A'
+	const Vector2 vB = bRigidbody.velocity + Vector2(-(bRigidbody.angularVelocity * rB.y), (bRigidbody.angularVelocity * rB.y)); // Combined linear and angular velocity of 'B'
 
 	// Relative velocity between the two objects
 	const Vector2 vRel = vA - vB;
 
-	// Relative velocity along the collision normal vector
-	const float vRelDotNormal = vRel.Dot(collisionNormal);
-
-	// Calculating Impulse
-	const Vector2 impulseDirection = collisionNormal; // Impulse direction is the same as collision normal
-	const float impulseMagnitude =
+	// Calculating Impulse along the normal
+	const float vRelDotNormal = vRel.Dot(collisionNormal); // Relative velocity along the collision normal vector
+	const Vector2 impulseNormalDirection = collisionNormal; // Impulse direction is the same as collision normal
+	const float impulseNormalMagnitude =
 		-(1 + e) * vRelDotNormal / (
 			(aRigidbody.inverseOfMass + bRigidbody.inverseOfMass) +
 			(rA.Cross(collisionNormal) * rA.Cross(collisionNormal) * aRigidbody.inverseOfAngularMass) +
 			(rB.Cross(collisionNormal) * rB.Cross(collisionNormal) * bRigidbody.inverseOfAngularMass)
 			); // Magnitude of linear + angular impulse
-	Vector2 impulse = impulseDirection * impulseMagnitude;
+	const Vector2 impulseNormal = impulseNormalDirection * impulseNormalMagnitude;
 
-	aRigidbody.ApplyImpulse(impulse, rA);
-	bRigidbody.ApplyImpulse(-impulse, rB);
+	// Calculating Impulse along the tangent (Friction Impulse)
+	const Vector2 tangent = collisionNormal.Normal(); // Perpendicular to collisionNormal (direction of friction)
+	const float vRelDotTangent = vRel.Dot(tangent); // Relative velocity along the tangent
+	const Vector2 impulseTangentDirection = tangent; // Friction Impulse direction is the same as tangent
+	const float impulseTangentMagnitude =
+		f * -(1 + e) * vRelDotTangent / (
+			(aRigidbody.inverseOfMass + bRigidbody.inverseOfMass) +
+			(rA.Cross(tangent) * rA.Cross(tangent) * aRigidbody.inverseOfAngularMass) +
+			(rB.Cross(tangent) * rB.Cross(tangent) * bRigidbody.inverseOfAngularMass)
+			); // Magnitude of linear + angular friction impulse
+	const Vector2 impulseTangent = impulseTangentDirection * impulseTangentMagnitude;
+
+	Vector2 totalImpulse = impulseNormal + impulseTangent;
+
+	aRigidbody.ApplyImpulse(totalImpulse, rA);
+	bRigidbody.ApplyImpulse(-totalImpulse, rB);
 }

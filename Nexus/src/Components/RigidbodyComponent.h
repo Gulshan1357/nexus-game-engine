@@ -12,6 +12,7 @@
  * @param angularVelocity (Float): Default value is set to 0.
  * @param angularAcceleration (Float): Default value is set to 0.
  * @param restitution (Float value between 0.0 - 1.0): Elasticity. Default is 1.0f
+ * @param friction (Float value between 0.0 - 1.0): Coefficient of friction. Default is 0.7f
 */
 class RigidBodyComponent
 {
@@ -31,6 +32,9 @@ public:
 	// Coefficient of restitution (elasticity)
 	float restitution;
 
+	// Coefficient of friction
+	float friction;
+
 	// Initialized later by Physics System
 	float angularMass = 0.0f;			// Moment of Inertia (angularMass)
 	Vector2 sumForces = Vector2();		// Tracks accumulated linear forces.
@@ -45,7 +49,8 @@ public:
 		const float mass = 1.0f,
 		const float angularVelocity = 0.0f,
 		const float angularAcceleration = 0.0f,
-		const float restitution = 1.0f
+		const float restitution = 1.0f,
+		const float friction = 0.7f
 	) :
 		velocity(velocity),
 		acceleration(acceleration),
@@ -53,7 +58,8 @@ public:
 		mass(mass),
 		angularVelocity(angularVelocity),
 		angularAcceleration(angularAcceleration),
-		restitution(restitution)
+		restitution(restitution),
+		friction(friction)
 	{}
 
 
