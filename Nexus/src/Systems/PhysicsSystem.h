@@ -108,12 +108,12 @@ public:
 				//------------------------------------------------------------------------
 
 				// Adding Drag force
-				Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, 0.008f);
-				rigidBody.AddForce(drag);
+				// Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, 0.008f);
+				// rigidBody.AddForce(drag);
 
 				// Adding weight force
-				Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
-				rigidBody.AddForce(weight);
+				// Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
+				// rigidBody.AddForce(weight);
 
 
 				//------------------------------------------------------------------------

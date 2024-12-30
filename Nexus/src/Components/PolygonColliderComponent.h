@@ -6,7 +6,7 @@
 
 /**
  * PolygonColliderComponent Polygon provides information for Collision System
- * @param localVertices (vector<Vector2>) of the PolygonCollider with respect to the local space where origin is the position of entity
+ * @param localVertices (vector<Vector2>) of the PolygonCollider with respect to the local space where origin is the position of entity. Order of the vertices is very important. Starting from the bottom left and moving anti-clockwise
  * @param offset (Vector2)
 */
 struct PolygonColliderComponent

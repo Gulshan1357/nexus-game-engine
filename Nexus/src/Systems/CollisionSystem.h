@@ -52,30 +52,21 @@ public:
 			auto collisionInfo = GetCircleCircleCollisionInfo(a, b);
 			if (collisionInfo.has_value())
 			{
-				Logger::Log("CircleCircleCollision() Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
+				Logger::Log("Circle-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
 				eventManager->EmitEvent<CollisionEvent>(a, b, collisionInfo.value());
 			}
 		}
-		// Box-Box collision
-		else if (aType == ColliderType::Box && bType == ColliderType::Box)
-		{
-			auto collisionInfo = GetBoxBoxCollisionInfo(a, b);
-			if (collisionInfo.has_value())
-			{
-				Logger::Log("BoxBoxCollision(): Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
-				eventManager->EmitEvent<CollisionEvent>(a, b, collisionInfo.value());
-			}
-		}
-		// Polygon-Polygon collision
-		else if (aType == ColliderType::Polygon && bType == ColliderType::Polygon)
+		// Box-Box or Polygon-Polygon collision
+		else if ((aType == ColliderType::Box || aType == ColliderType::Polygon) && (bType == ColliderType::Box || bType == ColliderType::Polygon))
 		{
 			auto collisionInfo = GetPolygonPolygonCollisionInfo(a, b);
 			if (collisionInfo.has_value())
 			{
-				Logger::Log("PolygonPolygonCollision(): Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
+				Logger::Log("Polygon-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
 				eventManager->EmitEvent<CollisionEvent>(a, b, collisionInfo.value());
 			}
 		}
+
 		// TODO: collision between entities with different collider types
 	}
 
@@ -108,48 +99,32 @@ public:
 		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 	}
 
-	static std::optional<ContactInfo> GetBoxBoxCollisionInfo(const Entity a, const Entity b)
-	{
-		const auto& aTransform = a.GetComponent<TransformComponent>();
-		const auto& aBoxCollider = a.GetComponent<BoxColliderComponent>();
-
-		const auto& bTransform = b.GetComponent<TransformComponent>();
-		const auto& bBoxCollider = b.GetComponent<BoxColliderComponent>();
-
-		// Calculate the bottom-left positions of entities 'a' and 'b'
-		const float aBottomLeftX = aTransform.position.x + aBoxCollider.offset.x - static_cast<float>(aBoxCollider.width) / 2.0f;
-		const float aBottomLeftY = aTransform.position.y + aBoxCollider.offset.y - static_cast<float>(aBoxCollider.height) / 2.0f;
-
-		const float bBottomLeftX = bTransform.position.x + bBoxCollider.offset.x - static_cast<float>(bBoxCollider.width) / 2.0f;
-		const float bBottomLeftY = bTransform.position.y + bBoxCollider.offset.y - static_cast<float>(bBoxCollider.height) / 2.0f;
-
-		// Check for Axis-Aligned Bounding Box collision and return bool
-		// if (!PhysicsEngine::IsAABBCollision(
-		// 	aBottomLeftX, aBottomLeftY, aBoxCollider.width, aBoxCollider.height,
-		// 	bBottomLeftX, bBottomLeftY, bBoxCollider.width, bBoxCollider.height
-		// ))
-		// {
-		// 	return std::nullopt;
-		// }
-
-		// Values will be calculated by IsSATCollision()
-		Vector2 startContactPoint = {};
-		Vector2 endContactPoint = {};
-		float penetration = std::numeric_limits<float>::infinity();
-		Vector2 collisionNormal;
-
-		if (!PhysicsEngine::IsSATCollision(aBoxCollider.globalVertices, bBoxCollider.globalVertices, startContactPoint, endContactPoint, collisionNormal, penetration))
-		{
-			return std::nullopt;
-		}
-
-		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetration);
-	}
-
 	static std::optional<ContactInfo> GetPolygonPolygonCollisionInfo(const Entity a, const Entity b)
 	{
-		const auto& aPolygon = a.GetComponent<PolygonColliderComponent>();
-		const auto& bPolygon = b.GetComponent<PolygonColliderComponent>();
+		std::vector<Vector2> aGlobalVertices;
+		std::vector<Vector2> bGlobalVertices;
+
+		// Logger::Log("inside polygon-polygon info");
+
+		const auto aCollider = a.GetComponent<ColliderTypeComponent>();
+		if (aCollider.type == ColliderType::Box)
+		{
+			aGlobalVertices = a.GetComponent<BoxColliderComponent>().globalVertices;
+		}
+		else if (aCollider.type == ColliderType::Polygon)
+		{
+			aGlobalVertices = a.GetComponent<PolygonColliderComponent>().globalVertices;
+		}
+
+		const auto bCollider = b.GetComponent<ColliderTypeComponent>();
+		if (bCollider.type == ColliderType::Box)
+		{
+			bGlobalVertices = b.GetComponent<BoxColliderComponent>().globalVertices;
+		}
+		else if (bCollider.type == ColliderType::Polygon)
+		{
+			bGlobalVertices = b.GetComponent<PolygonColliderComponent>().globalVertices;
+		}
 
 		// Values will be calculated by IsSATCollision()
 		Vector2 startContactPoint = {};
@@ -157,7 +132,7 @@ public:
 		float penetration = std::numeric_limits<float>::infinity();
 		Vector2 collisionNormal;
 
-		if (!PhysicsEngine::IsSATCollision(aPolygon.globalVertices, bPolygon.globalVertices, startContactPoint, endContactPoint, collisionNormal, penetration))
+		if (!PhysicsEngine::IsSATCollision(aGlobalVertices, bGlobalVertices, startContactPoint, endContactPoint, collisionNormal, penetration))
 		{
 			return std::nullopt;
 		}
