@@ -24,8 +24,9 @@ public:
 		for (auto entity : GetSystemEntities())
 		{
 			const auto& transform = entity.GetComponent<TransformComponent>();
-			const auto& colliderType = entity.GetComponent<ColliderTypeComponent>();
+			auto& colliderType = entity.GetComponent<ColliderTypeComponent>();
 
+			// Draw colliders
 			switch (colliderType.type)
 			{
 				case ColliderType::Box:
@@ -38,6 +39,13 @@ public:
 					DrawPolygonCollider(entity);
 					break;
 			}
+
+			// Draw contact info
+			Logger::Log("Debug: " + colliderType.contactInfo.startContactPoint.ToString());
+			Graphics::DrawCircle(colliderType.contactInfo.startContactPoint, 3, 36, Color(Colors::RED));
+			Graphics::DrawCircle(colliderType.contactInfo.endContactPoint, 3, 36, Color(Colors::RED));
+			Graphics::DrawLine(colliderType.contactInfo.startContactPoint, colliderType.contactInfo.startContactPoint + colliderType.contactInfo.collisionNormal * 15, Color(Colors::RED));
+			colliderType.contactInfo = ContactInfo();
 
 			// Debug rotation
 			static std::string text;
