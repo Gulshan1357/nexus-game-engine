@@ -5,10 +5,12 @@
 
 #include "src/InputManagement/InputEnums.h"
 
+enum class ColliderType;
 class Coordinator;
 class EventManager;
 class InputManager;
 class AssetManager;
+struct Vector2;
 
 class TestApp
 {
@@ -26,10 +28,13 @@ public:
 	void Shutdown();
 
 private:
-	bool bIsDebug; // Trigger debug mode using 'B' key
+	bool m_isDebug; // Trigger debug mode using 'B' key
+	bool m_bWasLMousePressedPast = false;
 
 	std::unique_ptr<Coordinator> m_coordinator;
 	std::unique_ptr<EventManager> m_eventManager;
 	std::unique_ptr<InputManager> m_inputManager;
 	std::unique_ptr<AssetManager> m_assetManager;
+
+	void SpawnShape(Vector2 position, ColliderType colliderType) const;
 };

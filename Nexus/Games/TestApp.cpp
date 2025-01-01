@@ -41,7 +41,7 @@
 
 TestApp::TestApp()
 {
-	bIsDebug = true;
+	m_isDebug = true;
 
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_unique<EventManager>();
@@ -91,13 +91,35 @@ void TestApp::LoadLevel(int level)
 	// Print TileMaps
 	PrintTiles("tile-map", static_cast<float>(0.7), R"(.\Assets\Sprites\test2.map)", 20, 20);
 
+	// Walls and grounds
+	Entity ground = m_coordinator->CreateEntity();
+	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -250.0f), Vector2(1.f, 1.f));
+	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f, 0.0f, 0.0f, 0.2f, 0.7f);
+	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH), 500.0f);
+	// Entity leftWall = m_coordinator->CreateEntity();
+	// leftWall.AddComponent<TransformComponent>(Vector2(0.f, static_cast<float>(Physics::SCREEN_HEIGHT)/2), Vector2(1.f, 1.f));
+	// leftWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f);
+	// leftWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	// leftWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
+	// Entity rightWall = m_coordinator->CreateEntity();
+	// rightWall.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH), static_cast<float>(Physics::SCREEN_HEIGHT)/2), Vector2(1.f, 1.f));
+	// rightWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f);
+	// rightWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	// rightWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
+	// Entity ceiling = m_coordinator->CreateEntity();
+	// ceiling.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH)/2, static_cast<float>(Physics::SCREEN_HEIGHT)), Vector2(1.f, 1.f));
+	// ceiling.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f);
+	// ceiling.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	// ceiling.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH), 5.0f);
+
 	// Animation SystemLimitation: If one player is animating then all should animation component otherwise different player sprite start animating on different player's input
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
 	test.AddComponent<SpriteComponent>("player1-test-image", 2, Asset::DemoPlayer::ANIM_BACKWARDS); // Only prints a default sprite
-	test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
+	// test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 18.f, 18.0f, 18.f, 18.f);
 	test.AddComponent<AnimationComponent>(false, 8, true);
 	test.Tag("Player1");
@@ -137,33 +159,24 @@ void TestApp::LoadLevel(int level)
 	std::vector<Vector2> redballPolygonVertices;
 	// Going clockwise from top left
 	redballPolygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	redballPolygonVertices.emplace_back(0.0f, -(m_assetManager->GetSpriteHeight("red-ball")));
 	redballPolygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
 	redballPolygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	redballPolygonVertices.emplace_back(0.0f, (m_assetManager->GetSpriteHeight("red-ball")));
 	redballPolygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
 
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
-	redBall.AddComponent<TransformComponent>(Vector2(200.f, 100.f), Vector2(1.f, 1.f), 0.03f);
-	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 10.f, 0.f, 0.0f, 0.1f);
+	redBall.AddComponent<TransformComponent>(Vector2(400.f, 200.f), Vector2(1.f, 1.f), -0.3f);
+	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	// redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"));
+	// redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	// redBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
 	redBall.Tag("Player2");
 	redBall.Group("Player");
-
-	Entity redBigBall = m_coordinator->CreateEntity();
-	redBigBall.AddComponent<SpriteComponent>("red-ball", 3);
-	redBigBall.AddComponent<TransformComponent>(Vector2(200.5f, 300.f), Vector2(1.f, 1.f));
-	redBigBall.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 0.0f), Vector2(), true, 10.0f, 0.0f, 0.0f, 0.0f, 0.1f);
-	redBigBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	redBigBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
-	// redBigBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
-	// redBigBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
-
-	redBigBall.Tag("BigBall");
 
 	// Add Key bindings for player 2
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'W', Input::PlayerAction::MOVE_UP);
@@ -257,6 +270,8 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 	}
 }
 
+
+
 void TestApp::Update(float deltaTime)
 {
 	ProcessInput();
@@ -274,7 +289,6 @@ void TestApp::Update(float deltaTime)
 	m_coordinator->Update();
 
 	// Invoke all the systems that needs to be updated
-	m_coordinator->GetSystem<PhysicsSystem>().Update(deltaTime);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 	m_coordinator->GetSystem<PhysicsSystem>().Update(deltaTime);
@@ -286,10 +300,19 @@ void TestApp::Update(float deltaTime)
 void TestApp::ProcessInput()
 {
 	// For debug mode
+	Vector2 mousePos;
+	App::GetMousePos(mousePos.x, mousePos.y);
+
 	if (App::IsKeyPressed('B'))
 	{
-		bIsDebug = !bIsDebug;
+		m_isDebug = !m_isDebug;
 	}
+	if ((App::IsKeyPressed(VK_LBUTTON) == true) && m_bWasLMousePressedPast == false)
+	{
+		Logger::Err("Left mouse button pressed");
+		SpawnShape(mousePos, ColliderType::Polygon);
+	}
+	m_bWasLMousePressedPast = App::IsKeyPressed(VK_LBUTTON);
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_2, "Player2");
 }
@@ -317,16 +340,51 @@ void TestApp::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& pla
 	}
 }
 
+void TestApp::SpawnShape(Vector2 position, ColliderType colliderType) const
+{
+	// Polygon local vertices for red-ball sprite
+	std::vector<Vector2> polygonVertices;
+	// Going clockwise from top left
+	polygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	polygonVertices.emplace_back(0.0f, -(m_assetManager->GetSpriteHeight("red-ball")));
+	polygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	polygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+	polygonVertices.emplace_back(0.0f, (m_assetManager->GetSpriteHeight("red-ball")));
+	polygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+
+	Entity shape = m_coordinator->CreateEntity();
+	shape.AddComponent<SpriteComponent>("red-ball", 3);
+	shape.AddComponent<TransformComponent>(position, Vector2(1.f, 1.f), 0.53f);
+	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), true, 5.0f, 0.0f, 0.0f, 0.1f, 0.1f);
+	shape.Tag("SpawnItem");
+	switch (colliderType)
+	{
+		case ColliderType::Box:
+			shape.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			shape.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+			break;
+		case ColliderType::Polygon:
+			shape.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+			shape.AddComponent<PolygonColliderComponent>(polygonVertices);
+			break;
+		case ColliderType::Circle:
+			shape.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+			shape.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+			break;
+	}
+	// We need to calculate the moment of Inertia, inverse mass etc. for the spawned entities
+	PhysicsEngine::InitializeEntityPhysics(shape);
+}
+
 void TestApp::Render()
 {
 	// Update Render Systems
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager);
 	m_coordinator->GetSystem<RenderTextSystem>().Update();
 
-	if (bIsDebug)
+	if (m_isDebug)
 	{
 		m_coordinator->GetSystem<RenderDebugSystem>().Update();
-
 	}
 }
 
