@@ -41,7 +41,6 @@ public:
 			}
 
 			// Draw contact info
-			Logger::Log("Debug: " + colliderType.contactInfo.startContactPoint.ToString());
 			Graphics::DrawCircle(colliderType.contactInfo.startContactPoint, 3, 36, Color(Colors::RED));
 			Graphics::DrawCircle(colliderType.contactInfo.endContactPoint, 3, 36, Color(Colors::RED));
 			Graphics::DrawLine(colliderType.contactInfo.startContactPoint, colliderType.contactInfo.startContactPoint + colliderType.contactInfo.collisionNormal * 15, Color(Colors::RED));
