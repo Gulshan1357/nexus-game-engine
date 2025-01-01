@@ -13,6 +13,17 @@ class PhysicsEngine
 {
 public:
 	//------------------------------------------------------------------------
+	// Entity setup
+	//------------------------------------------------------------------------
+
+	// Calculate Angular Mass
+	static float CalculateMomentOfInertia(const Entity& entity);
+
+	// Calculate inverse mass, angular mass(Moment of Inertia) and inverse angular mass of entity with RigidBody and bUsePhysics set to true
+	static void InitializeEntityPhysics(const Entity& entity);
+
+
+	//------------------------------------------------------------------------
 	// Integrating Force and Torque
 	//------------------------------------------------------------------------
 
@@ -22,6 +33,10 @@ public:
 	// Returns a new rotation by integrating the RigidBody's angular velocity and angular acceleration.
 	static float IntegrateAngular(RigidBodyComponent& rigidBodyComponent, float dt);
 
+	//------------------------------------------------------------------------
+	// Force and Torque
+	//------------------------------------------------------------------------
+
 	static void AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force);
 
 	static void ClearForces(RigidBodyComponent& rigidBodyComponent);
@@ -30,7 +45,6 @@ public:
 
 	static void ClearTorque(RigidBodyComponent& rigidBodyComponent);
 
-	static float CalculateMomentOfInertia(const Entity& entity);
 
 	//------------------------------------------------------------------------
 	// Different Forces

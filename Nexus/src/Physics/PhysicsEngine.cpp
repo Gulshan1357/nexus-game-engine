@@ -18,6 +18,55 @@
 #include "src/Components/CircleColliderComponent.h"
 #include "src/Components/PolygonColliderComponent.h"
 
+float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
+{
+	const auto& collider = entity.GetComponent<ColliderTypeComponent>();
+	const auto& rigidbody = entity.GetComponent<RigidBodyComponent>();
+
+	switch (collider.type)
+	{
+		case ColliderType::Circle:
+			if (entity.HasComponent<CircleColliderComponent>())
+			{
+				// For circle I = 1/2 * radius^2 * mass
+				const auto& circleCollider = entity.GetComponent<CircleColliderComponent>();
+				return 0.5f * rigidbody.mass * circleCollider.radius * circleCollider.radius;
+			}
+			break;
+		case ColliderType::Box:
+			if (entity.HasComponent<BoxColliderComponent>())
+			{
+				// For rectangle I = 1/12 * (width^2 + height^2) * mass
+				const auto& boxCollider = entity.GetComponent<BoxColliderComponent>();
+				return 0.083333f * rigidbody.mass * (boxCollider.width * boxCollider.width + boxCollider.height * boxCollider.height);
+			}
+			break;
+		case ColliderType::Polygon:
+			if (entity.HasComponent<PolygonColliderComponent>())
+			{
+				// const auto& polygonCollider = entity.GetComponent<PolygonColliderComponent>();
+				// TODO: ...
+				return 5000.0f;
+			}
+	}
+	Logger::Err("Couldn't calculate the Moment Of Inertia!");
+	return 0.0f;
+}
+
+void PhysicsEngine::InitializeEntityPhysics(const Entity& entity)
+{
+	auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
+	if (rigidBody.bUsePhysics)
+	{
+		rigidBody.inverseOfMass = (rigidBody.mass != 0.0f) ? 1.0f / rigidBody.mass : 0.0f;
+		if (entity.HasComponent<ColliderTypeComponent>())
+		{
+			rigidBody.angularMass = PhysicsEngine::CalculateMomentOfInertia(entity);
+			rigidBody.inverseOfAngularMass = (rigidBody.angularMass != 0.0f) ? 1.0f / rigidBody.angularMass : 0.0f;
+		}
+	}
+}
+
 // TODO: Currently using the Implicit Euler Integration technique. Try Verlet Integration or RK4.
 Vector2 PhysicsEngine::IntegrateLinear(RigidBodyComponent& rigidBodyComponent, float dt)
 {
@@ -81,69 +130,6 @@ void PhysicsEngine::AddTorque(RigidBodyComponent& rigidBodyComponent, const floa
 void PhysicsEngine::ClearTorque(RigidBodyComponent& rigidBodyComponent)
 {
 	rigidBodyComponent.sumTorque = 0.0f;
-}
-
-float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
-{
-	const auto& collider = entity.GetComponent<ColliderTypeComponent>();
-	const auto& rigidbody = entity.GetComponent<RigidBodyComponent>();
-
-	switch (collider.type)
-	{
-		case ColliderType::Circle:
-			if (entity.HasComponent<CircleColliderComponent>())
-			{
-				// For circle I = 1/2 * radius^2 * mass
-				const auto& circleCollider = entity.GetComponent<CircleColliderComponent>();
-				return 0.5f * rigidbody.mass * circleCollider.radius * circleCollider.radius;
-			}
-			break;
-		case ColliderType::Box:
-			if (entity.HasComponent<BoxColliderComponent>())
-			{
-				// For rectangle I = 1/12 * (width^2 + height^2) * mass
-				const auto& boxCollider = entity.GetComponent<BoxColliderComponent>();
-				return 0.083333f * rigidbody.mass * (boxCollider.width * boxCollider.width + boxCollider.height * boxCollider.height);
-			}
-			break;
-		case ColliderType::Polygon:
-			if (entity.HasComponent<PolygonColliderComponent>())
-			{
-				auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
-				if (entity.HasTag("Debug"))
-				{
-					std::cout << "Inside MoI function, mass: " << rigidBody.mass << " I: " << rigidBody.angularMass << " inverse of I: " << rigidBody.inverseOfAngularMass << "\n";
-				}
-
-				const auto& polygonCollider = entity.GetComponent<PolygonColliderComponent>();
-				// TODO: ...
-				return 0.0f;
-			}
-	}
-	Logger::Err("Couldn't calculate the Moment Of Inertia!");
-	return 0.0f;
-}
-
-// Momentum P = mass * velocity
-// Impulse is the change in momentum, J = ΔP = m*Δv
-// Therefore, the change in velocity Δv = Impulse / mass
-void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse)
-{
-	if (rigidbody.IsStatic())
-	{
-		return;
-	}
-	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
-}
-
-void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r)
-{
-	if (rigidbody.IsStatic())
-	{
-		return;
-	}
-	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
-	rigidbody.angularVelocity += r.Cross(impulse) * rigidbody.inverseOfAngularMass;
 }
 
 Vector2 PhysicsEngine::GenerateDragForce(const RigidBodyComponent& rigidBodyComponent, const float dragStrength)
@@ -221,6 +207,28 @@ Vector2 PhysicsEngine::GenerateSpringForce(const TransformComponent& transformA,
 	const Vector2 springDirection = l.UnitVector();
 	const float springMagnitude = -springForceStrength * displacement;
 	return springDirection * springMagnitude;
+}
+
+// Momentum P = mass * velocity
+// Impulse is the change in momentum, J = ΔP = m*Δv
+// Therefore, the change in velocity Δv = Impulse / mass
+void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse)
+{
+	if (rigidbody.IsStatic())
+	{
+		return;
+	}
+	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
+}
+
+void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r)
+{
+	if (rigidbody.IsStatic())
+	{
+		return;
+	}
+	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
+	rigidbody.angularVelocity += r.Cross(impulse) * rigidbody.inverseOfAngularMass;
 }
 
 bool PhysicsEngine::IsAABBCollision(const double aX, const double aY, const double aW, const double aH, const double bX, const double bY, const double bW, const double bH)

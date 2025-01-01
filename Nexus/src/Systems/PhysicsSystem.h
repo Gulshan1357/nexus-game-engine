@@ -19,38 +19,22 @@ public:
 
 	void InitializeEntityPhysics() const
 	{
-		Logger::Log("Initializing Entity Physics. Calculating inverse mass, angular mass etc.");
-		// Calculate inverse mass, angular mass and inverse angular mass of entities with RigidBody
+		Logger::Log("Calculating inverse mass, angular mass etc. for all the suitable entities");
 		for (auto entity : GetSystemEntities())
 		{
-			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
-			if (rigidBody.bUsePhysics)
-			{
-
-				rigidBody.inverseOfMass = (rigidBody.mass != 0.0f) ? 1.0f / rigidBody.mass : 0.0f;
-
-				if (entity.HasComponent<ColliderTypeComponent>())
-				{
-					rigidBody.angularMass = PhysicsEngine::CalculateMomentOfInertia(entity);
-					rigidBody.inverseOfAngularMass = (rigidBody.angularMass != 0.0f) ? 1.0f / rigidBody.angularMass : 0.0f;
-					if (entity.HasTag("Debug"))
-					{
-						std::cout << "Debug entity, mass: " << rigidBody.mass << " I: " << rigidBody.angularMass << " inverse of I: " << rigidBody.inverseOfAngularMass << "\n";
-					}
-				}
-			}
+			PhysicsEngine::InitializeEntityPhysics(entity);
 		}
 	}
 
 	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
 	{
 		using CallbackType = std::function<void(PhysicsSystem*, CollisionEvent&)>;
-		const CallbackType callback = [this](auto&&, auto&& placeholder2) { onCollision(std::forward<decltype(placeholder2)>(placeholder2)); };
+		const CallbackType callback = [this](auto&&, auto&& placeholder2) { OnCollision(std::forward<decltype(placeholder2)>(placeholder2)); };
 		eventManager->SubscribeToEvent<CollisionEvent>(this, callback);
 		//  std::placeholders::_2 tells std::bind that the second argument (the event) will be provided when the resulting function is called. This allows us to create a callable object that matches the required function signature of SubscribeToEvent, where the first argument is the instance (PhysicsSystem*), and the second argument is the event (CollisionEvent&).
 	}
 
-	void onCollision(const CollisionEvent& event)
+	static void OnCollision(const CollisionEvent& event)
 	{
 		// Collision Resolution
 		PhysicsEngine::ResolveCollision(
@@ -108,12 +92,12 @@ public:
 				//------------------------------------------------------------------------
 
 				// Adding Drag force
-				// Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, 0.008f);
-				// rigidBody.AddForce(drag);
+				Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, 0.01f);
+				rigidBody.AddForce(drag);
 
 				// Adding weight force
-				// Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
-				// rigidBody.AddForce(weight);
+				Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
+				rigidBody.AddForce(weight);
 
 
 				//------------------------------------------------------------------------
@@ -143,7 +127,7 @@ public:
 				// 	}
 				// }
 
-				HandleEdgeCollision(entity, transform, rigidBody);
+				// HandleEdgeCollision(entity, transform, rigidBody);
 
 			}
 		}
