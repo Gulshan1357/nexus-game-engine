@@ -8,13 +8,12 @@ struct Vector2
 {
 	float x, y;
 
-	Vector2() : x(0.0f), y(0.0f) {}
-	Vector2(const float newX, const float newY) : x(newX), y(newY) {}
+	Vector2();
+	Vector2(const float newX, const float newY);
 
 	Vector2 operator+(const Vector2& vector) const;			// v1 + v2
 	Vector2 operator-(const Vector2& vector) const;			// v1 - v2
 	Vector2 operator*(float scalar) const;					// v1 * scalar
-	Vector2 operator*(const Vector2& vector) const;			// (v1.x * v2.x, v1.y * v2.y) 
 	Vector2 operator/(float scalar) const;					// v1 / scalar
 	Vector2 operator/(const Vector2& vector) const;			// (v1.x / v2.x, v1.y / v2.y)
 
@@ -23,7 +22,6 @@ struct Vector2
 	Vector2& operator+=(const Vector2& vector);				// v1 += v2
 	Vector2& operator-=(const Vector2& vector);				// v1 -= v2
 	Vector2& operator*=(float scalar);						// v *= scalar
-	Vector2& operator*=(const Vector2& vector);				// v1 *= v2
 	Vector2& operator/=(float scalar);						// v1 /= scalar
 	Vector2& operator/=(const Vector2& vector);				// v1 /= v2
 
@@ -40,11 +38,17 @@ struct Vector2
 	[[nodiscard]] Vector2& Normalize();						// Turn the vector into a unit vector
 	[[nodiscard]] Vector2 Normal() const;					// Return a normalized perpendicular vector. x becomes y and y becomes x
 
-	[[nodiscard]] float Dot(const Vector2& vector) const;	// Return a dot product. A vectors projection onto another 
+	[[nodiscard]] float Dot(const Vector2& vector) const;	// Return a dot product. A vector's projection onto another 
 	[[nodiscard]] float Cross(const Vector2& vector) const;	// Return the magnitude of a perpendicular imaginary z-axis vector that is pointing inside/outside the screen. 
 
 	[[nodiscard]] std::string ToString() const;				// Convert the x and v into a nice printable string
 };
+
+inline Vector2::Vector2() : x(0.0f), y(0.0f)
+{}
+
+inline Vector2::Vector2(const float newX, const float newY) : x(newX), y(newY)
+{}
 
 inline Vector2 Vector2::operator+(const Vector2& vector) const
 {
@@ -59,11 +63,6 @@ inline Vector2 Vector2::operator-(const Vector2& vector) const
 inline Vector2 Vector2::operator*(const float scalar) const
 {
 	return { this->x * scalar, this->y * scalar };
-}
-
-inline Vector2 Vector2::operator*(const Vector2& vector) const
-{
-	return { this->x * vector.x, this->y * vector.y };
 }
 
 inline Vector2 Vector2::operator/(const float scalar) const
@@ -104,13 +103,6 @@ inline Vector2& Vector2::operator*=(const float scalar)
 	return *this;
 }
 
-inline Vector2& Vector2::operator*=(const Vector2& vector)
-{
-	x *= vector.x;
-	y *= vector.y;
-	return *this;
-}
-
 inline Vector2& Vector2::operator/=(const float scalar)
 {
 	x /= scalar;
@@ -139,7 +131,7 @@ inline bool Vector2::operator!=(const Vector2& vector) const
 
 inline Vector2 Vector2::Rotate(const float radians) const
 {
-	return Vector2(x * std::cos(radians) - y * std::sin(radians), x * std::sin(radians) + y * std::cos(radians));
+	return { x * std::cos(radians) - y * std::sin(radians), x * std::sin(radians) + y * std::cos(radians) };
 }
 
 inline float Vector2::Magnitude() const
@@ -160,7 +152,7 @@ inline float Vector2::Distance(const Vector2& to) const
 inline Vector2 Vector2::UnitVector() const
 {
 	Vector2 v;
-	if (const float length = Magnitude(); length != 0)
+	if (const float length = Magnitude(); length != 0.0f)
 		v = *this / length;
 	return v;
 }

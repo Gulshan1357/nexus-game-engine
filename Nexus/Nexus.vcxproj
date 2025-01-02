@@ -234,7 +234,9 @@
     <ClInclude Include="src\Utils\GraphicsUtils.h" />
     <ClInclude Include="src\Utils\Font.h" />
     <ClInclude Include="src\Utils\Logger.h" />
+    <ClInclude Include="src\Utils\Matrix.h" />
     <ClInclude Include="src\Utils\Vector2.h" />
+    <ClInclude Include="src\Utils\VectorN.h" />
     <ClInclude Include="stb_image\stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
