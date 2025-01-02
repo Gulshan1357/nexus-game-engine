@@ -4,6 +4,7 @@
 #include <string>
 
 #include "src/InputManagement/InputEnums.h"
+#include "src/Physics/Constants.h"
 
 enum class ColliderType;
 class Coordinator;
@@ -28,6 +29,9 @@ public:
 	void Shutdown();
 
 private:
+	//------------------------------------------------------------------------
+	// Engine
+	//------------------------------------------------------------------------
 	bool m_isDebug; // Trigger debug mode using 'B' key
 	bool m_bWasLMousePressedPast = false;
 
@@ -36,5 +40,11 @@ private:
 	std::unique_ptr<InputManager> m_inputManager;
 	std::unique_ptr<AssetManager> m_assetManager;
 
+
+	//------------------------------------------------------------------------
+	// World
+	//------------------------------------------------------------------------
+
+	float G = -Physics::gravity;
 	void SpawnShape(Vector2 position, ColliderType colliderType) const;
 };

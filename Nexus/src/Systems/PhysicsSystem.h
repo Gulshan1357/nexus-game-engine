@@ -96,39 +96,12 @@ public:
 				rigidBody.AddForce(drag);
 
 				// Adding weight force
-				Vector2 weight = Vector2(0.0f, rigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
+				Vector2 weight = Vector2(0.0f, rigidBody.mass * -Physics::gravity * Physics::PIXEL_PER_METER);
 				rigidBody.AddForce(weight);
 
-
-				//------------------------------------------------------------------------
-				// Apply forces to connected Entities
-				//------------------------------------------------------------------------
-
-				// if (entity.HasTag("Player2") || entity.HasTag("BigBall") || entity.BelongsToGroup("Anchor"))
-				// {
-				// 	// Adding forces to connected spring entities
-				// 	for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
-				// 	{
-				// 		TransformComponent& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
-				// 		RigidBodyComponent& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
-				//
-				// 		// Adding Drag force
-				// 		Vector2 drag = PhysicsEngine::GenerateDragForce(connectedEntityRigidBody, 0.008f);
-				// 		connectedEntityRigidBody.AddForce(drag);
-				//
-				// 		// // Adding spring force
-				// 		Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 1500);
-				// 		connectedEntityRigidBody.AddForce(springForce);
-				// 		rigidBody.AddForce(-springForce);
-				//
-				// 		// Adding weight force
-				// 		Vector2 weight = Vector2(0.0f, connectedEntityRigidBody.mass * -9.8f * Physics::PIXEL_PER_METER);
-				// 		connectedEntityRigidBody.AddForce(weight);
-				// 	}
-				// }
+				// AddSpringForceToConnectedEntities(entity);
 
 				// HandleEdgeCollision(entity, transform, rigidBody);
-
 			}
 		}
 	}
@@ -178,6 +151,27 @@ public:
 				localVertex.x * cosAngle - localVertex.y * sinAngle,
 				localVertex.x * sinAngle + localVertex.y * cosAngle
 			) + globalOffset;
+		}
+	}
+
+	static void AddSpringForceToConnectedEntities(const Entity& entity)
+	{
+		if (entity.BelongsToGroup("Anchor") || entity.BelongsToGroup("Spring"))
+		{
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
+
+			// Adding forces to connected spring entities
+			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
+			{
+				auto& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
+				auto& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
+
+				// // Adding spring force
+				Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 1500);
+				connectedEntityRigidBody.AddForce(springForce);
+				rigidBody.AddForce(-springForce);
+			}
 		}
 	}
 

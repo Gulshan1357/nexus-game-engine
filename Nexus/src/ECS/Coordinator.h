@@ -249,14 +249,9 @@ auto Coordinator::GetComponent(Entity entity) const -> TComponent&
 template <typename TSystem, typename ...TArgs>
 void Coordinator::AddSystem(TArgs&& ...args)
 {
-	TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
-	m_systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
-
-	// If error try this:
-	/*if (auto system = systems.find(std::type_index(typeid(TSystem))); system != systems.end())
-	{
-		systems.erase(system);
-	}*/
+	// TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
+	std::unique_ptr<TSystem> newSystem(std::make_unique<TSystem>(std::forward<TArgs>(args)...));
+	m_systems.insert(std::make_pair(std::type_index(typeid(TSystem)), std::move(newSystem)));
 }
 
 template <typename TSystem>
@@ -272,6 +267,7 @@ bool Coordinator::HasSystem() const
 	return m_systems.find(std::type_index(typeid(TSystem))) != m_systems.end();
 }
 
+//TODO: change the following to be more memory safe. Use share pointer or reference to unique pointer
 template <typename TSystem>
 TSystem Coordinator::GetSystem() const
 {
