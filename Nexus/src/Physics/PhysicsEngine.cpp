@@ -9,14 +9,13 @@
 
 #include "src/Components/RigidBodyComponent.h"
 #include "src/Components/TransformComponent.h"
-
-#include "src/Utils/Vector2.h"
-#include "src/Utils/Logger.h"
 #include <src/Components/ColliderTypeComponent.h>
-
 #include "src/Components/BoxColliderComponent.h"
 #include "src/Components/CircleColliderComponent.h"
 #include "src/Components/PolygonColliderComponent.h"
+
+#include "src/Utils/Vector2.h"
+#include "src/Utils/Logger.h"
 
 float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
 {
@@ -104,6 +103,71 @@ void PhysicsEngine::IntegrateVelocities(const RigidBodyComponent& rigidBodyCompo
 
 	// Calculating angular displacement by integrating angular velocity
 	transformComponent.rotation += rigidBodyComponent.angularVelocity * dt;
+}
+
+void PhysicsEngine::UpdateColliderProperties(const Entity& entity, TransformComponent& transform)
+{
+	if (entity.HasComponent<BoxColliderComponent>())
+	{
+		UpdateBoxColliderVertices(entity.GetComponent<BoxColliderComponent>(), transform);
+	}
+	else if (entity.HasComponent<PolygonColliderComponent>())
+	{
+		UpdatePolygonColliderVertices(entity.GetComponent<PolygonColliderComponent>(), transform);
+	}
+	else if (entity.HasComponent<CircleColliderComponent>())
+	{
+		UpdateCircleColliderCenter(entity.GetComponent<CircleColliderComponent>(), transform);
+	}
+	else
+	{
+		Logger::Err("Couldn't update the collider. Collider Component not found!");
+	}
+}
+
+void PhysicsEngine::UpdateCircleColliderCenter(CircleColliderComponent& circleCollider, const TransformComponent& transform)
+{
+	circleCollider.globalCenter = transform.position + circleCollider.offset;
+}
+
+void PhysicsEngine::UpdateBoxColliderVertices(BoxColliderComponent& collider, const TransformComponent& transform)
+{
+	// Compute global offset
+	const Vector2 globalOffset = transform.position + collider.offset;
+
+	// Precompute sine and cosine of rotation
+	const float cosAngle = std::cos(transform.rotation);
+	const float sinAngle = std::sin(transform.rotation);
+
+	// Rotate and translate each vertex
+	for (size_t i = 0; i < collider.localVertices.size(); ++i)
+	{
+		const Vector2& localVertex = collider.localVertices[i];
+		collider.globalVertices[i] = Vector2(
+			localVertex.x * cosAngle - localVertex.y * sinAngle,
+			localVertex.x * sinAngle + localVertex.y * cosAngle
+		) + globalOffset;
+	}
+}
+
+void PhysicsEngine::UpdatePolygonColliderVertices(PolygonColliderComponent& collider, const TransformComponent& transform)
+{
+	// Compute global offset
+	const Vector2 globalOffset = transform.position + collider.offset;
+
+	// Precompute sine and cosine of rotation
+	const float cosAngle = std::cos(transform.rotation);
+	const float sinAngle = std::sin(transform.rotation);
+
+	// Rotate and translate each vertex
+	for (size_t i = 0; i < collider.localVertices.size(); ++i)
+	{
+		const Vector2& localVertex = collider.localVertices[i];
+		collider.globalVertices[i] = Vector2(
+			localVertex.x * cosAngle - localVertex.y * sinAngle,
+			localVertex.x * sinAngle + localVertex.y * cosAngle
+		) + globalOffset;
+	}
 }
 
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)

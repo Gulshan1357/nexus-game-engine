@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 
-#include "src/Components/TransformComponent.h"
-
-
+struct PolygonColliderComponent;
+struct BoxColliderComponent;
+struct CircleColliderComponent;
 struct TransformComponent;
 class RigidBodyComponent;
 struct Vector2;
@@ -16,11 +16,11 @@ public:
 	// Entity setup
 	//------------------------------------------------------------------------
 
-	// Calculate Angular Mass
-	static float CalculateMomentOfInertia(const Entity& entity);
-
 	// Calculate inverse mass, angular mass(Moment of Inertia) and inverse angular mass of entity with RigidBody and bUsePhysics set to true
 	static void InitializeEntityPhysics(const Entity& entity);
+
+	// Calculate Angular Mass
+	static float CalculateMomentOfInertia(const Entity& entity);
 
 
 	//------------------------------------------------------------------------
@@ -30,8 +30,22 @@ public:
 	// Integrate Forces to change the rigidbody's linear and angular velocities
 	static void IntegrateForces(RigidBodyComponent& rigidBodyComponent, float dt);
 
-	// Integrate linear and angular velocities to change the transform's position and rotation
+	// Integrate linear and angular velocities to change the transform's position and rotation. Make sure to update the properties of collider based on the new values of the transform.
 	static void IntegrateVelocities(const RigidBodyComponent& rigidBodyComponent, TransformComponent& transformComponent, float dt);
+
+
+	//------------------------------------------------------------------------
+	// Update Collider w.r.t the transform component
+	//------------------------------------------------------------------------
+
+	// Update the properties like globalCenter(circle) and globalVertices(polygon) of the collider w.r.t. the transform component
+	static void UpdateColliderProperties(const Entity& entity, TransformComponent& transform);
+	// Function to update Circle-Collider's center
+	static void UpdateCircleColliderCenter(CircleColliderComponent& circleCollider, const TransformComponent& transform);
+	// Function to update Box-Collider's Vertices based on transform rotation
+	static void UpdateBoxColliderVertices(BoxColliderComponent& collider, const TransformComponent& transform);
+	// Function to update Polygon-Collider's Vertices based on transform rotation
+	static void UpdatePolygonColliderVertices(PolygonColliderComponent& collider, const TransformComponent& transform);
 
 
 	//------------------------------------------------------------------------

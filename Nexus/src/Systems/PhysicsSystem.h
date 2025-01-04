@@ -2,7 +2,6 @@
 
 #include "src/ECS/System.h"
 
-#include "src/Components/ColliderTypeComponent.h"
 #include "src/Components/RigidbodyComponent.h"
 
 #include "src/Physics/PhysicsEngine.h"
@@ -71,23 +70,8 @@ public:
 				// transform.rotation += PhysicsEngine::IntegrateAngular(rigidBody, dt);
 				PhysicsEngine::IntegrateForces(rigidBody, dt);
 				PhysicsEngine::IntegrateVelocities(rigidBody, transform, dt);
+				PhysicsEngine::UpdateColliderProperties(entity, transform);
 
-				//------------------------------------------------------------------------
-				// Update entity's collider (Example circleCollider.globalCenter)
-				//------------------------------------------------------------------------
-
-				if (entity.HasComponent<BoxColliderComponent>())
-				{
-					UpdateBoxColliderVertices(entity.GetComponent<BoxColliderComponent>(), transform);
-				}
-				else if (entity.HasComponent<PolygonColliderComponent>())
-				{
-					UpdatePolygonColliderVertices(entity.GetComponent<PolygonColliderComponent>(), transform);
-				}
-				else if (entity.HasComponent<CircleColliderComponent>())
-				{
-					UpdateCircleColliderCenter(entity.GetComponent<CircleColliderComponent>(), transform);
-				}
 
 				//------------------------------------------------------------------------
 				// Apply constantly acting forces like gravity, drag etc.
@@ -108,54 +92,6 @@ public:
 		}
 	}
 
-	// Function to update Circle-Collider's center
-	static void UpdateCircleColliderCenter(CircleColliderComponent& circleCollider, const TransformComponent& transform)
-	{
-		circleCollider.globalCenter = transform.position + circleCollider.offset;
-	}
-
-	// Function to update Box-Collider's Vertices based on transform rotation
-	static void UpdateBoxColliderVertices(BoxColliderComponent& collider, const TransformComponent& transform)
-	{
-		// Compute global offset
-		const Vector2 globalOffset = transform.position + collider.offset;
-
-		// Precompute sine and cosine of rotation
-		const float cosAngle = std::cos(transform.rotation);
-		const float sinAngle = std::sin(transform.rotation);
-
-		// Rotate and translate each vertex
-		for (size_t i = 0; i < collider.localVertices.size(); ++i)
-		{
-			const Vector2& localVertex = collider.localVertices[i];
-			collider.globalVertices[i] = Vector2(
-				localVertex.x * cosAngle - localVertex.y * sinAngle,
-				localVertex.x * sinAngle + localVertex.y * cosAngle
-			) + globalOffset;
-		}
-	}
-
-	// Function to update Polygon-Collider's Vertices based on transform rotation
-	static void UpdatePolygonColliderVertices(PolygonColliderComponent& collider, const TransformComponent& transform)
-	{
-		// Compute global offset
-		const Vector2 globalOffset = transform.position + collider.offset;
-
-		// Precompute sine and cosine of rotation
-		const float cosAngle = std::cos(transform.rotation);
-		const float sinAngle = std::sin(transform.rotation);
-
-		// Rotate and translate each vertex
-		for (size_t i = 0; i < collider.localVertices.size(); ++i)
-		{
-			const Vector2& localVertex = collider.localVertices[i];
-			collider.globalVertices[i] = Vector2(
-				localVertex.x * cosAngle - localVertex.y * sinAngle,
-				localVertex.x * sinAngle + localVertex.y * cosAngle
-			) + globalOffset;
-		}
-	}
-
 	static void AddSpringForceToConnectedEntities(const Entity& entity)
 	{
 		if (entity.BelongsToGroup("Anchor") || entity.BelongsToGroup("Spring"))
@@ -173,64 +109,6 @@ public:
 				Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 1500);
 				connectedEntityRigidBody.AddForce(springForce);
 				rigidBody.AddForce(-springForce);
-			}
-		}
-	}
-
-	// Only for box and circle collider. TODO: Polygon collider
-	static void HandleEdgeCollision(const Entity& entity, TransformComponent& transform, RigidBodyComponent& rigidBody)
-	{
-		// Reversing velocity if the player collides with screen edge
-		if (entity.HasComponent<BoxColliderComponent>())
-		{
-			const BoxColliderComponent& boxColliderComponent = entity.GetComponent<BoxColliderComponent>();
-
-			if (transform.position.x - (boxColliderComponent.width / 2) <= 0)
-			{
-				transform.position.x = boxColliderComponent.width / 2;
-				rigidBody.velocity.x *= -0.5f;
-			}
-			else if (transform.position.x + (boxColliderComponent.width / 2) >= Physics::SCREEN_WIDTH)
-			{
-				transform.position.x = Physics::SCREEN_WIDTH - boxColliderComponent.width / 2;
-				rigidBody.velocity.x *= -0.5f;
-			}
-
-			if (transform.position.y - (boxColliderComponent.height / 2) <= 0)
-			{
-				transform.position.y = boxColliderComponent.height / 2;
-				rigidBody.velocity.y *= -0.5f;
-			}
-			else if (transform.position.y + (boxColliderComponent.height / 2) >= Physics::SCREEN_HEIGHT)
-			{
-				transform.position.y = Physics::SCREEN_HEIGHT - boxColliderComponent.height / 2;
-				rigidBody.velocity.y *= -0.5f;
-			}
-		}
-		else if (entity.HasComponent<CircleColliderComponent>())
-		{
-			const CircleColliderComponent& circleColliderComponent = entity.GetComponent<CircleColliderComponent>();
-
-			if (transform.position.x - circleColliderComponent.radius <= 0)
-			{
-				transform.position.x = circleColliderComponent.radius;
-				rigidBody.velocity.x *= -0.5f;
-			}
-			else if (transform.position.x + circleColliderComponent.radius >= Physics::SCREEN_WIDTH)
-			{
-				transform.position.x = Physics::SCREEN_WIDTH - circleColliderComponent.radius;
-				rigidBody.velocity.x *= -0.5f;
-			}
-
-			if (transform.position.y - circleColliderComponent.radius <= 0)
-			{
-				transform.position.y = circleColliderComponent.radius;
-				rigidBody.velocity.y *= -0.5f;
-			}
-			else if (transform.position.y + circleColliderComponent.radius >= Physics::SCREEN_HEIGHT)
-			{
-				transform.position.y = Physics::SCREEN_HEIGHT - circleColliderComponent.radius;
-				rigidBody.velocity.y *= -0.5f;
 			}
 		}
 	}
