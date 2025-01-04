@@ -24,14 +24,15 @@ public:
 
 
 	//------------------------------------------------------------------------
-	// Integrating Force and Torque
+	// Integrating Forces(and Torque) and velocities
 	//------------------------------------------------------------------------
 
-	// Returns a new position by integrating the RigidBody's velocity and acceleration.
-	static Vector2 IntegrateLinear(RigidBodyComponent& rigidBodyComponent, float dt);
+	// Integrate Forces to change the rigidbody's linear and angular velocities
+	static void IntegrateForces(RigidBodyComponent& rigidBodyComponent, float dt);
 
-	// Returns a new rotation by integrating the RigidBody's angular velocity and angular acceleration.
-	static float IntegrateAngular(RigidBodyComponent& rigidBodyComponent, float dt);
+	// Integrate linear and angular velocities to change the transform's position and rotation
+	static void IntegrateVelocities(const RigidBodyComponent& rigidBodyComponent, TransformComponent& transformComponent, float dt);
+
 
 	//------------------------------------------------------------------------
 	// Force and Torque

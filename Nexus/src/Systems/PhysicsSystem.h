@@ -67,8 +67,10 @@ public:
 			else
 			{
 				// Integrating all the forces and torque acting on the RigidBody using Physics Engine
-				transform.position += PhysicsEngine::IntegrateLinear(rigidBody, dt);
-				transform.rotation += PhysicsEngine::IntegrateAngular(rigidBody, dt);
+				// transform.position += PhysicsEngine::IntegrateLinear(rigidBody, dt);
+				// transform.rotation += PhysicsEngine::IntegrateAngular(rigidBody, dt);
+				PhysicsEngine::IntegrateForces(rigidBody, dt);
+				PhysicsEngine::IntegrateVelocities(rigidBody, transform, dt);
 
 				//------------------------------------------------------------------------
 				// Update entity's collider (Example circleCollider.globalCenter)

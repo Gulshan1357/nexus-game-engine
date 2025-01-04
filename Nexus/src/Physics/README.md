@@ -25,10 +25,10 @@
 1. **PhysicsEngine**  
    - The core of the physics system. Contains helper functions for applying forces and integrating motion with respect to delta time.  
    - **Functions related to integrating force and torque:**  
-     - `IntegrateLinear()`  
-       - Calculates a new position by integrating the RigidBody's velocity and acceleration.  
-     - `IntegrateAngular()`  
-       - Calculates a new rotation by integrating the RigidBody's angular velocity and angular acceleration.  
+     - `IntegrateForces()`  
+       - Integrates Forces and torque to change the linear and angular velocities of `RigidBody` component.  
+     - `IntegrateVelocities()`  
+       - Integrates linear and angular velocities to change the position and rotation of `Transform` component  
      - `CalculateMomentOfInertia()`  
        - Computes the moment of inertia for entities.  
        - Supports box and circle shapes and requires the `ColliderType` component.

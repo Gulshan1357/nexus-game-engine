@@ -67,34 +67,19 @@ void PhysicsEngine::InitializeEntityPhysics(const Entity& entity)
 	}
 }
 
-// TODO: Currently using the Implicit Euler Integration technique. Try Verlet Integration or RK4.
-Vector2 PhysicsEngine::IntegrateLinear(RigidBodyComponent& rigidBodyComponent, float dt)
+void PhysicsEngine::IntegrateForces(RigidBodyComponent& rigidBodyComponent, float dt)
 {
 	// If the body have infinite mass, return 0 displacement
 	if (rigidBodyComponent.IsStatic())
 	{
-		return {};
+		return;
 	}
+
 	// Increment the original acceleration based on the applied forces and mass of the object (F = ma => a = F/m)
 	rigidBodyComponent.acceleration = rigidBodyComponent.sumForces * rigidBodyComponent.inverseOfMass;
 
 	// Calculating velocity by integrating acceleration
 	rigidBodyComponent.velocity += rigidBodyComponent.acceleration * dt;
-
-	// Calculating displacement by integrating velocity
-	const Vector2 displacement = rigidBodyComponent.velocity * dt;
-	ClearForces(rigidBodyComponent);
-	// Logger::Warn("Forces resolved");
-	return displacement;
-}
-
-float PhysicsEngine::IntegrateAngular(RigidBodyComponent& rigidBodyComponent, float dt)
-{
-	// If the body have infinite mass return 0 angular displacement
-	if (rigidBodyComponent.IsStatic())
-	{
-		return {};
-	}
 
 	// Increment the angular acceleration based on the applied forces and angular mass(Moment of inertia or I) of the object (τ = Iα => α = τ / I)
 	rigidBodyComponent.angularAcceleration += rigidBodyComponent.sumTorque * rigidBodyComponent.inverseOfAngularMass;
@@ -102,12 +87,17 @@ float PhysicsEngine::IntegrateAngular(RigidBodyComponent& rigidBodyComponent, fl
 	// Calculating angular velocity by integrating angular acceleration
 	rigidBodyComponent.angularVelocity += rigidBodyComponent.angularAcceleration * dt;
 
-	// Calculating angular displacement by integrating angular velocity
-	float angularDisplacement = rigidBodyComponent.angularVelocity * dt;
-
+	ClearForces(rigidBodyComponent);
 	ClearTorque(rigidBodyComponent);
-	// Logger::Warn("Torque resolved");
-	return angularDisplacement;
+}
+
+void PhysicsEngine::IntegrateVelocities(const RigidBodyComponent& rigidBodyComponent, TransformComponent& transformComponent, float dt)
+{
+	// Calculating displacement by integrating velocity
+	transformComponent.position += rigidBodyComponent.velocity * dt;
+
+	// Calculating angular displacement by integrating angular velocity
+	transformComponent.rotation += rigidBodyComponent.angularVelocity * dt;
 }
 
 void PhysicsEngine::AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force)
