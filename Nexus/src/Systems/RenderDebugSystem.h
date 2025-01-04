@@ -8,6 +8,8 @@
 #include "src/Components/PolygonColliderComponent.h"
 #include "src/Components/CircleColliderComponent.h"
 
+#include "src/Physics/Contact.h"
+
 #include "src/Utils/GraphicsUtils.h"
 
 class RenderDebugSystem : public System
@@ -44,7 +46,7 @@ public:
 			Graphics::DrawCircle(colliderType.contactInfo.startContactPoint, 3, 36, Color(Colors::RED));
 			Graphics::DrawCircle(colliderType.contactInfo.endContactPoint, 3, 36, Color(Colors::RED));
 			Graphics::DrawLine(colliderType.contactInfo.startContactPoint, colliderType.contactInfo.startContactPoint + colliderType.contactInfo.collisionNormal * 15, Color(Colors::RED));
-			colliderType.contactInfo = ContactInfo();
+			colliderType.contactInfo = Contact();
 
 			// Debug rotation
 			static std::string text;

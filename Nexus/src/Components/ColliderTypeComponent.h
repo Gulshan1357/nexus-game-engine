@@ -1,5 +1,6 @@
 #pragma once
-#include "src/Events/CollisionEvent.h"
+
+#include "src/Physics/Contact.h"
 
 enum class ColliderType
 {
@@ -16,9 +17,9 @@ struct ColliderTypeComponent
 {
 	ColliderType type;
 
-	ContactInfo contactInfo; // Store contact info for Render debug system
+	Contact contactInfo; // Store contact info for Render debug system
 
-	explicit ColliderTypeComponent(const ColliderType type, const ContactInfo& contactInfo = ContactInfo())
+	explicit ColliderTypeComponent(const ColliderType type, const Contact& contactInfo = Contact())
 		: type(type), contactInfo(contactInfo)
 	{}
 };

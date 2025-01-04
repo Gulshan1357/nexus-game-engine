@@ -110,6 +110,7 @@
     <ClInclude Include="src\Utils\GraphicsUtils.h" />
     <ClInclude Include="src\Utils\VectorN.h" />
     <ClInclude Include="src\Utils\Matrix.h" />
+    <ClInclude Include="src\Physics\Contact.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

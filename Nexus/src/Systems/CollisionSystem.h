@@ -11,6 +11,7 @@
 
 #include "src/EventManagement/EventManager.h"
 #include "src/Events/CollisionEvent.h"
+#include "src/Physics/Contact.h"
 
 #include "src/Physics/PhysicsEngine.h"
 #include "src/Utils/GraphicsUtils.h"
@@ -105,7 +106,7 @@ public:
 	}
 
 	// Collision detection between circle-circle
-	static std::optional<ContactInfo> GetCircleCircleCollisionInfo(const Entity a, const Entity b)
+	static std::optional<Contact> GetCircleCircleCollisionInfo(const Entity a, const Entity b)
 	{
 		const auto& aCircleCollider = a.GetComponent<CircleColliderComponent>();
 		const auto& bCircleCollider = b.GetComponent<CircleColliderComponent>();
@@ -130,11 +131,11 @@ public:
 
 		const float penetrationDepth = (endContactPoint - startContactPoint).Magnitude();
 
-		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+		return Contact(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 	}
 
 	// Collision detection between box-box, polygon-polygon and box-polygon
-	static std::optional<ContactInfo> GetPolygonPolygonCollisionInfo(const Entity a, const Entity b)
+	static std::optional<Contact> GetPolygonPolygonCollisionInfo(const Entity a, const Entity b)
 	{
 		const auto& aCollider = a.GetComponent<ColliderTypeComponent>();
 		const auto& bCollider = b.GetComponent<ColliderTypeComponent>();
@@ -173,11 +174,11 @@ public:
 			return std::nullopt;
 		}
 
-		return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetration);
+		return Contact(startContactPoint, endContactPoint, collisionNormal, penetration);
 	}
 
 	// Collision detection between circle-polygon(or box)
-	static std::optional<ContactInfo> GetCirclePolygonCollisionInfo(const Entity circleEntity, const Entity polygonEntity)
+	static std::optional<Contact> GetCirclePolygonCollisionInfo(const Entity circleEntity, const Entity polygonEntity)
 	{
 		// Retrieve circle properties
 		const auto& circleCollider = circleEntity.GetComponent<ColliderTypeComponent>();
@@ -269,7 +270,7 @@ public:
 
 					Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 					Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-					return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+					return Contact(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 				}
 			}
 			else
@@ -292,7 +293,7 @@ public:
 						float penetrationDepth = circleRadius - toCircleFromEnd.Magnitude();
 						Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 						Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-						return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+						return Contact(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 					}
 				}
 				else
@@ -312,7 +313,7 @@ public:
 						float penetrationDepth = circleRadius - maxProjection;
 						Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 						Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-						return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+						return Contact(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 					}
 				}
 			}
@@ -324,7 +325,7 @@ public:
 			float penetrationDepth = circleRadius - maxProjection;
 			Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 			Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-			return ContactInfo(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+			return Contact(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 		}
 	}
 };

@@ -221,6 +221,7 @@
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
     <ClInclude Include="src\Physics\Constants.h" />
+    <ClInclude Include="src\Physics\Contact.h" />
     <ClInclude Include="src\Physics\PhysicsEngine.h" />
     <ClInclude Include="src\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
