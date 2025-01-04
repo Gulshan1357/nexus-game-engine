@@ -15,7 +15,7 @@ struct Matrix
 
 	~Matrix();
 
-	Matrix& operator=(const Matrix& matrix) noexcept;	// m1 = m2
+	Matrix& operator=(const Matrix& matrix);			// m1 = m2
 	VectorN operator*(const VectorN& vectorN) const;	// matrix * vector
 	Matrix operator*(const Matrix& matrix) const;		// m1 * m2
 
