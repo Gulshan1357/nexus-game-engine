@@ -93,6 +93,12 @@ void PhysicsEngine::IntegrateForces(RigidBodyComponent& rigidBodyComponent, floa
 
 void PhysicsEngine::IntegrateVelocities(const RigidBodyComponent& rigidBodyComponent, TransformComponent& transformComponent, float dt)
 {
+	// If the body have infinite mass, return 0 displacement
+	if (rigidBodyComponent.IsStatic())
+	{
+		return;
+	}
+
 	// Calculating displacement by integrating velocity
 	transformComponent.position += rigidBodyComponent.velocity * dt;
 
