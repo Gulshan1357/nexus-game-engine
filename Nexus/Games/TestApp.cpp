@@ -93,23 +93,24 @@ void TestApp::LoadLevel(int level)
 
 	// Walls and grounds
 	Entity ground = m_coordinator->CreateEntity();
-	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -250.0f), Vector2(1.f, 1.f));
-	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f, 0.0f, 0.0f, 0.2f, 0.7f);
+	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -240.0f), Vector2(1.f, 1.f));
+	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.2f, 0.7f);
 	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH), 500.0f);
+	ground.Tag("ground");
 	// Entity leftWall = m_coordinator->CreateEntity();
 	// leftWall.AddComponent<TransformComponent>(Vector2(0.f, static_cast<float>(Physics::SCREEN_HEIGHT)/2), Vector2(1.f, 1.f));
-	// leftWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f);
+	// leftWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
 	// leftWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	// leftWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
 	// Entity rightWall = m_coordinator->CreateEntity();
 	// rightWall.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH), static_cast<float>(Physics::SCREEN_HEIGHT)/2), Vector2(1.f, 1.f));
-	// rightWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f);
+	// rightWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
 	// rightWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	// rightWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
 	// Entity ceiling = m_coordinator->CreateEntity();
 	// ceiling.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH)/2, static_cast<float>(Physics::SCREEN_HEIGHT)), Vector2(1.f, 1.f));
-	// ceiling.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), true, 0.0f);
+	// ceiling.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
 	// ceiling.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	// ceiling.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH), 5.0f);
 
@@ -117,7 +118,7 @@ void TestApp::LoadLevel(int level)
 	// Add Entities and Components
 	Entity test = m_coordinator->CreateEntity();
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
-	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f));
+	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f), Vector2(), false, 0.0f);
 	test.AddComponent<SpriteComponent>("player1-test-image", 2, Asset::DemoPlayer::ANIM_BACKWARDS); // Only prints a default sprite
 	// test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
 	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 18.f, 18.0f, 18.f, 18.f);
@@ -133,7 +134,7 @@ void TestApp::LoadLevel(int level)
 
 	// Entity test2 = m_coordinator->CreateEntity();
 	// test2.AddComponent<TransformComponent>(Vector2(450.f, 450.f), Vector2(1.f, 1.f));
-	// test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f));
+	// test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f), false, 1.0f);
 	// test2.AddComponent<SpriteComponent>("player2-test-image", 2, Asset::DemoPlayer::ANIM_FORWARDS);
 	// test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
 	// test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
@@ -169,7 +170,7 @@ void TestApp::LoadLevel(int level)
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBall.AddComponent<TransformComponent>(Vector2(400.f, 200.f), Vector2(1.f, 1.f), -0.3f);
-	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
+	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	// redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4);
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
@@ -184,23 +185,12 @@ void TestApp::LoadLevel(int level)
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'S', Input::PlayerAction::MOVE_DOWN);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
 
-	// Entity ball6 = m_coordinator->CreateEntity();
-	// ball6.AddComponent<SpriteComponent>("red-ball", 3);
-	// ball6.AddComponent<TransformComponent>(Vector2(100.f, 100.f), Vector2(1.f, 1.f), 0.13f);
-	// ball6.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 50.f, 0.f);
-	// ball6.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	// // ball6.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
-	// /*ball6.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"));*/
-	// ball6.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
-	//
-	// // Adding Torque
-	// float torque = 260;
-	// ball6.GetComponent<RigidBodyComponent>().AddTorque(torque);
-	// ball6.Tag("Debug");
+	// Constraints
 
-	// Adding weight force
-	// Vector2 weight = Vector2(0.0f, redBigBall.GetComponent<RigidBodyComponent>().mass * -9.8f * Physics::PIXEL_PER_METER);
-	// redBigBall.GetComponent<RigidBodyComponent>().AddForce(weight);
+	Entity ballA = m_coordinator->CreateEntity();
+	Entity ballB = m_coordinator->CreateEntity();
+	// coordinator->AddConstraint<Joint>(ballA, ballB, ballA.transform.position);
+
 
 }
 
@@ -355,7 +345,7 @@ void TestApp::SpawnShape(Vector2 position, ColliderType colliderType) const
 	Entity shape = m_coordinator->CreateEntity();
 	shape.AddComponent<SpriteComponent>("red-ball", 3);
 	shape.AddComponent<TransformComponent>(position, Vector2(1.f, 1.f), 0.53f);
-	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), true, 5.0f, 0.0f, 0.0f, 0.1f, 0.1f);
+	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), false, 5.0f, 0.0f, 0.0f, 0.1f, 0.1f);
 	shape.Tag("SpawnItem");
 	switch (colliderType)
 	{

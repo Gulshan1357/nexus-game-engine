@@ -55,14 +55,11 @@ float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
 void PhysicsEngine::InitializeEntityPhysics(const Entity& entity)
 {
 	auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
-	if (rigidBody.bUsePhysics)
+	rigidBody.inverseOfMass = (rigidBody.mass != 0.0f) ? 1.0f / rigidBody.mass : 0.0f;
+	if (entity.HasComponent<ColliderTypeComponent>())
 	{
-		rigidBody.inverseOfMass = (rigidBody.mass != 0.0f) ? 1.0f / rigidBody.mass : 0.0f;
-		if (entity.HasComponent<ColliderTypeComponent>())
-		{
-			rigidBody.angularMass = PhysicsEngine::CalculateMomentOfInertia(entity);
-			rigidBody.inverseOfAngularMass = (rigidBody.angularMass != 0.0f) ? 1.0f / rigidBody.angularMass : 0.0f;
-		}
+		rigidBody.angularMass = PhysicsEngine::CalculateMomentOfInertia(entity);
+		rigidBody.inverseOfAngularMass = (rigidBody.angularMass != 0.0f) ? 1.0f / rigidBody.angularMass : 0.0f;
 	}
 }
 
@@ -118,10 +115,6 @@ void PhysicsEngine::UpdateColliderProperties(const Entity& entity, TransformComp
 	else if (entity.HasComponent<CircleColliderComponent>())
 	{
 		UpdateCircleColliderCenter(entity.GetComponent<CircleColliderComponent>(), transform);
-	}
-	else
-	{
-		Logger::Err("Couldn't update the collider. Collider Component not found!");
 	}
 }
 
@@ -385,8 +378,8 @@ void PhysicsEngine::ResolvePenetration(const float depth, const Vector2 collisio
 	const float displacementA = depth / (aRigidbody.inverseOfMass + bRigidbody.inverseOfMass) * aRigidbody.inverseOfMass;
 	const float displacementB = depth / (aRigidbody.inverseOfMass + bRigidbody.inverseOfMass) * bRigidbody.inverseOfMass;
 
-	aTransform.position -= collisionNormal * displacementA;
-	bTransform.position += collisionNormal * displacementB;
+	if (!aRigidbody.isKinematic) aTransform.position -= collisionNormal * displacementA;
+	if (!bRigidbody.isKinematic) bTransform.position += collisionNormal * displacementB;
 }
 
 // (1) New Relative velocity along the collision normal =  - elasticity(E) (Relative velocity along collision normal)
@@ -443,6 +436,6 @@ void PhysicsEngine::ResolveCollision(const Vector2 startContactPoint, const Vect
 
 	Vector2 totalImpulse = impulseNormal + impulseTangent;
 
-	aRigidbody.ApplyImpulse(totalImpulse, rA);
-	bRigidbody.ApplyImpulse(-totalImpulse, rB);
+	if (!aRigidbody.isKinematic) aRigidbody.ApplyImpulse(totalImpulse, rA);
+	if (!bRigidbody.isKinematic) bRigidbody.ApplyImpulse(-totalImpulse, rB);
 }

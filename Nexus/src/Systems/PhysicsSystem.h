@@ -58,10 +58,11 @@ public:
 			auto& transform = entity.GetComponent<TransformComponent>();
 			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
 
-			if (!rigidBody.bUsePhysics)
+			if (rigidBody.isKinematic)
 			{
 				rigidBody.velocity += rigidBody.acceleration * dt;
 				transform.position += rigidBody.velocity * dt;
+				PhysicsEngine::UpdateColliderProperties(entity, transform);
 			}
 			else
 			{
@@ -71,7 +72,6 @@ public:
 				PhysicsEngine::IntegrateForces(rigidBody, dt);
 				PhysicsEngine::IntegrateVelocities(rigidBody, transform, dt);
 				PhysicsEngine::UpdateColliderProperties(entity, transform);
-
 
 				//------------------------------------------------------------------------
 				// Apply constantly acting forces like gravity, drag etc.

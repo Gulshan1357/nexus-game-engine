@@ -49,12 +49,16 @@ public:
 			colliderType.contactInfo = Contact();
 
 			// Debug rotation
-			static std::string text;
-			if (entity.HasTag("Debug"))
-			{
-				text = "Debug rotation: " + std::to_string(entity.GetComponent<TransformComponent>().rotation);
-			}
-			Graphics::PrintText(text, Vector2(50.0f, 80.0f));
+			// static std::string text;
+			// if (entity.HasComponent<BoxColliderComponent>())
+			// {
+			// 	if (entity.HasTag("ground"))
+			// 	{
+			// 		text = "Debug rotation: " + entity.GetComponent<BoxColliderComponent>().globalVertices.begin()->ToString();
+			// 		Graphics::PrintText(text, Vector2(50.0f, 80.0f));
+			// 	}
+			// 	
+			// }
 
 			// Debug lines for Spring relationship
 			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))

@@ -8,9 +8,10 @@ Components store data and define the properties of entities in the game.
    - Stores position, scale, and rotation.
 
 2. **RigidBody Component**  
-   - Stores information such as velocity, acceleration, mass, and `bUsePhysics`.  
-   - If `bUsePhysics` is `false`, acceleration is directly integrated to increment velocity.  
-   - If `bUsePhysics` is `true`, forces are used to calculate acceleration.
+   - Stores information such as velocity, acceleration, mass, and `isKinematic`.  
+   - If `isKinematic` is `false`, then the external forces, torque and impulses will be responsible for the motion.  
+   - If `isKinematic` is `true` (default), then the forces, collisions or joints won't affect the rigidbody.
+   - 
 
 3. **Sprite Component**  
    - Stores:  

@@ -16,7 +16,7 @@ public:
 	// Entity setup
 	//------------------------------------------------------------------------
 
-	// Calculate inverse mass, angular mass(Moment of Inertia) and inverse angular mass of entity with RigidBody and bUsePhysics set to true
+	// Calculate inverse mass, angular mass(Moment of Inertia) and inverse angular mass of entity with RigidBody and isKinematic set to false
 	static void InitializeEntityPhysics(const Entity& entity);
 
 	// Calculate Angular Mass

@@ -6,8 +6,8 @@
 /**
  * RigidBody Component is the physics components that provides simulations like velocity and acceleration
  * @param velocity (Vector2): Add this Vector to TransformComponent's position vector every delta time
- * @param acceleration (Vector2): Initial acceleration of the RigidBody. If bUsePhysics = true then the additional forces will change this value.
- * @param bUsePhysics (Bool): Default value is false. If set to true then it uses PhysicsEngine for stimulating forces and mass to drive acceleration. If set to false it can still move but the original acceleration remains the same. Toggling this value at runtime won't automatically calculate these values.
+ * @param acceleration (Vector2): Initial acceleration of the RigidBody. If isKinematic = false then the additional forces will change this value.
+ * @param isKinematic (Bool): Default value is true. If set to true then forces, collisions or joints won't affect the rigidbody. Toggling this value at runtime won't automatically calculate these values, you alos have to call the Physics::InitializeEntityPhysics()
  * @param mass (Float): Default value is set to 1. If mass is 0 then object is static and it won't move (like floor)
  * @param angularVelocity (Float): Default value is set to 0.
  * @param angularAcceleration (Float): Default value is set to 0.
@@ -21,7 +21,7 @@ public:
 	Vector2 velocity;
 	Vector2 acceleration;
 
-	bool bUsePhysics;
+	bool isKinematic;
 
 	float mass;
 
@@ -45,7 +45,7 @@ public:
 	explicit RigidBodyComponent(
 		const Vector2 velocity = Vector2(),
 		const Vector2 acceleration = Vector2(),
-		const bool bUsesPhysics = false,
+		bool isKinematic = true,
 		const float mass = 1.0f,
 		const float angularVelocity = 0.0f,
 		const float angularAcceleration = 0.0f,
@@ -54,7 +54,7 @@ public:
 	) :
 		velocity(velocity),
 		acceleration(acceleration),
-		bUsePhysics(bUsesPhysics),
+		isKinematic(isKinematic),
 		mass(mass),
 		angularVelocity(angularVelocity),
 		angularAcceleration(angularAcceleration),
