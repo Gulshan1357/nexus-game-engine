@@ -48,35 +48,17 @@ public:
 		);
 	}
 
-	void Update(const float deltaTime)
+	// Add and integrate forces for non-kinematic bodies
+	void UpdateForces(const float deltaTime)
 	{
-		// Delta time is in milliseconds so dividing by 1000 to convert it into seconds
-		const float dt = deltaTime / 1000;
-
+		const float dt = deltaTime / 1000.0f;
 		for (auto entity : GetSystemEntities())
 		{
 			auto& transform = entity.GetComponent<TransformComponent>();
 			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
 
-			if (rigidBody.isKinematic)
+			if (!rigidBody.isKinematic)
 			{
-				rigidBody.velocity += rigidBody.acceleration * dt;
-				transform.position += rigidBody.velocity * dt;
-				PhysicsEngine::UpdateColliderProperties(entity, transform);
-			}
-			else
-			{
-				// Integrating all the forces and torque acting on the RigidBody using Physics Engine
-				// transform.position += PhysicsEngine::IntegrateLinear(rigidBody, dt);
-				// transform.rotation += PhysicsEngine::IntegrateAngular(rigidBody, dt);
-				PhysicsEngine::IntegrateForces(rigidBody, dt);
-				PhysicsEngine::IntegrateVelocities(rigidBody, transform, dt);
-				PhysicsEngine::UpdateColliderProperties(entity, transform);
-
-				//------------------------------------------------------------------------
-				// Apply constantly acting forces like gravity, drag etc.
-				//------------------------------------------------------------------------
-
 				// Adding Drag force
 				Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, 0.01f);
 				rigidBody.AddForce(drag);
@@ -88,7 +70,41 @@ public:
 				// AddSpringForceToConnectedEntities(entity);
 
 				// HandleEdgeCollision(entity, transform, rigidBody);
+
+				PhysicsEngine::IntegrateForces(rigidBody, dt);
 			}
+		}
+	}
+
+	// Integrate velocity and acceleration (linear and angular) for all the bodies and update their collider
+	void UpdateVelocities(const float deltaTime)
+	{
+		const float dt = deltaTime / 1000.0f;
+
+		for (auto entity : GetSystemEntities())
+		{
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
+
+			if (rigidBody.isKinematic)
+			{
+				rigidBody.velocity += rigidBody.acceleration * dt;
+				transform.position += rigidBody.velocity * dt;
+				rigidBody.angularVelocity += rigidBody.angularAcceleration * dt;
+				transform.rotation += rigidBody.angularVelocity * dt;
+			}
+			else
+			{
+				PhysicsEngine::IntegrateVelocities(rigidBody, transform, dt);
+			}
+		}
+		// Update collider for all the bodies
+		for (auto entity : GetSystemEntities())
+		{
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
+
+			PhysicsEngine::UpdateColliderProperties(entity, transform);
 		}
 	}
 

@@ -202,6 +202,7 @@
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Components\CircleColliderComponent.h" />
     <ClInclude Include="src\Components\ColliderTypeComponent.h" />
+    <ClInclude Include="src\Components\ConstraintComponent.h" />
     <ClInclude Include="src\Components\InputComponent.h" />
     <ClInclude Include="src\Components\PolygonColliderComponent.h" />
     <ClInclude Include="src\Components\RigidBodyComponent.h" />
@@ -225,6 +226,7 @@
     <ClInclude Include="src\Physics\PhysicsEngine.h" />
     <ClInclude Include="src\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
+    <ClInclude Include="src\Systems\ConstraintSystem.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
     <ClInclude Include="src\Systems\InputSystem.h" />
     <ClInclude Include="src\Systems\PhysicsSystem.h" />

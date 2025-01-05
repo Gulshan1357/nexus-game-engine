@@ -31,6 +31,7 @@
 #include "src/Systems/RenderDebugSystem.h"
 #include "src/Systems/PhysicsSystem.h"
 #include "src/Systems/AnimationSystem.h"
+#include "src/Systems/ConstraintSystem.h"
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
@@ -78,6 +79,7 @@ void TestApp::LoadLevel(int level)
 	m_coordinator->AddSystem<RenderDebugSystem>();
 	m_coordinator->AddSystem<AnimationSystem>();
 	m_coordinator->AddSystem<PhysicsSystem>();
+	m_coordinator->AddSystem<ConstraintSystem>();
 
 	// Add assets to the asset manager
 	m_assetManager->AddSprite("player1-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
@@ -169,7 +171,7 @@ void TestApp::LoadLevel(int level)
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
-	redBall.AddComponent<TransformComponent>(Vector2(400.f, 200.f), Vector2(1.f, 1.f), -0.3f);
+	redBall.AddComponent<TransformComponent>(Vector2(400.f, 300.f), Vector2(1.f, 1.f), -0.3f);
 	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	// redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4);
@@ -281,7 +283,11 @@ void TestApp::Update(float deltaTime)
 	// Invoke all the systems that needs to be updated
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
-	m_coordinator->GetSystem<PhysicsSystem>().Update(deltaTime);
+
+	// Order is important. First integrate the forces, then resolve the constraint, then integrate the velocities
+	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(deltaTime);
+	m_coordinator->GetSystem<ConstraintSystem>().Update(deltaTime);
+	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(deltaTime);
 }
 
 //------------------------------------------------------------------------
