@@ -21,6 +21,8 @@ struct Matrix
 
 	void Zero();
 	[[nodiscard]] Matrix Transpose() const;
+
+	static VectorN SolveGaussSeidel(const Matrix& a, const VectorN& b);	// Gauss-Seidel Method to solve Ax = B for x, where A is a matrix and B is VectorN
 };
 
 inline Matrix::Matrix() : numRows(0), numCols(0), rowVectors(nullptr) {}
@@ -94,4 +96,25 @@ inline Matrix Matrix::Transpose() const
 		for (size_t j = 0; j < numCols; j++)
 			result.rowVectors[j][i] = rowVectors[i][j];
 	return result;
+}
+
+// TODO:: Check if this method can be improved
+inline VectorN Matrix::SolveGaussSeidel(const Matrix& a, const VectorN& b)
+{
+	const size_t sizeOfResult = b.dimensions;
+	VectorN result(sizeOfResult);
+	result.Zero();
+
+	// Iterate sizeOfResult times
+	for (size_t iterate = 0; iterate < sizeOfResult; iterate++)
+	{
+		for (size_t i = 0; i < sizeOfResult; i++)
+		{
+			if (a.rowVectors[i][i] != 0.0f)
+			{
+				result[i] += (b[i] / a.rowVectors[i][i]) - (a.rowVectors[i].Dot(result) / a.rowVectors[i][i]);
+			}
+		}
+	}
+	return  result;
 }
