@@ -86,14 +86,20 @@ public:
 	}
 
 	// Apply linear impulse to the RigidBody's center of mass. Change in Velocity, Δv = Impulse / mass
-	void ApplyImpulse(const Vector2 impulse)
+	void ApplyImpulseLinear(const Vector2 impulse)
 	{
-		PhysicsEngine::ApplyImpulse(*this, impulse);
+		PhysicsEngine::ApplyImpulseLinear(*this, impulse);
+	}
+
+	// Apply angular impulse to the RigidBody's center of mass.
+	void ApplyImpulseAngular(const float impulse)
+	{
+		PhysicsEngine::ApplyImpulseAngular(*this, impulse);
 	}
 
 	// Apply linear + angular impulse to the point at a certain distance from RigidBody's center of mass.
-	void ApplyImpulse(const Vector2 impulse, const Vector2& distanceFromCenter)
+	void ApplyImpulseAngular(const Vector2 impulse, const Vector2& distanceFromCenter)
 	{
-		PhysicsEngine::ApplyImpulse(*this, impulse, distanceFromCenter);
+		PhysicsEngine::ApplyImpulseAtPoint(*this, impulse, distanceFromCenter);
 	}
 };

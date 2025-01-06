@@ -267,7 +267,7 @@ Vector2 PhysicsEngine::GenerateSpringForce(const TransformComponent& transformA,
 // Momentum P = mass * velocity
 // Impulse is the change in momentum, J = ΔP = m*Δv
 // Therefore, the change in velocity Δv = Impulse / mass
-void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse)
+void PhysicsEngine::ApplyImpulseLinear(RigidBodyComponent& rigidbody, const Vector2& impulse)
 {
 	if (rigidbody.IsStatic())
 	{
@@ -276,7 +276,16 @@ void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& i
 	rigidbody.velocity += impulse * rigidbody.inverseOfMass;
 }
 
-void PhysicsEngine::ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r)
+void PhysicsEngine::ApplyImpulseAngular(RigidBodyComponent& rigidbody, const float impulse)
+{
+	if (rigidbody.IsStatic())
+	{
+		return;
+	}
+	rigidbody.angularVelocity += impulse * rigidbody.inverseOfAngularMass;
+}
+
+void PhysicsEngine::ApplyImpulseAtPoint(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r)
 {
 	if (rigidbody.IsStatic())
 	{
@@ -438,19 +447,19 @@ void PhysicsEngine::ResolveCollision(const Vector2 startContactPoint, const Vect
 
 	Vector2 totalImpulse = impulseNormal + impulseTangent;
 
-	if (!aRigidbody.isKinematic) aRigidbody.ApplyImpulse(totalImpulse, rA);
-	if (!bRigidbody.isKinematic) bRigidbody.ApplyImpulse(-totalImpulse, rB);
+	if (!aRigidbody.isKinematic) aRigidbody.ApplyImpulseAngular(totalImpulse, rA);
+	if (!bRigidbody.isKinematic) bRigidbody.ApplyImpulseAngular(-totalImpulse, rB);
 }
 
-Vector2 PhysicsEngine::LocalSpaceToWorldSpace(const TransformComponent& oldLocalOrigin, const TransformComponent& pointToConvert)
+Vector2 PhysicsEngine::LocalSpaceToWorldSpace(const TransformComponent& oldLocalOrigin, const Vector2 pointToConvert)
 {
-	const Vector2 rotated = pointToConvert.position.Rotate(oldLocalOrigin.rotation);
+	const Vector2 rotated = pointToConvert.Rotate(oldLocalOrigin.rotation);
 	return rotated + oldLocalOrigin.position;
 }
 
-Vector2 PhysicsEngine::WorldSpaceToLocalSpace(const TransformComponent& newLocalOrigin, const TransformComponent& pointToConvert)
+Vector2 PhysicsEngine::WorldSpaceToLocalSpace(const TransformComponent& newLocalOrigin, const Vector2 pointToConvert)
 {
-	const Vector2 translated = pointToConvert.position - newLocalOrigin.position;
+	const Vector2 translated = pointToConvert - newLocalOrigin.position;
 	// Multiplying by the inverse of rotation matrix
 	float rotatedX = translated.x * cos(-newLocalOrigin.rotation) - translated.y * sin(-newLocalOrigin.rotation);
 	float rotatedY = translated.y * cos(-newLocalOrigin.rotation) + translated.x * sin(-newLocalOrigin.rotation);

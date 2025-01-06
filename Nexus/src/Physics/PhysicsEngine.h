@@ -86,9 +86,11 @@ public:
 	//------------------------------------------------------------------------
 
 	// Apply linear impulse at the Center of Mass
-	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse);
+	static void ApplyImpulseLinear(RigidBodyComponent& rigidbody, const Vector2& impulse);
+	// Apply angular impulse
+	static void ApplyImpulseAngular(RigidBodyComponent& rigidbody, const float impulse);
 	// Apply impulse at a certain point which is at distance 'r' from Center of Mass
-	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r);
+	static void ApplyImpulseAtPoint(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r);
 
 
 	//------------------------------------------------------------------------
@@ -122,10 +124,10 @@ public:
 	//------------------------------------------------------------------------
 
 	// Convert Local position and rotation to world position and rotation
-	static Vector2 LocalSpaceToWorldSpace(const TransformComponent& oldLocalOrigin, const TransformComponent& pointToConvert);
+	static Vector2 LocalSpaceToWorldSpace(const TransformComponent& oldLocalOrigin, const Vector2 pointToConvert);
 
 	// Convert World position and rotation to local position and rotation
-	static Vector2 WorldSpaceToLocalSpace(const TransformComponent& newLocalOrigin, const TransformComponent& pointToConvert);
+	static Vector2 WorldSpaceToLocalSpace(const TransformComponent& newLocalOrigin, const Vector2 pointToConvert);
 
 
 	//------------------------------------------------------------------------
