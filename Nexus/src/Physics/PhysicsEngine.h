@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+struct VectorN;
+struct Matrix;
 struct PolygonColliderComponent;
 struct BoxColliderComponent;
 struct CircleColliderComponent;
@@ -12,6 +14,7 @@ class Entity;
 class PhysicsEngine
 {
 public:
+
 	//------------------------------------------------------------------------
 	// Entity setup
 	//------------------------------------------------------------------------
@@ -53,11 +56,8 @@ public:
 	//------------------------------------------------------------------------
 
 	static void AddForce(RigidBodyComponent& rigidBodyComponent, const Vector2& force);
-
 	static void ClearForces(RigidBodyComponent& rigidBodyComponent);
-
 	static void AddTorque(RigidBodyComponent& rigidBodyComponent, const float torque);
-
 	static void ClearTorque(RigidBodyComponent& rigidBodyComponent);
 
 
@@ -85,8 +85,10 @@ public:
 	// Impulse. An instantaneous change in velocity. Δv = Impulse / mass
 	//------------------------------------------------------------------------
 
-	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse); // Apply linear impulse at the Center of Mass
-	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r); // Apply impulse at a certain point which is at distance 'r' from Center of Mass
+	// Apply linear impulse at the Center of Mass
+	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse);
+	// Apply impulse at a certain point which is at distance 'r' from Center of Mass
+	static void ApplyImpulse(RigidBodyComponent& rigidbody, const Vector2& impulse, const Vector2& r);
 
 
 	//------------------------------------------------------------------------
@@ -114,4 +116,43 @@ public:
 	// This method executes the ResolvePenetration() method, calculate impulse and apply it to the two rigid-bodies.
 	// J = -(1 + minimum elasticity) * Relative velocity along collision normal / (1 / Mass of A) + (1 / Mass of B), along the direction of collision normal
 	static void ResolveCollision(Vector2 startContactPoint, Vector2 endContactPoint, const float depth, const Vector2 collisionNormal, RigidBodyComponent& aRigidbody, RigidBodyComponent& bRigidbody, TransformComponent& aTransform, TransformComponent& bTransform);
+
+	//------------------------------------------------------------------------
+	// Coordinates conversion
+	//------------------------------------------------------------------------
+
+	// Convert Local position and rotation to world position and rotation
+	static Vector2 LocalSpaceToWorldSpace(const TransformComponent& oldLocalOrigin, const TransformComponent& pointToConvert);
+
+	// Convert World position and rotation to local position and rotation
+	static Vector2 WorldSpaceToLocalSpace(const TransformComponent& newLocalOrigin, const TransformComponent& pointToConvert);
+
+
+	//------------------------------------------------------------------------
+	// Constraint Resolution
+	//------------------------------------------------------------------------
+
+	//---------------------------------------------
+	// Matrix6x6 with the all inverse mass and inverse I (angular Mass) of bodies "a" and "b"
+	//---------------------------------------------
+	//  [ 1/ma  0     0     0     0     0    ]
+	//  [ 0     1/ma  0     0     0     0    ]
+	//  [ 0     0     1/Ia  0     0     0    ]
+	//  [ 0     0     0     1/mb  0     0    ]
+	//  [ 0     0     0     0     1/mb  0    ]
+	//  [ 0     0     0     0     0     1/Ib ]
+	//---------------------------------------------
+	static Matrix GetInverseMassMatrix(const RigidBodyComponent& rigidBodyA, const RigidBodyComponent& rigidBodyB);
+
+	//---------------------------------------------
+	// VecN with the all linear and angular velocities of bodies "a" and "b"
+	//---------------------------------------------
+	//  [ va.x ]
+	//  [ va.y ]
+	//  [ ωa   ]
+	//  [ vb.x ]
+	//  [ vb.y ]
+	//  [ ωb   ]
+	//---------------------------------------------
+	static VectorN GetVelocitiesVector(const RigidBodyComponent& rigidBodyA, const RigidBodyComponent& rigidBodyB);
 };

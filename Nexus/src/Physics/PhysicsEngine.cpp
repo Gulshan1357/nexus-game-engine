@@ -16,6 +16,8 @@
 
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
+#include "src/Utils/Matrix.h"
+#include "src/Utils/VectorN.h"
 
 float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
 {
@@ -438,4 +440,45 @@ void PhysicsEngine::ResolveCollision(const Vector2 startContactPoint, const Vect
 
 	if (!aRigidbody.isKinematic) aRigidbody.ApplyImpulse(totalImpulse, rA);
 	if (!bRigidbody.isKinematic) bRigidbody.ApplyImpulse(-totalImpulse, rB);
+}
+
+Vector2 PhysicsEngine::LocalSpaceToWorldSpace(const TransformComponent& oldLocalOrigin, const TransformComponent& pointToConvert)
+{
+	const Vector2 rotated = pointToConvert.position.Rotate(oldLocalOrigin.rotation);
+	return rotated + oldLocalOrigin.position;
+}
+
+Vector2 PhysicsEngine::WorldSpaceToLocalSpace(const TransformComponent& newLocalOrigin, const TransformComponent& pointToConvert)
+{
+	const Vector2 translated = pointToConvert.position - newLocalOrigin.position;
+	// Multiplying by the inverse of rotation matrix
+	float rotatedX = translated.x * cos(-newLocalOrigin.rotation) - translated.y * sin(-newLocalOrigin.rotation);
+	float rotatedY = translated.y * cos(-newLocalOrigin.rotation) + translated.x * sin(-newLocalOrigin.rotation);
+	return { rotatedX, rotatedY };
+}
+
+Matrix PhysicsEngine::GetInverseMassMatrix(const RigidBodyComponent& rigidBodyA, const RigidBodyComponent& rigidBodyB)
+{
+	Matrix inverseMass(6, 6);
+	inverseMass.Zero();
+	inverseMass.rowVectors[0][0] = rigidBodyA.inverseOfMass;
+	inverseMass.rowVectors[1][1] = rigidBodyA.inverseOfMass;
+	inverseMass.rowVectors[2][2] = rigidBodyA.inverseOfAngularMass;
+	inverseMass.rowVectors[3][3] = rigidBodyB.inverseOfMass;
+	inverseMass.rowVectors[4][4] = rigidBodyB.inverseOfMass;
+	inverseMass.rowVectors[5][5] = rigidBodyB.inverseOfAngularMass;
+	return inverseMass;
+}
+
+VectorN PhysicsEngine::GetVelocitiesVector(const RigidBodyComponent& rigidBodyA, const RigidBodyComponent& rigidBodyB)
+{
+	VectorN velocitiesVector(6);
+	velocitiesVector.Zero();
+	velocitiesVector[0] = rigidBodyA.velocity.x;
+	velocitiesVector[1] = rigidBodyA.velocity.y;
+	velocitiesVector[2] = rigidBodyA.angularVelocity;
+	velocitiesVector[3] = rigidBodyB.velocity.x;
+	velocitiesVector[4] = rigidBodyB.velocity.y;
+	velocitiesVector[5] = rigidBodyB.angularVelocity;
+	return velocitiesVector;
 }
