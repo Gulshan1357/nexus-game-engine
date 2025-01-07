@@ -110,9 +110,10 @@ inline VectorN Matrix::SolveGaussSeidel(const Matrix& a, const VectorN& b)
 	{
 		for (size_t i = 0; i < sizeOfResult; i++)
 		{
-			if (a.rowVectors[i][i] != 0.0f)
+			float dx = (b[i] / a.rowVectors[i][i]) - (a.rowVectors[i].Dot(result) / a.rowVectors[i][i]);
+			if (!std::isnan(dx)) // Check if number is NaN
 			{
-				result[i] += (b[i] / a.rowVectors[i][i]) - (a.rowVectors[i].Dot(result) / a.rowVectors[i][i]);
+				result[i] += dx;
 			}
 		}
 	}
