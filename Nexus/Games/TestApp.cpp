@@ -304,14 +304,14 @@ void TestApp::Update(float deltaTime)
 	const float dt = deltaTime / 1000.0f;
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 	// Order is important. First integrate the forces, then resolve the constraint, then integrate the velocities
-	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(deltaTime);
+	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt);
 	m_coordinator->GetSystem<ConstraintSystem>().PreSolve(dt);
 	for (int i = 0; i < 5; i++)
 	{
 		m_coordinator->GetSystem<ConstraintSystem>().Solve();
 	}
 	m_coordinator->GetSystem<ConstraintSystem>().PostSolve();
-	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(deltaTime);
+	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 }
 

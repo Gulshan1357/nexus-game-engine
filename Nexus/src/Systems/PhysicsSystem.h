@@ -51,7 +51,6 @@ public:
 	// Add and integrate forces for non-kinematic bodies
 	void UpdateForces(const float deltaTime)
 	{
-		const float dt = deltaTime / 1000.0f;
 		for (auto entity : GetSystemEntities())
 		{
 			auto& transform = entity.GetComponent<TransformComponent>();
@@ -71,7 +70,7 @@ public:
 
 				// HandleEdgeCollision(entity, transform, rigidBody);
 
-				PhysicsEngine::IntegrateForces(rigidBody, dt);
+				PhysicsEngine::IntegrateForces(rigidBody, deltaTime);
 			}
 		}
 	}
@@ -79,8 +78,6 @@ public:
 	// Integrate velocity and acceleration (linear and angular) for all the bodies and update their collider
 	void UpdateVelocities(const float deltaTime)
 	{
-		const float dt = deltaTime / 1000.0f;
-
 		for (auto entity : GetSystemEntities())
 		{
 			auto& transform = entity.GetComponent<TransformComponent>();
@@ -88,14 +85,14 @@ public:
 
 			if (rigidBody.isKinematic)
 			{
-				rigidBody.velocity += rigidBody.acceleration * dt;
-				transform.position += rigidBody.velocity * dt;
-				rigidBody.angularVelocity += rigidBody.angularAcceleration * dt;
-				transform.rotation += rigidBody.angularVelocity * dt;
+				rigidBody.velocity += rigidBody.acceleration * deltaTime;
+				transform.position += rigidBody.velocity * deltaTime;
+				rigidBody.angularVelocity += rigidBody.angularAcceleration * deltaTime;
+				transform.rotation += rigidBody.angularVelocity * deltaTime;
 			}
 			else
 			{
-				PhysicsEngine::IntegrateVelocities(rigidBody, transform, dt);
+				PhysicsEngine::IntegrateVelocities(rigidBody, transform, deltaTime);
 			}
 		}
 		// Update collider for all the bodies
