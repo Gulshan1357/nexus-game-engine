@@ -46,6 +46,13 @@ Components store data and define the properties of entities in the game.
      - Player identifier (`Input::PlayerID playerId`).  
      - Input values, e.g., `upVelocity`, `rightVelocity`, `downVelocity`, and `leftVelocity`.
 
+8. **ConstraintType Component**  
+   - Informs the constraint system of the constraint's type. Possible values: `JOINT`.  
+   - Always add this component along with a type constraint component.  
+     - **Joint Constraint Component**: Stores the 
+       - connected entities `a` and `b`,
+       - `anchorPointForA` and `anchorPointForB` which is the location of the anchor point w.r.t 'a' and 'b' computed by the `ConstraintSystem`,
+       - and 'jacobian' matrix, 'cachedLambda' (for impulse) and `bias` (for Baumgarte stabilization) also computed by the `ConstraintSystem`. 
 ---
 
 ## Additional Information Regarding RigidBody

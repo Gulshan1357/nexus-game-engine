@@ -33,9 +33,10 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
      - **`InputSystem`**: Subscribed to the `KeyPressEvent`. When the event is triggered, it executes the necessary actions based on the event data.
 
 6. **Render Debug System**
-   - Requires: `TransformComponent` and `ColliderTypeComponent`.
+   - Requires: `TransformComponent`.
    - Purpose: Renders various debug information.
-     - Currently renders outlines for different collider shapes (Box, Sphere, Polygon).
+     - Renders outlines for different collider shapes (Box, Sphere, Polygon).
+     - Draw a line between entities connected by joint constraint.
 
 7. **Animation System**
    - Requires: `SpriteComponent` and `AnimationComponent`.
@@ -49,6 +50,10 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
      - Calculates inverse mass, angular mass, and inverse angular mass for entities with a `RigidBody` at the start of `game::Initialize()`.  
      - Handles movement logic by updating the entity's position based on its velocity and acceleration and also by resolving applied forces and torque.  
      - Listens to collision events and resolves collisions. 
+
+9. **Constraint System**
+   - Requires: `TransformComponent` and `ConstraintTypeComponent`.
+   - Purpose: Resolves constraints between entities.
 
 ---
 

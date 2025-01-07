@@ -112,7 +112,8 @@
     <ClInclude Include="src\Utils\Matrix.h" />
     <ClInclude Include="src\Physics\Contact.h" />
     <ClInclude Include="src\Systems\ConstraintSystem.h" />
-    <ClInclude Include="src\Components\ConstraintComponent.h" />
+    <ClInclude Include="src\Components\ConstraintTypeComponent.h" />
+    <ClInclude Include="src\Components\JointConstraintComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

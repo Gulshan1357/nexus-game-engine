@@ -92,6 +92,7 @@ Entity Coordinator::CreateEntity()
 
 void Coordinator::KillEntity(const Entity entity)
 {
+	// TODO: if the entity is part of the joint then also delete the joint
 	m_entitiesToBeKilled.insert(entity);
 	Logger::Log("Entity " + std::to_string(entity.GetId()) + " was killed!");
 }

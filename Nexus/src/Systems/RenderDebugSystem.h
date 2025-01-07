@@ -7,6 +7,7 @@
 #include "src/Components/ColliderTypeComponent.h"
 #include "src/Components/PolygonColliderComponent.h"
 #include "src/Components/CircleColliderComponent.h"
+#include "src/Components/JointConstraintComponent.h"
 
 #include "src/Physics/Contact.h"
 
@@ -18,7 +19,7 @@ public:
 	RenderDebugSystem()
 	{
 		RequireComponent<TransformComponent>();
-		RequireComponent<ColliderTypeComponent>();
+		// RequireComponent<ColliderTypeComponent>();
 	}
 
 	void Update() const
@@ -26,45 +27,59 @@ public:
 		for (auto entity : GetSystemEntities())
 		{
 			const auto& transform = entity.GetComponent<TransformComponent>();
-			auto& colliderType = entity.GetComponent<ColliderTypeComponent>();
-
-			// Draw colliders
-			switch (colliderType.type)
+			if (entity.HasComponent<ColliderTypeComponent>())
 			{
-				case ColliderType::Box:
-					DrawBoxCollider(entity);
-					break;
-				case ColliderType::Circle:
-					DrawCircleCollider(entity);
-					break;
-				case ColliderType::Polygon:
-					DrawPolygonCollider(entity);
-					break;
+				auto& colliderType = entity.GetComponent<ColliderTypeComponent>();
+
+				// Draw colliders
+				switch (colliderType.type)
+				{
+					case ColliderType::Box:
+						DrawBoxCollider(entity);
+						break;
+					case ColliderType::Circle:
+						DrawCircleCollider(entity);
+						break;
+					case ColliderType::Polygon:
+						DrawPolygonCollider(entity);
+						break;
+				}
+
+				// Draw contact info
+				Graphics::DrawCircle(colliderType.contactInfo.startContactPoint, 3, 36, Color(Colors::RED));
+				Graphics::DrawCircle(colliderType.contactInfo.endContactPoint, 3, 36, Color(Colors::RED));
+				Graphics::DrawLine(colliderType.contactInfo.startContactPoint, colliderType.contactInfo.startContactPoint + colliderType.contactInfo.collisionNormal * 15, Color(Colors::RED));
+				colliderType.contactInfo = Contact();
+
+				// Debug rotation
+				// static std::string text;
+				// if (entity.HasComponent<BoxColliderComponent>())
+				// {
+				// 	if (entity.HasTag("ground"))
+				// 	{
+				// 		text = "Debug rotation: " + entity.GetComponent<BoxColliderComponent>().globalVertices.begin()->ToString();
+				// 		Graphics::PrintText(text, Vector2(50.0f, 80.0f));
+				// 	}
+				// 	
+				// }
 			}
 
-			// Draw contact info
-			Graphics::DrawCircle(colliderType.contactInfo.startContactPoint, 3, 36, Color(Colors::RED));
-			Graphics::DrawCircle(colliderType.contactInfo.endContactPoint, 3, 36, Color(Colors::RED));
-			Graphics::DrawLine(colliderType.contactInfo.startContactPoint, colliderType.contactInfo.startContactPoint + colliderType.contactInfo.collisionNormal * 15, Color(Colors::RED));
-			colliderType.contactInfo = Contact();
-
-			// Debug rotation
-			// static std::string text;
-			// if (entity.HasComponent<BoxColliderComponent>())
-			// {
-			// 	if (entity.HasTag("ground"))
-			// 	{
-			// 		text = "Debug rotation: " + entity.GetComponent<BoxColliderComponent>().globalVertices.begin()->ToString();
-			// 		Graphics::PrintText(text, Vector2(50.0f, 80.0f));
-			// 	}
-			// 	
-			// }
 
 			// Debug lines for Spring relationship
 			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
 			{
 				const auto& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
 				Graphics::DrawLine(connectedEntityTransform.position, transform.position);
+			}
+
+			// Debug lines for Joint Constraint relationship
+			if (entity.HasComponent<JointConstraintComponent>())
+			{
+				auto& jointComponent = entity.GetComponent<JointConstraintComponent>();
+				Graphics::DrawLine(
+					jointComponent.a.GetComponent<TransformComponent>().position,
+					jointComponent.b.GetComponent<TransformComponent>().position,
+					Color(Colors::GRAY));
 			}
 		}
 	}

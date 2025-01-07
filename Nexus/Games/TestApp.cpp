@@ -37,6 +37,7 @@
 #include "src/Utils/Logger.h"
 
 #include "src/Components/AnimationComponent.h"
+#include "src/Components/ConstraintTypeComponent.h"
 
 #include "src/Events/ActionChangeEvent.h"
 
@@ -66,6 +67,8 @@ void TestApp::Initialize()
 	m_coordinator->Update();
 	// Calculate inverse mass, angular mass and inverse angular mass of entities with RigidBody
 	m_coordinator->GetSystem<PhysicsSystem>().InitializeEntityPhysics();
+	// Calculate the local coordinates of the connected entities in the joint w.r.t anchor(self entity)
+	m_coordinator->GetSystem<ConstraintSystem>().InitializeLocalCoordinates();
 }
 
 void TestApp::LoadLevel(int level)
@@ -188,12 +191,29 @@ void TestApp::LoadLevel(int level)
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
 
 	// Constraints
+	std::vector<Entity> joinedEntities;
+	for (size_t i = 0; i < 8; i++)
+	{
+		Entity ball = m_coordinator->CreateEntity();
+		float x = Physics::SCREEN_WIDTH / 2.0f - (static_cast<float>(i) * 60.f);
+		ball.AddComponent<TransformComponent>(Vector2(x, 750.f), Vector2(1.f, 1.f));
+		ball.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, static_cast<float>(i), 0.f, 0.0f, 0.1f, 0.1f);
+		ball.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+		// ballA.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4);
+		ball.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+		ball.AddComponent<SpriteComponent>("red-ball");
+		joinedEntities.push_back(ball);
+	}
 
-	Entity ballA = m_coordinator->CreateEntity();
-	Entity ballB = m_coordinator->CreateEntity();
-	// coordinator->AddConstraint<Joint>(ballA, ballB, ballA.transform.position);
-
-
+	for (size_t i = 0; i < joinedEntities.size() - 1; i++)
+	{
+		Vector2 midpoint = (joinedEntities[i].GetComponent<TransformComponent>().position + joinedEntities[i + 1].GetComponent<TransformComponent>().position) * 0.5f;
+		Entity joint = m_coordinator->CreateEntity();
+		joint.AddComponent<TransformComponent>(midpoint, Vector2(0.1f, 0.1f));
+		joint.AddComponent<SpriteComponent>("blue-ball");
+		joint.AddComponent<ConstraintTypeComponent>(ConstrainType::JOINT);
+		joint.AddComponent<JointConstraintComponent>(joinedEntities[i], joinedEntities[i + 1]);
+	}
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
@@ -281,13 +301,18 @@ void TestApp::Update(float deltaTime)
 	m_coordinator->Update();
 
 	// Invoke all the systems that needs to be updated
-	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
+	const float dt = deltaTime / 1000.0f;
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
-
 	// Order is important. First integrate the forces, then resolve the constraint, then integrate the velocities
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(deltaTime);
-	m_coordinator->GetSystem<ConstraintSystem>().Update(deltaTime);
+	m_coordinator->GetSystem<ConstraintSystem>().PreSolve(dt);
+	for (int i = 0; i < 5; i++)
+	{
+		m_coordinator->GetSystem<ConstraintSystem>().Solve();
+	}
+	m_coordinator->GetSystem<ConstraintSystem>().PostSolve();
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(deltaTime);
+	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 }
 
 //------------------------------------------------------------------------
