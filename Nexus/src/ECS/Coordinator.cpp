@@ -112,7 +112,7 @@ bool Coordinator::EntityHasTag(Entity entity, const std::string& tag) const
 	return (it != m_entityPerTag.end() && it->second == entity);
 }
 
-Entity Coordinator::GetEntityByTag(const std::string& tag) const
+Entity& Coordinator::GetEntityByTag(const std::string& tag)
 {
 	return m_entityPerTag.at(tag);
 }

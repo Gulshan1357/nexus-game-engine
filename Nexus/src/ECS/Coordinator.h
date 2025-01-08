@@ -45,7 +45,7 @@ public:
 	// Tag management
 	void TagEntity(Entity entity, const std::string& tag);
 	[[nodiscard]] bool EntityHasTag(Entity entity, const std::string& tag) const;
-	Entity GetEntityByTag(const std::string& tag) const;
+	Entity& GetEntityByTag(const std::string& tag);
 	void RemoveEntityTag(Entity entity);
 
 	// Group management
@@ -72,7 +72,7 @@ public:
 	template <typename TSystem>
 	[[nodiscard]] bool HasSystem() const;
 	template <typename TSystem>
-	TSystem GetSystem() const;
+	TSystem& GetSystem() const;
 
 	// Check the component signature of an entity and add the entity to the systems that are interested in it
 	void AddEntityToSystems(Entity entity) const;
@@ -228,8 +228,8 @@ void Coordinator::RemoveComponent(const Entity entity)
 template <typename TComponent>
 bool Coordinator::HasComponent(const Entity entity) const
 {
-	const auto componentId = Component<TComponent>::GetId();
-	const auto entityId = entity.GetId();
+	const auto& componentId = Component<TComponent>::GetId();
+	const auto& entityId = entity.GetId();
 
 	return m_entityComponentSignatures[entityId].test(componentId);
 }
@@ -269,10 +269,10 @@ bool Coordinator::HasSystem() const
 
 //TODO: change the following to be more memory safe. Use share pointer or reference to unique pointer
 template <typename TSystem>
-TSystem Coordinator::GetSystem() const
+TSystem& Coordinator::GetSystem() const
 {
 	const auto system = m_systems.find(std::type_index(typeid(TSystem)));
-	return *(std::static_pointer_cast<TSystem>(system->second));
+	return *(static_cast<TSystem*>(system->second.get()));
 }
 
 // // To debug forward Args
