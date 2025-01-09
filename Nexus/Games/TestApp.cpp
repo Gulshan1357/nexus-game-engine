@@ -101,18 +101,18 @@ void TestApp::LoadLevel(int level)
 	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -240.0f), Vector2(1.f, 1.f));
 	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.2f, 0.7f);
 	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH), 500.0f);
+	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) - 10, 500.0f);
 	ground.Tag("ground");
-	// Entity leftWall = m_coordinator->CreateEntity();
-	// leftWall.AddComponent<TransformComponent>(Vector2(0.f, static_cast<float>(Physics::SCREEN_HEIGHT)/2), Vector2(1.f, 1.f));
-	// leftWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
-	// leftWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	// leftWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
-	// Entity rightWall = m_coordinator->CreateEntity();
-	// rightWall.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH), static_cast<float>(Physics::SCREEN_HEIGHT)/2), Vector2(1.f, 1.f));
-	// rightWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
-	// rightWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	// rightWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
+	Entity leftWall = m_coordinator->CreateEntity();
+	leftWall.AddComponent<TransformComponent>(Vector2(0.f, static_cast<float>(Physics::SCREEN_HEIGHT) / 2), Vector2(1.f, 1.f));
+	leftWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
+	leftWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	leftWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
+	Entity rightWall = m_coordinator->CreateEntity();
+	rightWall.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH), static_cast<float>(Physics::SCREEN_HEIGHT) / 2), Vector2(1.f, 1.f));
+	rightWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
+	rightWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	rightWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
 	// Entity ceiling = m_coordinator->CreateEntity();
 	// ceiling.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH)/2, static_cast<float>(Physics::SCREEN_HEIGHT)), Vector2(1.f, 1.f));
 	// ceiling.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
@@ -146,12 +146,12 @@ void TestApp::LoadLevel(int level)
 	// test2.Tag("Player2");
 	// test2.Group("Player");
 
-	// // Create animation for test Player 2
-	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 1.0f / 15.0f, { 0,1,2,3,4,5,6,7 });
-	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_LEFT, 1.0f / 15.0f, { 8,9,10,11,12,13,14,15 });
-	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
-	// m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
-	//
+	// Create animation for test Player 2
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_BACKWARDS, 1.0f / 15.0f, { 0,1,2,3,4,5,6,7 });
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_LEFT, 1.0f / 15.0f, { 8,9,10,11,12,13,14,15 });
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_RIGHT, 1.0f / 15.0f, { 16,17,18,19,20,21,22,23 });
+	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
+
 	// Add Key bindings for player 1
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_UP, Input::PlayerAction::MOVE_UP);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
@@ -295,7 +295,8 @@ void TestApp::Update(float deltaTime)
 	// Perform the subscription of the events for all systems
 	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
-	m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
+	// m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
+	m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
 
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
@@ -303,16 +304,12 @@ void TestApp::Update(float deltaTime)
 	// Invoke all the systems that needs to be updated
 	const float dt = deltaTime / 1000.0f;
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
-	// Order is important. First integrate the forces, then resolve the constraint, then integrate the velocities
+	// Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt);
-	m_coordinator->GetSystem<ConstraintSystem>().PreSolve(dt);
-	for (int i = 0; i < 5; i++)
-	{
-		m_coordinator->GetSystem<ConstraintSystem>().Solve();
-	}
-	m_coordinator->GetSystem<ConstraintSystem>().PostSolve();
-	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
+	m_coordinator->GetSystem<ConstraintSystem>().Update(dt);
+	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);
+
 }
 
 //------------------------------------------------------------------------
@@ -330,9 +327,10 @@ void TestApp::ProcessInput()
 	}
 	if ((App::IsKeyPressed(VK_LBUTTON) == true) && m_bWasLMousePressedPast == false)
 	{
-		Logger::Err("Left mouse button pressed");
-		SpawnShape(mousePos, ColliderType::Polygon);
+		Logger::Warn("Left mouse button pressed");
+		SpawnShape(mousePos, ColliderType::Circle);
 	}
+
 	m_bWasLMousePressedPast = App::IsKeyPressed(VK_LBUTTON);
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_2, "Player2");
@@ -382,7 +380,7 @@ void TestApp::SpawnShape(Vector2 position, ColliderType colliderType) const
 	{
 		case ColliderType::Box:
 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-			shape.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+			shape.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4, m_assetManager->GetSpriteHeight("red-ball") * 4, Vector2());
 			break;
 		case ColliderType::Polygon:
 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
