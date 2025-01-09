@@ -19,7 +19,7 @@ public:
 
 	Contact contact;
 
-	CollisionEvent(const Entity a, const Entity b, Contact contact) :
+	CollisionEvent(const Entity& a, const Entity& b, Contact contact) :
 		a(a), b(b), contact(contact)
 	{}
 };
