@@ -92,7 +92,7 @@ private:
 			std::cout << "Player 2" << "\n";
 			const auto& inputComponent = player.GetComponent<InputComponent>();
 			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			// auto& animationComponent = player.GetComponent<AnimationComponent>();
 			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
 			// rigidbody.velocity.y = -inputComponent.downVelocity;
@@ -121,7 +121,7 @@ private:
 			std::cout << "Player 2" << "\n";
 			const auto& inputComponent = player.GetComponent<InputComponent>();
 			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			// auto& animationComponent = player.GetComponent<AnimationComponent>();
 			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
 			// rigidbody.velocity.y = -inputComponent.downVelocity;
@@ -152,7 +152,7 @@ private:
 			std::cout << "Player 2" << "\n";
 			const auto& inputComponent = player.GetComponent<InputComponent>();
 			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			// auto& animationComponent = player.GetComponent<AnimationComponent>();
 			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
 			// rigidbody.velocity.y = -inputComponent.downVelocity;
@@ -181,7 +181,7 @@ private:
 			std::cout << "Player 2" << "\n";
 			const auto& inputComponent = player.GetComponent<InputComponent>();
 			auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			// auto& animationComponent = player.GetComponent<AnimationComponent>();
 			auto& spriteComponent = player.GetComponent<SpriteComponent>();
 
 			// rigidbody.velocity.y = -inputComponent.downVelocity;
@@ -201,12 +201,17 @@ private:
 	}
 	void PerformIdle(Input::PlayerID playerId, const Entity player)
 	{
+		if ((playerId == Input::PlayerID::PLAYER_1 && player.HasTag("Player1")))
+		{
+			auto& animationComponent = player.GetComponent<AnimationComponent>();
+			animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
+			animationComponent.bIsActive = false;
+		}
 		// const auto& inputComponent = player.GetComponent<InputComponent>();
 		auto& rigidbody = player.GetComponent<RigidBodyComponent>();
-		auto& animationComponent = player.GetComponent<AnimationComponent>();
+
 
 		rigidbody.velocity = Vector2();
-		// animationComponent.animationFramesRow = Asset::DemoPlayer::ANIM_FORWARDS;
-		animationComponent.bIsActive = false;
+
 	}
 };
