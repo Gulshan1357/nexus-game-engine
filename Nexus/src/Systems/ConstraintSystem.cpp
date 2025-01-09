@@ -2,6 +2,8 @@
 
 #include "ConstraintSystem.h"
 
+#include <algorithm>
+
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
 #include "src/EventManagement/EventManager.h"
@@ -303,8 +305,8 @@ void ConstraintSystem::PreSolvePenetration(const float deltaTime)
 		penetration.jacobian.rowVectors[0][5] = rB.Cross(normalWorld);  // Angular B
 
 		// Populating second row: Impulses along the tangent (friction)
-		float friction = std::max(rigidbodyA.friction, rigidbodyB.friction);
-		if (friction > 0.0)
+		penetration.friction = std::max(rigidbodyA.friction, rigidbodyB.friction);
+		if (penetration.friction > 0.0)
 		{
 			Vector2 tangent = normalWorld.Normal();
 			penetration.jacobian.rowVectors[1][0] = -tangent.x;
@@ -385,6 +387,16 @@ void ConstraintSystem::SolvePenetration()
 		VectorN oldLambda = penetration.cachedLambda;
 		penetration.cachedLambda += lambda;
 		penetration.cachedLambda[0] = (penetration.cachedLambda[0] < 0.0f) ? 0.0f : penetration.cachedLambda[0];
+
+		// Friction should be between -(μ * λn) and (μ * λn), where λn is impulse along normal
+		if (penetration.friction > 0.0f)
+		{
+			// penetration.cachedLambda[0] is normal
+			// penetration.cachedLambda[1] is tangent
+			const float maxFriction = penetration.cachedLambda[0] * penetration.friction;
+			penetration.cachedLambda[1] = std::clamp(penetration.cachedLambda[1], -maxFriction, maxFriction);
+		}
+
 		lambda = penetration.cachedLambda - oldLambda;
 
 		// Computing impulses with direction and magnitude
