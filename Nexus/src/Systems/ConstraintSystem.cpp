@@ -342,11 +342,22 @@ void ConstraintSystem::PreSolvePenetration(const float deltaTime)
 
 		//---------------------------------------------
 		// Baumgarte stabilization(bias) for position error
+		// bias = (beta / deltaTime) * positionCorrection + (elasticity * vRelDotNormal)
 		constexpr float positionErrorThreshold = 0.01f;
 		constexpr float beta = 0.2f;
 		float positionCorrection = (collisionBWorld - collisionAWorld).Dot(-normalWorld);
 		positionCorrection = std::min(0.0f, positionCorrection + positionErrorThreshold);
-		penetration.bias = (beta / deltaTime) * positionCorrection;
+
+		// Calculate relative velocity pre-impulse normal to compute elasticity
+		Vector2 velocityA = rigidbodyA.velocity + (Vector2(-rigidbodyA.angularVelocity * rA.y, rigidbodyA.angularVelocity * rA.x));
+		Vector2 velocityB = rigidbodyB.velocity + (Vector2(-rigidbodyB.angularVelocity * rB.y, rigidbodyB.angularVelocity * rB.x));
+		float vRelDotNormal = (velocityA - velocityB).Dot(normalWorld);
+
+		// Coefficient of restitution between two bodies
+		float e = std::min(rigidbodyA.restitution, rigidbodyB.restitution);
+
+		// Bias w.r.t. elasticity(restitution)
+		penetration.bias = (beta / deltaTime) * positionCorrection + (e * vRelDotNormal);
 	}
 }
 
