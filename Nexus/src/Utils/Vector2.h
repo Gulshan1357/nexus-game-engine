@@ -17,7 +17,7 @@ struct Vector2
 	Vector2 operator/(float scalar) const;					// v1 / scalar
 	Vector2 operator/(const Vector2& vector) const;			// (v1.x / v2.x, v1.y / v2.y)
 
-	Vector2& operator-();									// -v
+	Vector2 operator-() const;								// -v
 
 	Vector2& operator+=(const Vector2& vector);				// v1 += v2
 	Vector2& operator-=(const Vector2& vector);				// v1 -= v2
@@ -75,11 +75,12 @@ inline Vector2 Vector2::operator/(const Vector2& vector) const
 	return { this->x / vector.x, this->y / vector.y };
 }
 
-inline Vector2& Vector2::operator-()
+inline Vector2 Vector2::operator-() const
 {
-	x = -x;
-	y = -y;
-	return *this;
+	Vector2 result;
+	result.x = x * -1;
+	result.y = y * -1;
+	return result;
 }
 
 inline Vector2& Vector2::operator+=(const Vector2& vector)
