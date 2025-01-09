@@ -35,12 +35,12 @@ public:
 
 	static void OnCollision(const CollisionEvent& event)
 	{
-		// Collision Resolution
+		// Collision Resolution. Since this method is deprecated, using only the first contact to resolve collision
 		PhysicsEngine::ResolveCollision(
-			event.contact.startContactPoint,
-			event.contact.endContactPoint,
-			event.contact.penetrationDepth,
-			event.contact.collisionNormal,
+			event.contacts[0].startContactPoint,
+			event.contacts[0].endContactPoint,
+			event.contacts[0].penetrationDepth,
+			event.contacts[0].collisionNormal,
 			event.a.GetComponent<RigidBodyComponent>(),
 			event.b.GetComponent<RigidBodyComponent>(),
 			event.a.GetComponent<TransformComponent>(),

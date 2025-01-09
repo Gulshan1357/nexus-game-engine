@@ -17,9 +17,9 @@ struct ColliderTypeComponent
 {
 	ColliderType type;
 
-	Contact contactInfo; // Store contact info for Render debug system
+	std::vector<Contact> contacts; // Store contact info for Render debug system
 
-	explicit ColliderTypeComponent(const ColliderType type, const Contact& contactInfo = Contact())
-		: type(type), contactInfo(contactInfo)
+	explicit ColliderTypeComponent(const ColliderType type)
+		: type(type), contacts({})
 	{}
 };

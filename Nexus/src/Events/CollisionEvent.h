@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <utility>
 
 #include "src/ECS/Entity.h"
 #include "src/EventManagement/IEvent.h"
@@ -10,6 +11,7 @@
  * CollisionEvent
  * @param a (Entity): Entity a (Entity a collides with Entity b)
  * @param b (Entity): Entity b (The 'other' entity)
+ * @param contacts (std::vector<Contact>): A vector of contacts for multiple contact points
 */
 class CollisionEvent : public IEvent
 {
@@ -17,9 +19,9 @@ public:
 	Entity a;
 	Entity b;
 
-	Contact contact;
+	std::vector<Contact> contacts;
 
-	CollisionEvent(const Entity& a, const Entity& b, Contact contact) :
-		a(a), b(b), contact(contact)
+	CollisionEvent(const Entity& a, const Entity& b, std::vector<Contact>& contacts) :
+		a(a), b(b), contacts(contacts)
 	{}
 };

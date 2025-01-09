@@ -99,7 +99,7 @@ void TestApp::LoadLevel(int level)
 	// Walls and grounds
 	Entity ground = m_coordinator->CreateEntity();
 	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -240.0f), Vector2(1.f, 1.f));
-	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.2f, 0.7f);
+	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.3f, 0.7f);
 	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) - 10, 500.0f);
 	ground.Tag("ground");
@@ -374,7 +374,7 @@ void TestApp::SpawnShape(Vector2 position, ColliderType colliderType) const
 	Entity shape = m_coordinator->CreateEntity();
 	shape.AddComponent<SpriteComponent>("red-ball", 3);
 	shape.AddComponent<TransformComponent>(position, Vector2(1.f, 1.f), 0.53f);
-	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), false, 5.0f, 0.0f, 0.0f, 0.1f, 0.1f);
+	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), false, 5.0f, 0.0f, 0.0f, 0.9f, 0.1f);
 	shape.Tag("SpawnItem");
 	switch (colliderType)
 	{

@@ -46,10 +46,14 @@ public:
 				}
 
 				// Draw contact info
-				Graphics::DrawCircle(colliderType.contactInfo.startContactPoint, 3, 36, Color(Colors::RED));
-				Graphics::DrawCircle(colliderType.contactInfo.endContactPoint, 3, 36, Color(Colors::RED));
-				Graphics::DrawLine(colliderType.contactInfo.startContactPoint, colliderType.contactInfo.startContactPoint + colliderType.contactInfo.collisionNormal * 15, Color(Colors::RED));
-				colliderType.contactInfo = Contact();
+				for (const auto& contact : colliderType.contacts)
+				{
+					Graphics::DrawCircle(contact.startContactPoint, 3, 36, Color(Colors::RED));
+					Graphics::DrawCircle(contact.endContactPoint, 3, 36, Color(Colors::RED));
+					Graphics::DrawLine(contact.startContactPoint, contact.startContactPoint + contact.collisionNormal * 15, Color(Colors::RED));
+				}
+				colliderType.contacts.clear();
+
 
 				// Debug rotation
 				// static std::string text;

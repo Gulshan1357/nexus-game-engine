@@ -41,15 +41,18 @@ void ConstraintSystem::SubscribeToEvents(const std::unique_ptr<EventManager>& ev
 	eventManager->SubscribeToEvent<CollisionEvent>(this, callback);
 }
 
-void ConstraintSystem::onCollision(CollisionEvent& event)
+void ConstraintSystem::onCollision(const CollisionEvent& event)
 {
-	AddPenetration(
-		event.a,
-		event.b,
-		event.contact.startContactPoint,
-		event.contact.endContactPoint,
-		event.contact.collisionNormal
-	);
+	for (const auto& contact : event.contacts)
+	{
+		AddPenetration(
+			event.a,
+			event.b,
+			contact.startContactPoint,
+			contact.endContactPoint,
+			contact.collisionNormal
+		);
+	}
 }
 
 
