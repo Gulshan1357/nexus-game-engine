@@ -31,13 +31,12 @@ void ConstraintSystem::InitializeLocalCoordinates() const
 	}
 }
 
+// Subscribe to collision events
 void ConstraintSystem::SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
 {
-	// // Clean up all dynamically allocated objects
 	using CallbackType = std::function<void(ConstraintSystem*, CollisionEvent&)>;
 	const CallbackType callback = [this](auto&&, auto&& placeholder2) { onCollision(std::forward<decltype(placeholder2)>(placeholder2)); };
 	eventManager->SubscribeToEvent<CollisionEvent>(this, callback);
-	//  std::placeholders::_2 tells std::bind that the second argument (the event) will be provided when the resulting function is called. This allows us to create a callable object that matches the required function signature of SubscribeToEvent, where the first argument is the instance (DamageSystem*), and the second argument is the event (CollisionEvent&).
 }
 
 void ConstraintSystem::onCollision(CollisionEvent& event)
@@ -49,7 +48,6 @@ void ConstraintSystem::onCollision(CollisionEvent& event)
 		event.contact.endContactPoint,
 		event.contact.collisionNormal
 	);
-	// Logger::Warn("OnCollision GetPenetrationSize: " + std::to_string(GetPenetrationSize()));
 }
 
 
@@ -58,18 +56,21 @@ void ConstraintSystem::Update(const float deltaTime)
 	// Logger::Log("ConstraintSystem::Update GetPenetrationSize: " + std::to_string(GetPenetrationSize()));
 	PreSolve(deltaTime);
 	PreSolvePenetration(deltaTime);
-	// Multiple iteration for better accuracy
+
+	// Iterate multiple times for better constraint resolution
 	for (int i = 0; i < 5; i++)
 	{
 		Solve();
 		SolvePenetration();
 	}
+
 	PostSolve();
 	PostSolvePenetration();
+
 	ClearPenetrations();
 }
 
-
+// Prepare constraints before solving
 void ConstraintSystem::PreSolve(const float deltaTime)
 {
 	for (const auto& entity : GetSystemEntities())
@@ -87,7 +88,7 @@ void ConstraintSystem::PreSolve(const float deltaTime)
 		const auto& entityA = jointComponent.a;
 		const auto& entityB = jointComponent.b;
 
-		// The connected entities should have rigidbody component so that we can use the inverse mass for constraint
+		// Ensure connected entities have rigid body components so that we can use the inverse mass for constraint
 		if (!entityA.HasComponent<RigidBodyComponent>() || !entityB.HasComponent<RigidBodyComponent>())
 			continue;
 
@@ -103,7 +104,8 @@ void ConstraintSystem::PreSolve(const float deltaTime)
 		const Vector2 rA = anchorAWorld - transformA.position; // Distance between the anchor point and the center of mass of the entity
 		const Vector2 rB = anchorBWorld - transformB.position; // Distance between the anchor point and the center of mass of the entity
 
-
+		//---------------------------------------------
+		// Compute Jacobian matrix for constraint resolution
 		// First derivative of constrain = Jacobian matrix * velocity vector
 		// Where, Jacobian Matrix = [2(ra-rb), 2( ra(vector) x (ra - rb) ), 2(rb-ra), 2( rb(vector) x (rb - ra) )]
 		// And, velocity vector = PhysicsEngine::GetVelocitiesVector()
@@ -121,6 +123,7 @@ void ConstraintSystem::PreSolve(const float deltaTime)
 
 		const Matrix jacobianTranspose = jointComponent.jacobian.Transpose();
 
+		//---------------------------------------------
 		// Warm-starting: Apply cached impulses
 		VectorN cachedImpulses = jacobianTranspose * jointComponent.cachedLambda;
 
@@ -131,7 +134,6 @@ void ConstraintSystem::PreSolve(const float deltaTime)
 		//  [ jacobianLinearB.x ]
 		//  [ jacobianLinearB.y ]
 		//  [ jacobianAngularB  ]
-		// Apply impulses to bodies
 		if (!rigidbodyA.isKinematic)
 		{
 			rigidbodyA.ApplyImpulseLinear(Vector2(cachedImpulses[0], cachedImpulses[1]));	// A linear impulse
@@ -144,7 +146,7 @@ void ConstraintSystem::PreSolve(const float deltaTime)
 			rigidbodyB.ApplyImpulseAngular(cachedImpulses[5]);										// B angular impulse
 		}
 
-		// Baumgarte stabilization(bias) for position error
+		// Baumgarte stabilization(bias) for position error correction
 		constexpr float positionErrorThreshold = 0.01f;
 		constexpr float beta = 0.2f;
 		float positionError = (anchorBWorld - anchorAWorld).Dot(anchorBWorld - anchorAWorld);
@@ -153,6 +155,7 @@ void ConstraintSystem::PreSolve(const float deltaTime)
 	}
 }
 
+// Resolve constraints for the system
 void ConstraintSystem::Solve()
 {
 	// TODO: resolve constrains for non-kinematic bodies
@@ -182,6 +185,7 @@ void ConstraintSystem::Solve()
 		const VectorN velocities = PhysicsEngine::GetVelocitiesVector(rigidbodyA, rigidbodyB);
 		const Matrix inverseMassMatrix = PhysicsEngine::GetInverseMassMatrix(rigidbodyA, rigidbodyB);
 
+		//---------------------------------------------
 		// Calculate lambda (constraint impulses)
 		// lambda = -(J V + b) / (J M^-1 JT) or,
 		// lambda = -(Jacobian Matrix * VelocitiesVector + bias) / (Jacobian Matrix * InverseMass Matrix * Jacobian Matrix transpose)
@@ -200,6 +204,7 @@ void ConstraintSystem::Solve()
 		// Computing impulses with direction and magnitude
 		VectorN impulses = jacobianTranspose * lambda;
 
+		//---------------------------------------------
 		// Applying impulses to both A and B
 		if (!rigidbodyA.isKinematic)
 		{
@@ -262,7 +267,7 @@ void ConstraintSystem::PreSolvePenetration(const float deltaTime)
 		const Entity& entityA = penetration.a;
 		const Entity& entityB = penetration.b;
 
-		// The connected entities should have rigidbody component so that we can use the inverse mass for constraint
+		// Ensure connected entities have rigid body components so that we can use the inverse mass for constraint
 		if (!entityA.HasComponent<RigidBodyComponent>() || !entityB.HasComponent<RigidBodyComponent>())
 			continue;
 
@@ -279,23 +284,40 @@ void ConstraintSystem::PreSolvePenetration(const float deltaTime)
 		const Vector2 rA = collisionAWorld - transformA.position; // Distance between the anchor point and the center of mass of the entity
 		const Vector2 rB = collisionBWorld - transformB.position; // Distance between the anchor point and the center of mass of the entity
 
+		//---------------------------------------------
 		// First derivative of constrain = Jacobian matrix * velocity vector
-		// Where, Jacobian Matrix = [-normal, -2( ra(vector) x normal ), normal, 2( rb(vector) x normal )]
+		// Compute Jacobian matrix for constraint resolution
+		// The Jacobian Matrix is
+		//  [ -normal   -2( ra(vector)x normal)      normal      2( rb(vector) x normal)     ]
+		//  [ -tangent  -2( ra(vector)x tangent)     tangent     2( rb(vector) x tangent)    ]
 		// And, velocity vector = PhysicsEngine::GetVelocitiesVector()
 		penetration.jacobian.Zero();
 
-		const Vector2 linearA = -normalWorld;
-		penetration.jacobian.rowVectors[0][0] = linearA.x;
-		penetration.jacobian.rowVectors[0][1] = linearA.y;
+		// Populating first row: Impulses along the normal
+		penetration.jacobian.rowVectors[0][0] = -normalWorld.x;			// Linear A
+		penetration.jacobian.rowVectors[0][1] = -normalWorld.y;			// Linear A
 		penetration.jacobian.rowVectors[0][2] = -rA.Cross(normalWorld); // Angular A
 
-		const Vector2 linearB = normalWorld;
-		penetration.jacobian.rowVectors[0][3] = linearB.x;
-		penetration.jacobian.rowVectors[0][4] = linearB.y;
+		penetration.jacobian.rowVectors[0][3] = normalWorld.x;			// Linear B
+		penetration.jacobian.rowVectors[0][4] = normalWorld.y;			// Linear B
 		penetration.jacobian.rowVectors[0][5] = rB.Cross(normalWorld);  // Angular B
+
+		// Populating second row: Impulses along the tangent (friction)
+		float friction = std::max(rigidbodyA.friction, rigidbodyB.friction);
+		if (friction > 0.0)
+		{
+			Vector2 tangent = normalWorld.Normal();
+			penetration.jacobian.rowVectors[1][0] = -tangent.x;
+			penetration.jacobian.rowVectors[1][1] = -tangent.y;
+			penetration.jacobian.rowVectors[1][2] = -rA.Cross(tangent);
+			penetration.jacobian.rowVectors[1][3] = tangent.x;
+			penetration.jacobian.rowVectors[1][4] = tangent.y;
+			penetration.jacobian.rowVectors[1][5] = rB.Cross(tangent);
+		}
 
 		const Matrix jacobianTranspose = penetration.jacobian.Transpose();
 
+		//---------------------------------------------
 		// Warm-starting: Apply cached impulses
 		VectorN cachedImpulses = jacobianTranspose * penetration.cachedLambda;
 
@@ -316,6 +338,7 @@ void ConstraintSystem::PreSolvePenetration(const float deltaTime)
 			rigidbodyB.ApplyImpulseAngular(cachedImpulses[5]);										// B angular impulse
 		}
 
+		//---------------------------------------------
 		// Baumgarte stabilization(bias) for position error
 		constexpr float positionErrorThreshold = 0.01f;
 		constexpr float beta = 0.2f;
@@ -333,7 +356,7 @@ void ConstraintSystem::SolvePenetration()
 		const Entity& entityA = penetration.a;
 		const Entity& entityB = penetration.b;
 
-		// The connected entities should have rigidbody component so that we can use the inverse mass for constraint
+		// Ensure connected entities have rigid body components so that we can use the inverse mass for constraint
 		if (!entityA.HasComponent<RigidBodyComponent>() || !entityB.HasComponent<RigidBodyComponent>())
 			continue;
 

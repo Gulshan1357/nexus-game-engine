@@ -27,6 +27,7 @@ public:
 	Matrix jacobian;			// Calculated by ConstraintSystem::PreSolve()
 	VectorN cachedLambda;		// Calculated by ConstraintSystem::Solve()
 	float bias;					// Baumgarte stabilization factor calculated by ConstraintSystem::PreSolve()
+	float friction;				// Friction coefficient between the two penetrating bodies
 
 	// PenetrationConstraint() : m_entityA(), m_entityB(), jacobian(1, 6), cachedLambda(1), bias(0.0f)
 	// {}
@@ -37,7 +38,7 @@ public:
 		const Vector2& aCollisionPoint,
 		const Vector2& bCollisionPoint,
 		const Vector2& collisionNormal)
-		: a(a), b(b), jacobian(1, 6), cachedLambda(1), bias(0.0f)
+		: a(a), b(b), jacobian(2, 6), cachedLambda(2), bias(0.0f), friction(0.0f)
 	{
 		this->aCollisionPoint = PhysicsEngine::WorldSpaceToLocalSpace(a.GetComponent<TransformComponent>(), aCollisionPoint);
 		this->bCollisionPoint = PhysicsEngine::WorldSpaceToLocalSpace(b.GetComponent<TransformComponent>(), bCollisionPoint);
