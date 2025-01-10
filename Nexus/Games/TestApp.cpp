@@ -328,7 +328,7 @@ void TestApp::ProcessInput()
 	if ((App::IsKeyPressed(VK_LBUTTON) == true) && m_bWasLMousePressedPast == false)
 	{
 		Logger::Warn("Left mouse button pressed");
-		SpawnShape(mousePos, ColliderType::Box);
+		SpawnShape(mousePos, ColliderType::Polygon);
 	}
 	// m_coordinator->GetEntityByTag("SpawnItem").GetComponent<TransformComponent>().position = mousePos;
 	// m_coordinator->GetEntityByTag("SpawnItem").GetComponent<TransformComponent>().rotation = .2f;

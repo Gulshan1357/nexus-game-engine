@@ -53,6 +53,10 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
    - [Link](https://www.toptal.com/game/video-game-physics-part-iii-constrained-rigid-body-simulation)  
    - *In this article, I found the equation to calculate the Jacobian matrix to calculate correctional impulse.*
 
+8. **Computing tensor of Inertia in 2D (StackOverFlow)**  
+   - [Link](https://stackoverflow.com/questions/41592034/computing-tensor-of-inertia-in-2d/41618980#41618980)  
+   - *In this article, I found the equation to calculate the Moment of inertia for convex polygons.*
+
 ### YouTube
 
 1. **C++ and Game Engine Video Series (The Cherno)**  

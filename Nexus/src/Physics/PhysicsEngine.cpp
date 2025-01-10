@@ -45,9 +45,31 @@ float PhysicsEngine::CalculateMomentOfInertia(const Entity& entity)
 		case ColliderType::Polygon:
 			if (entity.HasComponent<PolygonColliderComponent>())
 			{
-				// const auto& polygonCollider = entity.GetComponent<PolygonColliderComponent>();
-				// TODO: ...
-				return 5000.0f;
+				// TO find inertia of polygon, loop all the vertices to find the total area and combine the centroids (center of gravity) of all the triangles of the polygon.
+				const auto& polygonVertices = entity.GetComponent<PolygonColliderComponent>().localVertices;
+				const size_t vertexCount = polygonVertices.size();
+				
+				// I = accumulatedInertia / (6 * area)
+				float accumulatedInertia = 0.0f;
+				float accumulatedArea = 0.0f;
+
+				// Loop through each edge of the polygon, forming triangles with the origin
+				for (size_t i = 0; i < vertexCount; ++i) {
+					// Get the current vertex and the next vertex (wrapping around at the end)
+					const auto& currentVertex = polygonVertices[i];
+					const auto& nextVertex = polygonVertices[(i + 1) % vertexCount];
+
+					// Area of the triangle formed by the origin and two vertices
+					const float triangleArea = std::abs(currentVertex.Cross(nextVertex));
+					accumulatedArea += triangleArea;
+					
+					// Calculate contribution to the moment of inertia from this triangle
+					// Uses the formula: I = (a² + b² + a·b) * area / 6
+					// where a and b are vectors from origin to triangle vertices
+					const float triangleInertiaContribution  = currentVertex.Dot(currentVertex) + nextVertex.Dot(nextVertex) + currentVertex.Dot(nextVertex);
+					accumulatedInertia += triangleArea * triangleInertiaContribution ;
+				}
+				return accumulatedInertia / (6.0f * accumulatedArea);
 			}
 	}
 	Logger::Err("Couldn't calculate the Moment Of Inertia!");
