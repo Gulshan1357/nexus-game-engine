@@ -45,6 +45,14 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
    - [Link](https://medium.com/@www.seymour/coding-a-2d-physics-engine-from-scratch-and-using-it-to-simulate-a-pendulum-clock-964b4ac2107a)  
    - *In this article, I found the equation to calculate the Impulse imparted by the collision, and subsequently its effect on the linear and angular velocity.*
 
+6. **Equality Constraints (Hubert Eichner)**  
+   - [Link](https://web.archive.org/web/20211022100314mp_/http://myselph.de/gamePhysics/equalityConstraints.html)  
+   - *This article contains equations and the derivation for the Joint Constaint.*
+
+7. **Video Game Physics Tutorial - Part III: Constrained Rigid Body Simulation (Nilson Souto)**  
+   - [Link](https://www.toptal.com/game/video-game-physics-part-iii-constrained-rigid-body-simulation)  
+   - *In this article, I found the equation to calculate the Jacobian matrix to calculate correctional impulse.*
+
 ### YouTube
 
 1. **C++ and Game Engine Video Series (The Cherno)**  
