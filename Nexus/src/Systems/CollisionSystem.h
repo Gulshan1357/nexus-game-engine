@@ -98,7 +98,7 @@ public:
 	}
 
 	// Collision detection between circle-circle
-	static bool IsCollidingCircleCircle(const Entity a, const Entity b, std::vector<Contact>& contacts)
+	static bool IsCollidingCircleCircle(const Entity a, const Entity b, std::vector<Contact>& outContacts)
 	{
 		const auto& aCircleCollider = a.GetComponent<CircleColliderComponent>();
 		const auto& bCircleCollider = b.GetComponent<CircleColliderComponent>();
@@ -111,7 +111,7 @@ public:
 			return false; // No collision
 		}
 
-		// If there is a collision then calculate and add the contact info to the contacts vector. There will only be one contact
+		// If there is a collision then calculate and add the contact info to the outContacts vector. There will only be one contact
 		const Vector2 collisionNormal = ab.Normalize();
 
 		// Start contact point is the point of circle 'b' inside 'a'. So that is the position of b minus the scaled normal. Subtracting because normal ab is from a to b
@@ -122,12 +122,12 @@ public:
 
 		const float penetrationDepth = (endContactPoint - startContactPoint).Magnitude();
 
-		contacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+		outContacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 		return true;
 	}
 
 	// Collision detection between box-box, polygon-polygon and box-polygon
-	static bool IsCollidingPolygonPolygon(const Entity a, const Entity b, std::vector<Contact>& contacts)
+	static bool IsCollidingPolygonPolygon(const Entity a, const Entity b, std::vector<Contact>& outContacts)
 	{
 		const auto& aCollider = a.GetComponent<ColliderTypeComponent>();
 		const auto& bCollider = b.GetComponent<ColliderTypeComponent>();
@@ -155,23 +155,24 @@ public:
 			bGlobalVertices = b.GetComponent<PolygonColliderComponent>().globalVertices;
 		}
 
-		// Values will be calculated by IsSATCollision()
-		Vector2 startContactPoint = {};
-		Vector2 endContactPoint = {};
-		float penetration = std::numeric_limits<float>::infinity();
-		Vector2 collisionNormal;
-
-		if (!PhysicsEngine::IsSATCollision(aGlobalVertices, bGlobalVertices, startContactPoint, endContactPoint, collisionNormal, penetration))
+		// // Values will be calculated by IsSATCollision()
+		// Vector2 startContactPoint = {};
+		// Vector2 endContactPoint = {};
+		// float penetration = std::numeric_limits<float>::infinity();
+		// Vector2 collisionNormal;
+		//
+		// Contact contact;
+		if (!PhysicsEngine::IsSATCollision(aGlobalVertices, bGlobalVertices, outContacts))
 		{
 			return false;
 		}
 
-		contacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetration);
+		// outContacts.emplace_back(contact);
 		return true;
 	}
 
 	// Collision detection between circle-polygon(or box)
-	static bool IsCollidingCirclePolygon(const Entity circleEntity, const Entity polygonEntity, std::vector<Contact>& contacts)
+	static bool IsCollidingCirclePolygon(const Entity circleEntity, const Entity polygonEntity, std::vector<Contact>& outContacts)
 	{
 		// Retrieve circle properties
 		auto& circleCollider = circleEntity.GetComponent<CircleColliderComponent>();
@@ -263,7 +264,7 @@ public:
 
 					Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 					Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-					contacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+					outContacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 					return true;
 				}
 			}
@@ -287,7 +288,7 @@ public:
 						float penetrationDepth = circleRadius - toCircleFromEnd.Magnitude();
 						Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 						Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-						contacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+						outContacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 						return true;
 					}
 				}
@@ -308,7 +309,7 @@ public:
 						float penetrationDepth = circleRadius - maxProjection;
 						Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 						Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-						contacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+						outContacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 						return true;
 					}
 				}
@@ -321,7 +322,7 @@ public:
 			float penetrationDepth = circleRadius - maxProjection;
 			Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 			Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
-			contacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
+			outContacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
 			return true;
 		}
 	}
