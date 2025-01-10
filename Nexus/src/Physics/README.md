@@ -69,14 +69,14 @@
      - `IsAABBCollision()`  
        - Checks if two boxes are colliding using Axis-Aligned Bounding Box.  
      - `IsSATCollision()`  
-       - Checks if two convex polygons are colliding using the Separating Axis Theorem.  
+       - Checks if two convex polygons are colliding using the Separating Axis Theorem. It also updates the 'std::vector<Contact>& outContactPoints' for multi-contact collision resolution.   
 
-   - **Functions to resolve collisions:**  
+   - **Functions to resolve collisions:** [Deprecated: Now the constraint system resolves the constraints after collision. This is more stable]  
      - `ResolvePenetration()`  
        - Adjusts the position so that the colliding bodies are just in contact. This is useful because if the bodies are moving very fast, they might intersect between frames.  
      - `ResolveCollision()`  
-       - Executes the `ResolvePenetration()` method, then calculates the impulse and applies it to the two rigid bodies in opposite directions. Mass and the body's coefficient of restitution (elasticity) significantly affect the impulse.  
-
+       - Executes the `ResolvePenetration()` method, then calculates the impulse and applies it to the two rigid bodies in opposite directions. Mass and the body's coefficient of restitution (elasticity) significantly affect the impulse.
+  
 2. **Constants**  
    - Stores constants related to physics calculations.  
 

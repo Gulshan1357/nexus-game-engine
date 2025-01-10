@@ -328,9 +328,10 @@ void TestApp::ProcessInput()
 	if ((App::IsKeyPressed(VK_LBUTTON) == true) && m_bWasLMousePressedPast == false)
 	{
 		Logger::Warn("Left mouse button pressed");
-		SpawnShape(mousePos, ColliderType::Circle);
+		SpawnShape(mousePos, ColliderType::Box);
 	}
-
+	// m_coordinator->GetEntityByTag("SpawnItem").GetComponent<TransformComponent>().position = mousePos;
+	// m_coordinator->GetEntityByTag("SpawnItem").GetComponent<TransformComponent>().rotation = .2f;
 	m_bWasLMousePressedPast = App::IsKeyPressed(VK_LBUTTON);
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_2, "Player2");
@@ -373,14 +374,14 @@ void TestApp::SpawnShape(Vector2 position, ColliderType colliderType) const
 
 	Entity shape = m_coordinator->CreateEntity();
 	shape.AddComponent<SpriteComponent>("red-ball", 3);
-	shape.AddComponent<TransformComponent>(position, Vector2(1.f, 1.f), 0.53f);
-	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), false, 5.0f, 0.0f, 0.0f, 0.9f, 0.1f);
+	shape.AddComponent<TransformComponent>(position, Vector2(1.f, 1.f));
+	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), false, 5.0f, 0.0f, 0.0f, 0.3f, 0.1f);
 	shape.Tag("SpawnItem");
 	switch (colliderType)
 	{
 		case ColliderType::Box:
 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-			shape.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4, m_assetManager->GetSpriteHeight("red-ball") * 4, Vector2());
+			shape.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 3, m_assetManager->GetSpriteHeight("red-ball") * 3, Vector2());
 			break;
 		case ColliderType::Polygon:
 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);

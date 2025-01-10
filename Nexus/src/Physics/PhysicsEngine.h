@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 
+struct Contact;
 struct VectorN;
 struct Matrix;
 struct PolygonColliderComponent;
@@ -101,8 +102,8 @@ public:
 	static bool IsAABBCollision(const double aX, const double aY, const double aW, const double aH, const double bX, const double bY, const double bW, const double bH);
 
 	// Separating Axis Theorem for Collision Detection between two convex polygon. Input are the list of vertices for each polygon. Returns true if the two polygons are colliding.
-	// It also updates the values of outStartContactPoint, outEndContactPoint, outMinPenetration and outCollisionNormalAxis(collision normal) which can be used for collision resolution
-	static bool IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, Vector2& outStartContactPoint, Vector2& outEndContactPoint, Vector2& outCollisionNormalAxis, float& outMinPenetration);
+	// It also update the outContactPoints vector<Contact> by returning a single contact point for circles and more than one contact points for polygons
+	static bool IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, std::vector<Contact>& outContactPoints);
 
 
 	//------------------------------------------------------------------------
@@ -157,4 +158,40 @@ public:
 	//  [ ωb   ]
 	//---------------------------------------------
 	static VectorN GetVelocitiesVector(const RigidBodyComponent& rigidBodyA, const RigidBodyComponent& rigidBodyB);
+
+	/**
+	* @brief Finds the maximum separation between two polygons.
+	* Determines the edge of the primary polygon with the largest separation
+	* from the secondary polygon along its normal.
+	* @param primaryVertices Vertices of the primary polygon.
+	* @param secondaryVertices Vertices of the secondary polygon.
+	* @param[out] outIndexReferenceEdge Index of the edge with the largest separation.
+	* @param[out] outSupportPoint Closest vertex of the secondary polygon.
+	* @return Maximum separation value.
+	*/
+	static float FindMinSeparation(const std::vector<Vector2>& primaryVertices, const std::vector<Vector2>& secondaryVertices, size_t& outIndexReferenceEdge, Vector2& outSupportPoint);
+
+	/**
+	 * @brief Finds the edge of the incident polygon closest to the reference 'other' normal.
+	 *
+	 * Identifies the edge whose normal has the smallest projection onto the reference normal.
+	 *
+	 * @param verticesIncidentShape Vertices of the incident polygon.
+	 * @param outReferenceNormal Reference normal for comparison.
+	 * @return Index of the closest edge.
+	 */
+	static size_t FindIncidentEdge(const std::vector<Vector2>& verticesIncidentShape, const Vector2& outReferenceNormal);
+
+	/**
+	 * @brief Clips a line segment against a given line.
+	 *
+	 * Keeps segment points that are on or behind the clipping line, adding intersection points if needed.
+	 *
+	 * @param inContacts Endpoints of the segment to clip.
+	 * @param[out] outContacts Resulting clipped points.
+	 * @param clipVertex0 Start of the clipping line.
+	 * @param clipVertex1 End of the clipping line.
+	 * @return Number of clipped points.
+	 */
+	static int ClipSegmentToLine(const std::vector<Vector2>& inContacts, std::vector<Vector2>& outContacts, const Vector2& clipVertex0, const Vector2& clipVertex1);
 };

@@ -53,11 +53,11 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
 
 9. **Constraint System**
    - Requires: `TransformComponent` and `ConstraintTypeComponent`.
-   - Purpose: Resolves constraints between entities.
-
----
-
-## TODO
-
-- **Physics System**:
-  - Listening to collisions is very expensive. Use a different method to detect player's position.
+   - Purpose: Resolves constraints between entities by calculating Jacobians to apply corrective impulses. It handles
+     - Joint Constraints: To simulated entities connected by a joint.
+     - Penetration Constraints: To resolve collisions. The system manages a vector of penetration constraints that are added during collisions and cleared after resolution.
+   - Features:
+     - More iterations of the 'Solve' and 'SolvePenetration()' means higher stability. Currently iterating 8 times.
+     - Uses multi-contact detection and resolution for `Polygon-Polygon` collision.
+   - TODO:
+     - Contact Caching, Continuous Collision Detection. 

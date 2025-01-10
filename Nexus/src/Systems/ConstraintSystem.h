@@ -35,8 +35,6 @@ public:
 	void PreSolve(const float deltaTime);
 	// Solve step: Resolve constraints and accumulate impulses
 	void Solve();
-	// Post-solve step: 
-	void PostSolve();
 
 
 	// For Penetration constraint
@@ -45,8 +43,6 @@ public:
 	void PreSolvePenetration(const float deltaTime);
 	// Solve step: Resolve constraints and accumulate impulses
 	void SolvePenetration();
-	// Post-solve step: 
-	void PostSolvePenetration();
 
 	// Manage penetration vector. Whenever a collision happens a new penetration is added to the vector and after resolution they are cleared.
 	std::vector<PenetrationConstraint>& GetPenetrations();

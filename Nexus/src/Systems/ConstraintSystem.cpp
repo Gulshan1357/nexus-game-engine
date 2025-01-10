@@ -63,14 +63,11 @@ void ConstraintSystem::Update(const float deltaTime)
 	PreSolvePenetration(deltaTime);
 
 	// Iterate multiple times for better constraint resolution
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		Solve();
 		SolvePenetration();
 	}
-
-	PostSolve();
-	PostSolvePenetration();
 
 	ClearPenetrations();
 }
@@ -227,40 +224,6 @@ void ConstraintSystem::Solve()
 		// Logger::Warn("Impulse Linear B: " + Vector2(impulses[3], impulses[4]).ToString());
 		// Logger::Warn("Impulse Angular B: " + std::to_string(impulses[5]));
 
-	}
-}
-
-void ConstraintSystem::PostSolve()
-{
-	for (const auto& entity : GetSystemEntities())
-	{
-		const auto& constraintType = entity.GetComponent<ConstraintTypeComponent>();
-
-		// if (!rigidBody.isKinematic)
-		// {
-		// }
-
-		if (constraintType.type == ConstrainType::JOINT)
-		{
-			auto& jointComponent = entity.GetComponent<JointConstraintComponent>();
-			const auto& entityA = jointComponent.a;
-			const auto& entityB = jointComponent.b;
-
-			// The connected entities should have rigidbody component so that we can use the inverse mass for constraint
-			if (entityA.HasComponent<RigidBodyComponent>() && entityB.HasComponent<RigidBodyComponent>())
-			{
-				auto& transformA = entityA.GetComponent<TransformComponent>();
-				auto& transformB = entityB.GetComponent<TransformComponent>();
-				// auto& rigidbodyA = entityA.GetComponent<RigidBodyComponent>();
-				// auto& rigidbodyB = entityB.GetComponent<RigidBodyComponent>();
-
-				// TODO:....
-
-				// Update the anchor transform. The anchor should be exactly in the middle between the transformA and transformB
-				auto& transform = entity.GetComponent<TransformComponent>();
-				transform.position = (transformA.position + transformB.position) * 0.5f;
-			}
-		}
 	}
 }
 
@@ -429,26 +392,6 @@ void ConstraintSystem::SolvePenetration()
 			rigidbodyB.ApplyImpulseAngular(impulses[5]);								// B angular impulse
 			// Logger::Log("B impulse: " + Vector2(impulses[3], impulses[4]).ToString());
 		}
-	}
-}
-
-void ConstraintSystem::PostSolvePenetration()
-{
-	for (auto& penetration : m_penetrations)
-	{
-		const Entity& entityA = penetration.a;
-		const Entity& entityB = penetration.b;
-
-		// The connected entities should have rigidbody component so that we can use the inverse mass for constraint
-		if (entityA.HasComponent<RigidBodyComponent>() && entityB.HasComponent<RigidBodyComponent>())
-		{
-			// auto& rigidbodyA = entityA.GetComponent<RigidBodyComponent>();
-			// auto& rigidbodyB = entityB.GetComponent<RigidBodyComponent>();
-
-			// TODO:....
-
-		}
-
 	}
 }
 

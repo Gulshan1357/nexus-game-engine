@@ -302,80 +302,86 @@ bool PhysicsEngine::IsAABBCollision(const double aX, const double aY, const doub
 	return 	isOverlappingX && isOverlappingY;
 }
 
-bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, Vector2& outStartContactPoint, Vector2& outEndContactPoint, Vector2& outCollisionNormalAxis, float& outMinPenetration)
+bool PhysicsEngine::IsSATCollision(const std::vector<Vector2>& verticesA, const std::vector<Vector2>& verticesB, std::vector<Contact>& outContactPoints)
 {
-	// The goal is to find a separating axis. If there exist an axis where the projection of the polygons are separated, then the polygons are not colliding.
+	// Check if there is a Separating Axis Theorem (SAT) collision between two polygons.
+	// If there exists an axis along which the projections of the polygons are separated, there is no collision.
+	// This function also identifies contact points if a collision is detected.
 
-	// Helper function to calculate the minimum separation between two sets of vertices.
-	auto findMinSeparation = [](const std::vector<Vector2>& primaryVertices, const std::vector<Vector2>& secondaryVertices, Vector2& outEdgeAxis, Vector2& outContactPoint)
+	size_t referenceEdgeIdxA;
+	size_t referenceEdgeIdxB;
+
+	Vector2 supportPointA;
+	Vector2 supportPointB;
+
+
+	// Check for a separating axis along the axes of Polygon A
+	const float abSeparation = FindMinSeparation(verticesA, verticesB, referenceEdgeIdxA, supportPointA);
+	if (abSeparation >= 0) return false; // Separating axis found, no collision.
+
+	// Check for a separating axis along the axes of Polygon B
+	const float baSeparation = FindMinSeparation(verticesB, verticesA, referenceEdgeIdxB, supportPointB);
+	if (baSeparation >= 0) return false; // Separating axis found, no collision.
+
+
+	// if abSeparation > baSeparation then Polygon A is the reference shape, and Polygon B is the incident shape
+	// else, Polygon B is the reference shape, and Polygon A is the incident shape
+	const std::vector<Vector2>& referenceShape = (abSeparation > baSeparation) ? verticesA : verticesB;
+	const std::vector<Vector2>& incidentShape = (abSeparation > baSeparation) ? verticesB : verticesA;
+	const size_t referenceEdgeIdx = (abSeparation > baSeparation) ? referenceEdgeIdxA : referenceEdgeIdxB;
+
+	// Find the reference edge of the reference shape
+	const Vector2 referenceEdge = referenceShape[(referenceEdgeIdx + 1) % referenceShape.size()] - referenceShape[referenceEdgeIdx];
+
+	//------------------------------------------------------------------------
+	// Clipping
+
+	// Find the incident edge(vertex) on the incident shape that is most perpendicular to the reference edge
+	const size_t incidentEdgeIndex = FindIncidentEdge(incidentShape, referenceEdge.Normal());
+	const size_t incidentNextIndex = (incidentEdgeIndex + 1) % incidentShape.size();
+
+	const Vector2 vertex0 = incidentShape[incidentEdgeIndex];
+	const Vector2 vertex1 = incidentShape[incidentNextIndex];
+
+	// Perform edge clipping to calculate contact points
+	std::vector<Vector2> contactPoints = { vertex0, vertex1 };
+	std::vector<Vector2> clippedPoints = { vertex0, vertex1 }; // Holds points after clipping
+	for (size_t i = 0; i < referenceShape.size(); i++) // To find the two clipping planes
+	{
+		if (i == referenceEdgeIdx) continue;
+		// Vertex of the reference shape which comprises the clipping plane
+		Vector2 clipVertexStart = referenceShape[i];
+		Vector2 clipVertexEnd = referenceShape[(i + 1) % referenceShape.size()];
+
+		// Clip the segment and update the contact points
+		if (ClipSegmentToLine(contactPoints, clippedPoints, clipVertexStart, clipVertexEnd) < 2) break;
+		contactPoints = clippedPoints;
+	}
+
+	const auto referenceVertex = referenceShape[referenceEdgeIdx];
+
+	// Process the clipped points and calculate contact points for collision
+	for (auto& clipVertex : clippedPoints)
+	{
+		const float separation = (clipVertex - referenceVertex).Dot(referenceEdge.Normal()); // negative separation means the objects are penetrating each other
+		if (separation <= 0) // Include only points with penetration
 		{
-			float maxSeparation = std::numeric_limits<float>::lowest();
+			Contact contact;
+			contact.collisionNormal = referenceEdge.Normal();
+			contact.startContactPoint = clipVertex;
+			contact.endContactPoint = clipVertex + contact.collisionNormal * -separation;
 
-			// Loop through all edges of the primary polygon.
-			for (size_t i = 0; i < primaryVertices.size(); ++i)
+			// Ensure the contact normal and points are consistently directed from 'A' to 'B'
+			if (baSeparation >= abSeparation)
 			{
-				Vector2 vertexA = primaryVertices[i];
-				Vector2 edgeA = primaryVertices[(i + 1) % primaryVertices.size()] - vertexA;
-				Vector2 edgeNormal = edgeA.Normal();  // Get perpendicular (normal) to the edge
-
-				// Find the minimum projection distance for the secondary polygon onto this edge normal.
-				float minProjection = std::numeric_limits<float>::max();
-				Vector2 closestVertex;
-
-				// Loop through all the vertices of the secondary polygon.
-				for (auto vertexB : secondaryVertices)
-				{
-					// Calculate the projection of the vector from the vertexA to the vertexB onto the edge normal.
-					float projection = (vertexB - vertexA).Dot(edgeNormal);
-					if (projection < minProjection)
-					{
-						minProjection = projection;
-						closestVertex = vertexB; // Track the vertex causing the minimum separation.
-					}
-				}
-
-				// Update the maximum separation along the current edge normal.
-				if (minProjection > maxSeparation)
-				{
-					maxSeparation = minProjection;
-					outEdgeAxis = primaryVertices[(i + 1) % primaryVertices.size()] - vertexA;
-					outContactPoint = closestVertex;
-				}
+				std::swap(contact.startContactPoint, contact.endContactPoint);	// the start contact points are always from 'a' to 'b'
+				contact.collisionNormal *= -1.0;	// the collision normal is always from 'a' to 'b'
 			}
-			return maxSeparation;
-		};
-
-	Vector2 aAxis, bAxis;
-	Vector2 aContactPoint, bContactPoint;
-
-	const float abSeparation = findMinSeparation(verticesA, verticesB, aAxis, aContactPoint);
-	if (abSeparation >= 0)
-	{
-		return false; // Separating axis found, no collision.
+			outContactPoints.push_back(contact);
+		}
 	}
 
-	const float baSeparation = findMinSeparation(verticesB, verticesA, bAxis, bContactPoint);
-	if (baSeparation >= 0)
-	{
-		return false; // Separating axis found, no collision.
-	}
-
-	// Determine the collision normal and penetration based on the smallest separation.
-	if (abSeparation > baSeparation)
-	{
-		outMinPenetration = -abSeparation;
-		outCollisionNormalAxis = aAxis.Normal();
-		outStartContactPoint = aContactPoint;
-		outEndContactPoint = aContactPoint + outCollisionNormalAxis * outMinPenetration;
-	}
-	else
-	{
-		outMinPenetration = -baSeparation;
-		outCollisionNormalAxis = -bAxis.Normal();
-		outStartContactPoint = bContactPoint - outCollisionNormalAxis * outMinPenetration;
-		outEndContactPoint = bContactPoint;
-	}
-
+	// 	outMinPenetration ?
 	return true; // No separating axis found, collision occurs
 }
 
@@ -490,4 +496,91 @@ VectorN PhysicsEngine::GetVelocitiesVector(const RigidBodyComponent& rigidBodyA,
 	velocitiesVector[4] = rigidBodyB.velocity.y;
 	velocitiesVector[5] = rigidBodyB.angularVelocity;
 	return velocitiesVector;
+}
+
+float PhysicsEngine::FindMinSeparation(const std::vector<Vector2>& primaryVertices,
+	const std::vector<Vector2>& secondaryVertices, size_t& outIndexReferenceEdge, Vector2& outSupportPoint)
+{
+	float maxSeparation = std::numeric_limits<float>::lowest();
+
+	const size_t primarySize = primaryVertices.size();
+
+	// Loop through all edges of the primary polygon.
+	for (size_t i = 0; i < primarySize; i++)
+	{
+		Vector2 primaryVertexStart = primaryVertices[i];
+		Vector2 primaryVertexEnd = primaryVertices[(i + 1) % primarySize];
+		Vector2 edgeNormal = (primaryVertexEnd - primaryVertexStart).Normal();  // Get perpendicular (normal) to the edge
+
+		// Find the minimum projection distance for the secondary polygon onto this edge normal.
+		float minProjection = std::numeric_limits<float>::max();
+		Vector2 closestVertex;
+
+		// Loop through all the vertices of the secondary polygon.
+		for (auto secondaryVertex : secondaryVertices)
+		{
+			// Project the secondary vertex onto the current edge's normal.
+			const float projection = (secondaryVertex - primaryVertexStart).Dot(edgeNormal);
+			if (projection < minProjection)
+			{
+				minProjection = projection;
+				closestVertex = secondaryVertex; // Store the vertex causing the minimum projection.
+			}
+		}
+
+		// Update the maximum separation if this edge normal has the highest separation.
+		if (minProjection > maxSeparation)
+		{
+			maxSeparation = minProjection;
+			outIndexReferenceEdge = i;
+			outSupportPoint = closestVertex;
+		}
+	}
+	return maxSeparation;
+}
+
+size_t PhysicsEngine::FindIncidentEdge(const std::vector<Vector2>& verticesIncidentShape, const Vector2& outReferenceNormal)
+{
+	// To track the incident edge with the smallest projection.
+	size_t indexIncidentEdge = 0;
+	float minProjection = std::numeric_limits<float>::max();
+	for (size_t i = 0; i < verticesIncidentShape.size(); ++i)
+	{
+		auto edge = verticesIncidentShape[(i + 1) % verticesIncidentShape.size()] - verticesIncidentShape[i];
+		const auto projection = edge.Normal().Dot(outReferenceNormal);
+		if (projection < minProjection)
+		{
+			minProjection = projection;
+			indexIncidentEdge = i;
+		}
+	}
+	return indexIncidentEdge;
+}
+
+int PhysicsEngine::ClipSegmentToLine(const std::vector<Vector2>& inContacts, std::vector<Vector2>& outContacts, const Vector2& clipVertex0, const Vector2& clipVertex1)
+{
+	// Start with no clipped points
+	int numOut = 0;
+
+	// Compute the direction vector of the clipping line and normalize it.
+	const Vector2 normal = (clipVertex1 - clipVertex0).Normalize();
+
+	// Calculate the distance of each input point to the clipping line.
+	const float distance0 = (inContacts[0] - clipVertex0).Cross(normal);
+	const float distance1 = (inContacts[1] - clipVertex0).Cross(normal);
+
+	// Add the points that are behind or on the clipping line to the output.
+	if (distance0 <= 0.0f) outContacts[numOut++] = inContacts[0];
+	if (distance1 <= 0.0f) outContacts[numOut++] = inContacts[1];
+
+	// If the points are on different sides of the plane (one distance is negative while other is positive), compute the intersection.
+	if (distance0 * distance1 < 0.0f)
+	{
+		// Find the intersection using linear interpolation: lerp(start, end) => start + t*(end-start)
+		const float t = distance0 / (distance0 - distance1);
+		Vector2 intersection = inContacts[0] + (inContacts[1] - inContacts[0]) * t;
+		outContacts[numOut] = intersection;
+		numOut++;
+	}
+	return numOut;
 }
