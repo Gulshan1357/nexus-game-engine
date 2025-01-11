@@ -13,6 +13,7 @@
 #include "src/InputManagement/InputEnums.h"
 #include "src/AssetManagement/AssetManager.h"
 #include "src/AssetManagement/AssetEnums.h"
+#include "src/AudioManagement/AudioManager.h"
 
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
@@ -49,6 +50,7 @@ TestApp::TestApp()
 	m_eventManager = std::make_unique<EventManager>();
 	m_inputManager = std::make_unique<InputManager>();
 	m_assetManager = std::make_unique<AssetManager>();
+	m_audioManager = std::make_unique<AudioManager>();
 	Logger::Log("Game constructor called!");
 }
 TestApp::~TestApp()
@@ -92,6 +94,10 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->AddSprite("blue-ball-large", R"(.\Assets\Sprites\ball_blue_large.bmp)", 1, 1);
 	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
 	m_assetManager->AddSprite("red-ball-large", R"(.\Assets\Sprites\ball_red_large.bmp)", 1, 1);
+
+	// Add sounds to the audio manager
+	m_audioManager->AddAudio("gun-shot", R"(.\Assets\Audio\weapon_gun_shot_008.wav)");
+	m_audioManager->AddAudio("cannon-shot", R"(.\Assets\Audio\weapon_cannon_shot_002.wav)");
 
 	// Print TileMaps
 	PrintTiles("tile-map", static_cast<float>(0.7), R"(.\Assets\Sprites\test2.map)", 20, 20);
@@ -214,6 +220,7 @@ void TestApp::LoadLevel(int level)
 		joint.AddComponent<ConstraintTypeComponent>(ConstrainType::JOINT);
 		joint.AddComponent<JointConstraintComponent>(joinedEntities[i], joinedEntities[i + 1]);
 	}
+
 }
 
 void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const std::string& mapFileLocation, int rows, int cols)
@@ -330,6 +337,12 @@ void TestApp::ProcessInput()
 		Logger::Warn("Left mouse button pressed");
 		SpawnShape(mousePos, ColliderType::Polygon);
 	}
+	if ((App::IsKeyPressed(VK_RBUTTON) == true))
+	{
+		Logger::Warn("Right mouse button pressed");
+		m_audioManager->PlayAudio("gun-shot");
+	}
+
 	// m_coordinator->GetEntityByTag("SpawnItem").GetComponent<TransformComponent>().position = mousePos;
 	// m_coordinator->GetEntityByTag("SpawnItem").GetComponent<TransformComponent>().rotation = .2f;
 	m_bWasLMousePressedPast = App::IsKeyPressed(VK_LBUTTON);

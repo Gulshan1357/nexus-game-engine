@@ -10,6 +10,9 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
    - [Asset Link](https://www.kenney.nl/assets/isometric-blocks)  
    - [License](Nexus/Assets/Sprites/License.txt)  
    - *Used for isometric tiles.*
+2. **Royalty Free Sound Effects Archive: GameAudioGDC (Sonniss.com)**  
+   - [Asset Link](https://sonniss.com/gameaudiogdc)  
+   - [License](Nexus/Assets/Audio/License.pdf)  
 
 ---
 

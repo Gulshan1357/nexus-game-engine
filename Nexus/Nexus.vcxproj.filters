@@ -35,6 +35,8 @@
     <ClCompile Include="src\InputManagement\InputManager.cpp" />
     <ClCompile Include="src\AssetManagement\AssetManager.cpp" />
     <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
+    <ClCompile Include="src\Systems\ConstraintSystem.cpp" />
+    <ClCompile Include="src\AudioManagement\AudioManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -114,6 +116,9 @@
     <ClInclude Include="src\Systems\ConstraintSystem.h" />
     <ClInclude Include="src\Components\ConstraintTypeComponent.h" />
     <ClInclude Include="src\Components\JointConstraintComponent.h" />
+    <ClInclude Include="src\Physics\PenetrationConstraint.h" />
+    <ClInclude Include="src\AudioManagement\AudioAsset.h" />
+    <ClInclude Include="src\AudioManagement\AudioManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

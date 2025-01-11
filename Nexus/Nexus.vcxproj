@@ -198,6 +198,8 @@
     <ClInclude Include="miniaudio\miniaudio.h" />
     <ClInclude Include="src\AssetManagement\AssetEnums.h" />
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
+    <ClInclude Include="src\AudioManagement\AudioAsset.h" />
+    <ClInclude Include="src\AudioManagement\AudioManager.h" />
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Components\CircleColliderComponent.h" />
@@ -258,6 +260,7 @@
     <ClCompile Include="Nexus.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />
     <ClCompile Include="src\AssetManagement\AssetManager.cpp" />
+    <ClCompile Include="src\AudioManagement\AudioManager.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />

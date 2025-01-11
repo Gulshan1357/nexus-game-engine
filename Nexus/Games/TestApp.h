@@ -11,6 +11,7 @@ class Coordinator;
 class EventManager;
 class InputManager;
 class AssetManager;
+class AudioManager;
 struct Vector2;
 
 class TestApp
@@ -39,7 +40,7 @@ private:
 	std::unique_ptr<EventManager> m_eventManager;
 	std::unique_ptr<InputManager> m_inputManager;
 	std::unique_ptr<AssetManager> m_assetManager;
-
+	std::unique_ptr<AudioManager> m_audioManager;
 
 	//------------------------------------------------------------------------
 	// World
