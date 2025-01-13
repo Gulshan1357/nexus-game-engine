@@ -193,8 +193,11 @@
     <ClInclude Include="App\SimpleController.h" />
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
+    <ClInclude Include="Games\Game.h" />
+    <ClInclude Include="Games\GameState.h" />
     <ClInclude Include="Games\OriginalDemo.h" />
     <ClInclude Include="Games\TestApp.h" />
+    <ClInclude Include="Games\UI\UIEffects.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
     <ClInclude Include="src\AssetManagement\AssetEnums.h" />
     <ClInclude Include="src\AssetManagement\AssetManager.h" />
@@ -255,8 +258,10 @@
     <ClCompile Include="App\SimpleController.cpp" />
     <ClCompile Include="App\SimpleSound.cpp" />
     <ClCompile Include="App\SimpleSprite.cpp" />
+    <ClCompile Include="Games\Game.cpp" />
     <ClCompile Include="Games\OriginalDemo.cpp" />
     <ClCompile Include="Games\TestApp.cpp" />
+    <ClCompile Include="Games\UI\UIEffects.cpp" />
     <ClCompile Include="Nexus.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />
     <ClCompile Include="src\AssetManagement\AssetManager.cpp" />
