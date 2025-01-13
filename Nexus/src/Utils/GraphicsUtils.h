@@ -10,7 +10,7 @@
 namespace Graphics
 {
 	//-------------------------------------------------------------------------------------------
-	// Print text to screen at Vector2(x,y) coordinates using color r = red, g = green, b=blue using the passed GLUT font. 
+	// Print text to screen at Vector2(x,y) coordinates using the passed GLUT font. 
 	// Color values are in the range 0.0f to 1.0f. Default color is white
 	// Available fonts...
 	// GLUT_BITMAP_9_BY_15, GLUT_BITMAP_8_BY_13, GLUT_BITMAP_TIMES_ROMAN_10, GLUT_BITMAP_TIMES_ROMAN_24
@@ -22,7 +22,7 @@ namespace Graphics
 	}
 
 	//-------------------------------------------------------------------------------------------
-	// Draw a line from startPoint(x, y) to endPoint(x, y) and a radius using color r = red, g = green, b=blue 
+	// Draw a line from startPoint(x, y) to endPoint(x, y)
 	// Color values are in the range 0.0f to 1.0f. Default color is white
 	//-------------------------------------------------------------------------------------------
 	static void DrawLine(const Vector2& startPoint, const Vector2& endPoint, const Color color = Color())
@@ -31,11 +31,11 @@ namespace Graphics
 	}
 
 	//-------------------------------------------------------------------------------------------
-	// Draw a circle with center at Vector2(x,y) and a radius using color r = red, g = green, b=blue 
+	// Draw a circle outline with center at Vector2(x,y)
 	// Color values are in the range 0.0f to 1.0f. Default color is white
 	// Default Segment = 36
 	//-------------------------------------------------------------------------------------------
-	static void DrawCircle(const Vector2& center, float radius, const int segments = 36, const Color color = Color())
+	static void DrawCircle(const Vector2& center, const float radius, const int segments = 36, const Color color = Color())
 	{
 		for (int i = 0; i < segments; ++i)
 		{
@@ -50,7 +50,7 @@ namespace Graphics
 	}
 
 	//-------------------------------------------------------------------------------------------
-	// Draw a polygon based on the vertices(vector<Vector2>) using color r = red, g = green, b=blue 
+	// Draw a polygon outline based on the vertices(vector<Vector2>)
 	// Color values are in the range 0.0f to 1.0f. Default color is white
 	//-------------------------------------------------------------------------------------------
 	static void DrawPolygon(const std::vector<Vector2>& vertices, const Color color = Color())
@@ -65,7 +65,30 @@ namespace Graphics
 		}
 	}
 
-	inline void DrawFillCircle(const Vector2& center, float radius, int segments = 36, const Color& color = Color())
+	//-------------------------------------------------------------------------------------------
+	// Draw a rectangle outline with the specified bottom-left corner, width, height, and color
+	// Color values are in the range 0.0f to 1.0f. Default color is white
+	//-------------------------------------------------------------------------------------------
+	inline void DrawRectangle(const Vector2& bottomLeft, const float width, const float height, const Color& color = Color())
+	{
+		// Define the rectangle's vertices
+		std::vector<Vector2> vertices = {
+			bottomLeft,
+			{bottomLeft.x + width, bottomLeft.y},
+			{bottomLeft.x + width, bottomLeft.y + height},
+			{bottomLeft.x, bottomLeft.y + height}
+		};
+
+		// Rectangle outline
+		DrawPolygon(vertices, color);
+	}
+
+	//-------------------------------------------------------------------------------------------
+	// Draw a filled circle with center at Vector2(x,y)
+	// Color values are in the range 0.0f to 1.0f. Default color is white
+	// Default Segment = 36
+	//-------------------------------------------------------------------------------------------
+	inline void DrawFillCircle(const Vector2& center, const float radius, const int segments = 36, const Color& color = Color())
 	{
 		if (radius <= 0.0f) return;
 
@@ -73,10 +96,10 @@ namespace Graphics
 		for (int y = static_cast<int>(center.y - radius); y <= static_cast<int>(center.y + radius); ++y)
 		{
 			// Calculate the vertical distance from the circle's center
-			float dy = static_cast<float>(y) - center.y;
+			const float dy = static_cast<float>(y) - center.y;
 
 			// Calculate the horizontal distance using the circle equation: x^2 + y^2 = r^2
-			float dx = std::sqrt(radius * radius - dy * dy);
+			const float dx = std::sqrt(radius * radius - dy * dy);
 
 			// Define the left and right points on this line
 			Vector2 left(center.x - dx, static_cast<float>(y));
@@ -90,6 +113,10 @@ namespace Graphics
 		DrawCircle(center, radius, segments, color);
 	}
 
+	//-------------------------------------------------------------------------------------------
+	// Draw a filled polygon based on the vertices(vector<Vector2>)
+	// Color values are in the range 0.0f to 1.0f. Default color is white
+	//-------------------------------------------------------------------------------------------
 	inline void DrawFillPolygon(const std::vector<Vector2>& vertices, const Color& color)
 	{
 		if (vertices.size() < 3) return;
@@ -107,12 +134,12 @@ namespace Graphics
 		}
 
 		// Iterate through each y-coordinate in the bounding box
-		int startY = static_cast<int>(minY);
-		int endY = static_cast<int>(maxY);
+		const int startY = static_cast<int>(minY);
+		const int endY = static_cast<int>(maxY);
 
 		for (int y = startY; y <= endY; ++y)
 		{
-			float yCoord = static_cast<float>(y);
+			const float yCoordinate = static_cast<float>(y);
 			std::vector<float> intersections;
 
 			// Find intersections of the polygon's edges with the current y-coordinate
@@ -125,9 +152,9 @@ namespace Graphics
 				if (std::abs(v1.y - v2.y) < FLT_EPSILON) continue;
 
 				// Check if the current y-coordinate intersects the edge
-				if ((yCoord >= v1.y && yCoord <= v2.y) || (yCoord >= v2.y && yCoord <= v1.y))
+				if ((yCoordinate >= v1.y && yCoordinate <= v2.y) || (yCoordinate >= v2.y && yCoordinate <= v1.y))
 				{
-					float t = (yCoord - v1.y) / (v2.y - v1.y);
+					float t = (yCoordinate - v1.y) / (v2.y - v1.y);
 					float x = v1.x + t * (v2.x - v1.x);
 					intersections.push_back(x);
 				}
@@ -139,8 +166,8 @@ namespace Graphics
 			// Draw horizontal lines between pairs of intersections
 			for (size_t i = 0; i < intersections.size() - 1; i += 2)
 			{
-				Vector2 left(intersections[i], yCoord);
-				Vector2 right(intersections[i + 1], yCoord);
+				Vector2 left(intersections[i], yCoordinate);
+				Vector2 right(intersections[i + 1], yCoordinate);
 				DrawLine(left, right, color);
 			}
 		}
@@ -149,7 +176,11 @@ namespace Graphics
 		DrawPolygon(vertices, color);
 	}
 
-	inline void DrawFillRectangle(const Vector2& bottomLeft, float width, float height, const Color& color = Color())
+	//-------------------------------------------------------------------------------------------
+	// Draw a filled rectangle with the specified bottom-left corner, width, height, and color
+	// Color values are in the range 0.0f to 1.0f. Default color is white
+	//-------------------------------------------------------------------------------------------
+	inline void DrawFillRectangle(const Vector2& bottomLeft, const float width, const float height, const Color& color = Color())
 	{
 		// Iterate through each y-coordinate in the rectangle
 		for (int y = static_cast<int>(bottomLeft.y); y <= static_cast<int>(bottomLeft.y + height); ++y)
@@ -160,7 +191,7 @@ namespace Graphics
 		}
 
 		// Define the rectangle's vertices
-		std::vector<Vector2> vertices = {
+		const std::vector<Vector2> vertices = {
 			bottomLeft,
 			{bottomLeft.x + width, bottomLeft.y},
 			{bottomLeft.x + width, bottomLeft.y + height},
