@@ -22,7 +22,9 @@
 
 2. **GraphicsUtils**  
    - Purpose: Provide helper functions to draw basic shapes.  
-   - Features:  
-     -  Have functions like `Graphics::PrintText()`, `Graphics::DrawLine()`, `Graphics::DrawCircle()` and `Graphics::DrawPolygon()`
+   - Features: Have functions to 
+     - Print Text: `Graphics::PrintText()` 
+     - Draw lines and outlined shapes:`Graphics::DrawLine()`, `Graphics::DrawCircle()` and `Graphics::DrawPolygon()`
+     - Draw filled shapes: `DrawFillCircle()`, `DrawFillPolygon()` and `DrawFillRectangle()`
 
 ---

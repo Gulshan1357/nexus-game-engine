@@ -2,6 +2,8 @@
 
 #include "../App/app.h"
 
+#include <algorithm>
+
 #include "Vector2.h"
 #include "Color.h"
 
@@ -53,7 +55,7 @@ namespace Graphics
 	//-------------------------------------------------------------------------------------------
 	static void DrawPolygon(const std::vector<Vector2>& vertices, const Color color = Color())
 	{
-		if (vertices.empty()) return;
+		if (vertices.size() < 3) return;
 
 		for (size_t i = 0; i < vertices.size(); ++i)
 		{
@@ -61,5 +63,111 @@ namespace Graphics
 			const auto& v2 = vertices[(i + 1) % vertices.size()];
 			DrawLine(v1, v2, color); // Use DrawLine to connect the vertices
 		}
+	}
+
+	inline void DrawFillCircle(const Vector2& center, float radius, int segments = 36, const Color& color = Color())
+	{
+		if (radius <= 0.0f) return;
+
+		// Iterate through each y-coordinate in the bounding box of the circle
+		for (int y = static_cast<int>(center.y - radius); y <= static_cast<int>(center.y + radius); ++y)
+		{
+			// Calculate the vertical distance from the circle's center
+			float dy = static_cast<float>(y) - center.y;
+
+			// Calculate the horizontal distance using the circle equation: x^2 + y^2 = r^2
+			float dx = std::sqrt(radius * radius - dy * dy);
+
+			// Define the left and right points on this line
+			Vector2 left(center.x - dx, static_cast<float>(y));
+			Vector2 right(center.x + dx, static_cast<float>(y));
+
+			// Draw a horizontal line to fill the circle
+			DrawLine(left, right, color);
+		}
+
+		// Optionally, draw the circle outline
+		DrawCircle(center, radius, segments, color);
+	}
+
+	inline void DrawFillPolygon(const std::vector<Vector2>& vertices, const Color& color)
+	{
+		if (vertices.size() < 3) return;
+
+		// Calculate the bounding box of the polygon
+		float minY = vertices[0].y, maxY = vertices[0].y;
+		float minX = vertices[0].x, maxX = vertices[0].x;
+
+		for (const auto& vertex : vertices)
+		{
+			minY = (((minY) < (vertex.y)) ? (minY) : (vertex.y));
+			maxY = (((maxY) > (vertex.y)) ? (maxY) : (vertex.y));
+			minX = (((minX) < (vertex.x)) ? (minX) : (vertex.x));
+			maxX = (((maxX) > (vertex.x)) ? (maxX) : (vertex.x));
+		}
+
+		// Iterate through each y-coordinate in the bounding box
+		int startY = static_cast<int>(minY);
+		int endY = static_cast<int>(maxY);
+
+		for (int y = startY; y <= endY; ++y)
+		{
+			float yCoord = static_cast<float>(y);
+			std::vector<float> intersections;
+
+			// Find intersections of the polygon's edges with the current y-coordinate
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				const Vector2& v1 = vertices[i];
+				const Vector2& v2 = vertices[(i + 1) % vertices.size()];
+
+				// Skip horizontal edges
+				if (std::abs(v1.y - v2.y) < FLT_EPSILON) continue;
+
+				// Check if the current y-coordinate intersects the edge
+				if ((yCoord >= v1.y && yCoord <= v2.y) || (yCoord >= v2.y && yCoord <= v1.y))
+				{
+					float t = (yCoord - v1.y) / (v2.y - v1.y);
+					float x = v1.x + t * (v2.x - v1.x);
+					intersections.push_back(x);
+				}
+			}
+
+			// Sort intersections by x-coordinate
+			std::sort(intersections.begin(), intersections.end());
+
+			// Draw horizontal lines between pairs of intersections
+			for (size_t i = 0; i < intersections.size() - 1; i += 2)
+			{
+				Vector2 left(intersections[i], yCoord);
+				Vector2 right(intersections[i + 1], yCoord);
+				DrawLine(left, right, color);
+			}
+		}
+
+		// Polygon outline
+		DrawPolygon(vertices, color);
+	}
+
+	inline void DrawFillRectangle(const Vector2& bottomLeft, float width, float height, const Color& color = Color())
+	{
+		// Iterate through each y-coordinate in the rectangle
+		for (int y = static_cast<int>(bottomLeft.y); y <= static_cast<int>(bottomLeft.y + height); ++y)
+		{
+			Vector2 left(bottomLeft.x, static_cast<float>(y));
+			Vector2 right(bottomLeft.x + width, static_cast<float>(y));
+			DrawLine(left, right, color);
+		}
+
+		// Define the rectangle's vertices
+		std::vector<Vector2> vertices = {
+			bottomLeft,
+			{bottomLeft.x + width, bottomLeft.y},
+			{bottomLeft.x + width, bottomLeft.y + height},
+			{bottomLeft.x, bottomLeft.y + height}
+		};
+
+		// Rectangle outline
+		DrawPolygon(vertices, color);
 	}
 }
