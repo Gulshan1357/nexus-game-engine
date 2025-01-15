@@ -193,7 +193,7 @@ void ParticleEffectSystem::Render() const
 						)
 				};
 
-				Graphics::DrawPolygon(corners, color);
+				Graphics::DrawFillPolygon(corners, color);
 				break;
 			}
 		}

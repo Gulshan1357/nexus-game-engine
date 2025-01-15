@@ -137,10 +137,13 @@ namespace Graphics
 		const int startY = static_cast<int>(minY);
 		const int endY = static_cast<int>(maxY);
 
+		std::vector<float> intersections;
+		intersections.reserve(vertices.size());
+
 		for (int y = startY; y <= endY; ++y)
 		{
 			const float yCoordinate = static_cast<float>(y);
-			std::vector<float> intersections;
+			intersections.clear();
 
 			// Find intersections of the polygon's edges with the current y-coordinate
 			for (size_t i = 0; i < vertices.size(); ++i)
@@ -163,12 +166,15 @@ namespace Graphics
 			// Sort intersections by x-coordinate
 			std::sort(intersections.begin(), intersections.end());
 
-			// Draw horizontal lines between pairs of intersections
-			for (size_t i = 0; i < intersections.size() - 1; i += 2)
+			if (intersections.size() >= 2)  // Add this check
 			{
-				Vector2 left(intersections[i], yCoordinate);
-				Vector2 right(intersections[i + 1], yCoordinate);
-				DrawLine(left, right, color);
+				// Draw horizontal lines between pairs of intersections
+				for (size_t i = 0; i < intersections.size() - 1; i += 2)
+				{
+					Vector2 left(intersections[i], yCoordinate);
+					Vector2 right(intersections[i + 1], yCoordinate);
+					DrawLine(left, right, color);
+				}
 			}
 		}
 
