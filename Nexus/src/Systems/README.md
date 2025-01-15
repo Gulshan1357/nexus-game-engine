@@ -60,4 +60,10 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
      - More iterations of the 'Solve' and 'SolvePenetration()' means higher stability. Currently iterating 8 times.
      - Uses multi-contact detection and resolution for `Polygon-Polygon` collision.
    - TODO:
-     - Contact Caching, Continuous Collision Detection. 
+     - Contact Caching, Continuous Collision Detection, split collision detection into broad and narrow phase. 
+
+10. **Particle Effect System**
+   - Requires: `TransformComponent` and `ParticleEmitterComponent`.
+   - Purpose:
+     - The `Update` function maintain existing particles and emit new particles based on the `ParticleEmitterComponent`.
+     - The `Render` function draw all the exiting particles.

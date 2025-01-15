@@ -53,6 +53,10 @@ Components store data and define the properties of entities in the game.
        - connected entities `a` and `b`,
        - `anchorPointForA` and `anchorPointForB` which is the location of the anchor point w.r.t 'a' and 'b' computed by the `ConstraintSystem`,
        - and 'jacobian' matrix, 'cachedLambda' (for impulse) and `bias` (for Baumgarte stabilization) also computed by the `ConstraintSystem`. 
+
+9. **Particle Emitter Component**  
+   - Informs the particle effect system how to emit the particles. 
+
 ---
 
 ## Additional Information Regarding RigidBody

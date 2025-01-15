@@ -72,7 +72,11 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 
 3. **Mike Acton: "Data-Oriented Design and C++"**  
    - [Video Link](https://www.youtube.com/watch?v=rX0ItVEVjHc&list=LL)  
-   - *I’ve watched this video multiple times but still feel there’s more to absorb. It was my first step into data-oriented design.*  
+   - *I’ve watched this video multiple times but still feel there’s more to absorb. It was my first step into data-oriented design.*
+
+3. **The Cherno: "Making a PARTICLE SYSTEM in ONE HOUR! (NO ENGINES)"**  
+   - [Video Link](https://www.youtube.com/watch?v=GK0jHlv3e3w&t=268s)  
+   - *This video was super helpful while I was building the particle effect system.*  
 
 ### Miscellaneous
 

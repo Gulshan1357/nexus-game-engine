@@ -23,6 +23,9 @@
 #include "src/Components/BoxColliderComponent.h"
 #include "src/Components/CircleColliderComponent.h"
 #include "src/Components/PolygonColliderComponent.h"
+#include "src/Components/AnimationComponent.h"
+#include "src/Components/ConstraintTypeComponent.h"
+#include "src/Components/ParticleEmitterComponent.h"
 
 #include "src/Systems/RenderSystem.h"
 #include "src/Systems/CollisionSystem.h"
@@ -33,12 +36,11 @@
 #include "src/Systems/PhysicsSystem.h"
 #include "src/Systems/AnimationSystem.h"
 #include "src/Systems/ConstraintSystem.h"
+#include "src/Systems/ParticleEffectSystem.h"
 
+#include "src/Physics/Particle.h"
 #include "src/Utils/Vector2.h"
 #include "src/Utils/Logger.h"
-
-#include "src/Components/AnimationComponent.h"
-#include "src/Components/ConstraintTypeComponent.h"
 
 #include "src/Events/ActionChangeEvent.h"
 
@@ -85,6 +87,7 @@ void TestApp::LoadLevel(int level)
 	m_coordinator->AddSystem<AnimationSystem>();
 	m_coordinator->AddSystem<PhysicsSystem>();
 	m_coordinator->AddSystem<ConstraintSystem>();
+	m_coordinator->AddSystem<ParticleEffectSystem>();
 
 	// Add assets to the asset manager
 	m_assetManager->AddSprite("player1-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
@@ -196,30 +199,75 @@ void TestApp::LoadLevel(int level)
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'S', Input::PlayerAction::MOVE_DOWN);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
 
-	// Constraints
-	std::vector<Entity> joinedEntities;
-	for (size_t i = 0; i < 8; i++)
-	{
-		Entity ball = m_coordinator->CreateEntity();
-		float x = Physics::SCREEN_WIDTH / 2.0f - (static_cast<float>(i) * 60.f);
-		ball.AddComponent<TransformComponent>(Vector2(x, 750.f), Vector2(1.f, 1.f));
-		ball.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, static_cast<float>(i), 0.f, 0.0f, 0.1f, 0.1f);
-		ball.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-		// ballA.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4);
-		ball.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
-		ball.AddComponent<SpriteComponent>("red-ball");
-		joinedEntities.push_back(ball);
-	}
+	// // Constraints
+	// std::vector<Entity> joinedEntities;
+	// for (size_t i = 0; i < 8; i++)
+	// {
+	// 	Entity ball = m_coordinator->CreateEntity();
+	// 	float x = Physics::SCREEN_WIDTH / 2.0f - (static_cast<float>(i) * 60.f);
+	// 	ball.AddComponent<TransformComponent>(Vector2(x, 750.f), Vector2(1.f, 1.f));
+	// 	ball.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, static_cast<float>(i), 0.f, 0.0f, 0.1f, 0.1f);
+	// 	ball.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	// 	// ballA.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4);
+	// 	ball.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+	// 	ball.AddComponent<SpriteComponent>("red-ball");
+	// 	joinedEntities.push_back(ball);
+	// }
+	//
+	// for (size_t i = 0; i < joinedEntities.size() - 1; i++)
+	// {
+	// 	Vector2 midpoint = (joinedEntities[i].GetComponent<TransformComponent>().position + joinedEntities[i + 1].GetComponent<TransformComponent>().position) * 0.5f;
+	// 	Entity joint = m_coordinator->CreateEntity();
+	// 	joint.AddComponent<TransformComponent>(midpoint, Vector2(0.1f, 0.1f));
+	// 	joint.AddComponent<SpriteComponent>("blue-ball");
+	// 	joint.AddComponent<ConstraintTypeComponent>(ConstrainType::JOINT);
+	// 	joint.AddComponent<JointConstraintComponent>(joinedEntities[i], joinedEntities[i + 1]);
+	// }
 
-	for (size_t i = 0; i < joinedEntities.size() - 1; i++)
-	{
-		Vector2 midpoint = (joinedEntities[i].GetComponent<TransformComponent>().position + joinedEntities[i + 1].GetComponent<TransformComponent>().position) * 0.5f;
-		Entity joint = m_coordinator->CreateEntity();
-		joint.AddComponent<TransformComponent>(midpoint, Vector2(0.1f, 0.1f));
-		joint.AddComponent<SpriteComponent>("blue-ball");
-		joint.AddComponent<ConstraintTypeComponent>(ConstrainType::JOINT);
-		joint.AddComponent<JointConstraintComponent>(joinedEntities[i], joinedEntities[i + 1]);
-	}
+	// Smoke Effect
+	ParticleProps smokeProps;
+	smokeProps.colorBegin = Color(0.7f, 0.7f, 0.7f);   // Light gray
+	smokeProps.colorEnd = Color(0.4f, 0.4f, 0.4f);     // Darker gray, fading out
+	smokeProps.sizeBegin = 10.0f;                   // Start larger
+	smokeProps.sizeEnd = 30.0f;                     // Grow as it rises
+	smokeProps.sizeVariations = 5.0f;               // More size variation
+	smokeProps.lifeTime = 4.0f;                     // Longer lifetime
+	smokeProps.velocity = { 0.0f, 50.0f };            // Slow upward movement (positive Y)
+	smokeProps.velocityVariations = { 20.f, 10.f };   // Slight horizontal drift
+	smokeProps.position = { 0.0f, 0.0f };
+
+	// Fountain Effect
+	ParticleProps fountainProps;
+	fountainProps.particleShape = ParticleShape::CIRCLE;
+	fountainProps.colorBegin = Color(0.25f, 0.64f, 0.87f);   // Light blue
+	fountainProps.colorEnd = Color(0.12f, 0.4f, 0.69f);      // Darker blue
+	fountainProps.sizeBegin = 8.0f;
+	fountainProps.sizeEnd = 4.0f;                     // Shrink as they fall
+	fountainProps.sizeVariations = 2.0f;
+	fountainProps.lifeTime = 4.0f;
+	fountainProps.velocity = { 0.0f, 300.0f };          // Strong upward velocity (positive Y)
+	fountainProps.velocityVariations = { 100.f, 50.f }; // More horizontal spread
+	fountainProps.position = { 0.0f, 0.0f };
+	fountainProps.useGravity = true;
+	fountainProps.gravityStrength = 50.0f;
+
+	redBall.AddComponent<ParticleEmitterComponent>(
+		fountainProps,
+		15.f,
+		true,
+		EmissionShape::POINT,
+		15.0f,
+		0.0f
+	);
+
+	test.AddComponent<ParticleEmitterComponent>(
+		smokeProps,
+		15.f,
+		true,
+		EmissionShape::CIRCLE,
+		15.0f,
+		0.0f
+	);
 
 }
 
@@ -296,27 +344,32 @@ void TestApp::Update(float deltaTime)
 	ProcessInput();
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
+	//------------------------------------------------------------------------
 	// Reset all event callbacks for the current frame
 	m_eventManager->Reset();
 
+	//------------------------------------------------------------------------
 	// Perform the subscription of the events for all systems
 	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
 	// m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
 	m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
 
+	//------------------------------------------------------------------------
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
 
+	//------------------------------------------------------------------------	
 	// Invoke all the systems that needs to be updated
-	const float dt = deltaTime / 1000.0f;
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
-	// Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
+	// [Physics system Start] Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
+	const float dt = deltaTime / 1000.0f; // Converting to seconds
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<ConstraintSystem>().Update(dt);
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);
-
+	// [Physics system End]
+	m_coordinator->GetSystem<ParticleEffectSystem>().Update(dt);
 }
 
 //------------------------------------------------------------------------
@@ -413,6 +466,7 @@ void TestApp::Render()
 {
 	// Update Render Systems
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager);
+	m_coordinator->GetSystem<ParticleEffectSystem>().Render();
 	m_coordinator->GetSystem<RenderTextSystem>().Update();
 
 	if (m_isDebug)

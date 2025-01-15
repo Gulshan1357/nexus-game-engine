@@ -38,6 +38,9 @@
     <ClCompile Include="src\Systems\ConstraintSystem.cpp" />
     <ClCompile Include="src\AudioManagement\AudioManager.cpp" />
     <ClCompile Include="Games\Game.cpp" />
+    <ClCompile Include="Games\UI\UIEffects.cpp" />
+    <ClCompile Include="src\Systems\ParticleEffectSystem.cpp" />
+    <ClCompile Include="src\Utils\Random.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -122,6 +125,12 @@
     <ClInclude Include="src\AudioManagement\AudioManager.h" />
     <ClInclude Include="Games\GameState.h" />
     <ClInclude Include="Games\Game.h" />
+    <ClInclude Include="Games\UI\UIEffects.h" />
+    <ClInclude Include="src\Systems\ParticleEffectSystem.h" />
+    <ClInclude Include="src\Utils\Random.h" />
+    <ClInclude Include="src\Utils\Math.h" />
+    <ClInclude Include="src\Components\ParticleEmitterComponent.h" />
+    <ClInclude Include="src\Physics\Particle.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

@@ -80,6 +80,15 @@
 2. **Constants**  
    - Stores constants related to physics calculations.  
 
+3. **Contact**  
+   - The contact information when two entities collide. The `Collision Event` pass this information to the concerned systems. 
+
+4. **PenetrationConstraint**  
+   - Stores the penetration constrain information between two colliding entities. `ConstraintSystem` manages a vector of penetration constraints that are added during collisions and cleared after resolution 
+
+5. **Particle**  
+   - The particle information used by the `ParticleEffect System` and `ParticleEmitter Component`.    
+
 ---  
 
 ## TODO  
