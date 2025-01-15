@@ -20,11 +20,28 @@
      - Supports operations such as Dot product, Cross product, and normalization.  
      - Provides methods for vector addition, subtraction, scalar multiplication, and magnitude calculation.  
 
-2. **GraphicsUtils**  
+3. **Color**  
+   - Purpose: A struct representing RGB color with three floats (`r`, `g`, `b`).  
+   - Features:
+     - Includes an Enum `Colors` which contains a some popular colors. Usage `Color(Colors::RED)`.
+
+4. **GraphicsUtils**  
    - Purpose: Provide helper functions to draw basic shapes.  
    - Features: Have functions to 
      - Print Text: `Graphics::PrintText()` 
      - Draw lines and outlined shapes:`Graphics::DrawLine()`, `Graphics::DrawCircle()` and `Graphics::DrawPolygon()`
      - Draw filled shapes: `DrawFillCircle()`, `DrawFillPolygon()` and `DrawFillRectangle()`
+
+5. **Math**  
+   - Purpose: Provide helper functions to Linear interpolate between two values `start` and `end` w.r.t `t`. If `t=0` means `start` and `t=1` means `end`. 
+   - Features: `Lerp` function overloads for `float`, `Vector2` and `Color`
+
+6. **Random**  
+   - Purpose: Provide helper functions to generate random values. Usage `Random::Float()`.
+   - Features: 
+     - `Float()`: Return a random float value between `0` and `1`.
+     - `Float(min, max)`: Return a random float value between `min` and `max`.
+     - `Int()`: Return a random int value between `min` and `max`.
+   - *This RNG helper is inspired by [Cherno](https://www.youtube.com/watch?v=GK0jHlv3e3w)*
 
 ---
