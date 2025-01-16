@@ -89,6 +89,9 @@
 5. **Particle**  
    - The particle information used by the `ParticleEffect System` and `ParticleEmitter Component`.    
 
+6. **Camera**  
+   - An orthographic camera with useful function like `SetPosition()`, `Move()`, `GetPosition()`. The Camera should be passed to all the systems related to game rendering.      
+
 ---  
 
 ## TODO  

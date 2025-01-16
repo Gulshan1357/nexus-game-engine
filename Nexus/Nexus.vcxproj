@@ -228,6 +228,7 @@
     <ClInclude Include="src\EventManagement\EventCallback.h" />
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
+    <ClInclude Include="src\Physics\Camera.h" />
     <ClInclude Include="src\Physics\Constants.h" />
     <ClInclude Include="src\Physics\Contact.h" />
     <ClInclude Include="src\Physics\Particle.h" />
@@ -276,6 +277,7 @@
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\InputManagement\InputManager.cpp" />
+    <ClCompile Include="src\Physics\Camera.cpp" />
     <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="src\Systems\ConstraintSystem.cpp" />
     <ClCompile Include="src\Systems\ParticleEffectSystem.cpp" />

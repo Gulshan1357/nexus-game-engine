@@ -77,6 +77,8 @@ void TestApp::Initialize()
 
 void TestApp::LoadLevel(int level)
 {
+	// Camera
+	m_camera.SetPosition(Physics::SCREEN_WIDTH / 2.f, Physics::SCREEN_HEIGHT / 2.f);
 	// Add Systems
 	m_coordinator->AddSystem<RenderSystem>();
 	m_coordinator->AddSystem<CollisionSystem>();
@@ -112,11 +114,11 @@ void TestApp::LoadLevel(int level)
 	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) - 10, 500.0f);
 	ground.Tag("ground");
-	Entity leftWall = m_coordinator->CreateEntity();
-	leftWall.AddComponent<TransformComponent>(Vector2(0.f, static_cast<float>(Physics::SCREEN_HEIGHT) / 2), Vector2(1.f, 1.f));
-	leftWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
-	leftWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	leftWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
+	// Entity leftWall = m_coordinator->CreateEntity();
+	// leftWall.AddComponent<TransformComponent>(Vector2(0.f, static_cast<float>(Physics::SCREEN_HEIGHT) / 2), Vector2(1.f, 1.f));
+	// leftWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
+	// leftWall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	// leftWall.AddComponent<BoxColliderComponent>(5.f, static_cast<float>(Physics::SCREEN_HEIGHT));
 	Entity rightWall = m_coordinator->CreateEntity();
 	rightWall.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH), static_cast<float>(Physics::SCREEN_HEIGHT) / 2), Vector2(1.f, 1.f));
 	rightWall.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f);
@@ -341,6 +343,8 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 
 void TestApp::Update(float deltaTime)
 {
+	Vector2 position = m_coordinator->GetEntityByTag("Player2").GetComponent<TransformComponent>().position;
+	m_camera.SetPosition(position);
 	ProcessInput();
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
@@ -465,13 +469,13 @@ void TestApp::SpawnShape(Vector2 position, ColliderType colliderType) const
 void TestApp::Render()
 {
 	// Update Render Systems
-	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager);
-	m_coordinator->GetSystem<ParticleEffectSystem>().Render();
+	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager, m_camera);
+	m_coordinator->GetSystem<ParticleEffectSystem>().Render(m_camera);
 	m_coordinator->GetSystem<RenderTextSystem>().Update();
 
 	if (m_isDebug)
 	{
-		m_coordinator->GetSystem<RenderDebugSystem>().Update();
+		m_coordinator->GetSystem<RenderDebugSystem>().Update(m_camera);
 	}
 }
 

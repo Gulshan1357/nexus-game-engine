@@ -22,7 +22,7 @@ public:
 		// RequireComponent<ColliderTypeComponent>();
 	}
 
-	void Update() const
+	void Update(const Camera& camera) const
 	{
 		for (auto entity : GetSystemEntities())
 		{
@@ -35,84 +35,107 @@ public:
 				switch (colliderType.type)
 				{
 					case ColliderType::Box:
-						DrawBoxCollider(entity);
+						DrawBoxCollider(entity, camera);
 						break;
 					case ColliderType::Circle:
-						DrawCircleCollider(entity);
+						DrawCircleCollider(entity, camera);
 						break;
 					case ColliderType::Polygon:
-						DrawPolygonCollider(entity);
+						DrawPolygonCollider(entity, camera);
 						break;
 				}
 
 				// Draw contact info
 				for (const auto& contact : colliderType.contacts)
 				{
-					Graphics::DrawCircle(contact.startContactPoint, 3, 36, Color(Colors::RED));
-					Graphics::DrawCircle(contact.endContactPoint, 3, 36, Color(Colors::RED));
-					Graphics::DrawLine(contact.startContactPoint, contact.startContactPoint + contact.collisionNormal * 15, Color(Colors::RED));
+					const Vector2 startScreen = Camera::WorldToScreen(contact.startContactPoint, camera);
+					const Vector2 endScreen = Camera::WorldToScreen(contact.endContactPoint, camera);
+					const Vector2 normalEndScreen = Camera::WorldToScreen(
+						contact.startContactPoint + contact.collisionNormal * 15,
+						camera
+					);
+
+					Graphics::DrawCircle(Vector2(startScreen.x, startScreen.y), 3, 36, Color(Colors::RED));
+					Graphics::DrawCircle(Vector2(endScreen.x, endScreen.y), 3, 36, Color(Colors::RED));
+					Graphics::DrawLine(
+						Vector2(startScreen.x, startScreen.y),
+						Vector2(normalEndScreen.x, normalEndScreen.y),
+						Color(Colors::RED)
+					);
 				}
 				colliderType.contacts.clear();
-
-
-				// Debug rotation
-				// static std::string text;
-				// if (entity.HasComponent<BoxColliderComponent>())
-				// {
-				// 	if (entity.HasTag("ground"))
-				// 	{
-				// 		text = "Debug rotation: " + entity.GetComponent<BoxColliderComponent>().globalVertices.begin()->ToString();
-				// 		Graphics::PrintText(text, Vector2(50.0f, 80.0f));
-				// 	}
-				// 	
-				// }
 			}
-
 
 			// Debug lines for Spring relationship
 			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
 			{
 				const auto& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
-				Graphics::DrawLine(connectedEntityTransform.position, transform.position);
+				const Vector2 start = Camera::WorldToScreen(transform.position, camera);
+				const Vector2 end = Camera::WorldToScreen(connectedEntityTransform.position, camera);
+				Graphics::DrawLine(
+					Vector2(start.x, start.y),
+					Vector2(end.x, end.y)
+				);
 			}
 
 			// Debug lines for Joint Constraint relationship
 			if (entity.HasComponent<JointConstraintComponent>())
 			{
 				auto& jointComponent = entity.GetComponent<JointConstraintComponent>();
-				Graphics::DrawLine(
+				const Vector2 start = Camera::WorldToScreen(
 					jointComponent.a.GetComponent<TransformComponent>().position,
+					camera
+				);
+				const Vector2 end = Camera::WorldToScreen(
 					jointComponent.b.GetComponent<TransformComponent>().position,
-					Color(Colors::GRAY));
+					camera
+				);
+				Graphics::DrawLine(
+					Vector2(start.x, start.y),
+					Vector2(end.x, end.y),
+					Color(Colors::GRAY)
+				);
 			}
 		}
 	}
 
-	static void DrawBoxCollider(const Entity& entity)
+	static void DrawBoxCollider(const Entity& entity, const Camera& camera)
 	{
 		const auto& collider = entity.GetComponent<BoxColliderComponent>();
-		const auto& vertices = collider.globalVertices;
+		const auto& vertices = Camera::TransformVertices(collider.globalVertices, camera);
 
 		Graphics::DrawPolygon(vertices);
 	}
 
-	static void DrawCircleCollider(const Entity& entity)
+	static void DrawCircleCollider(const Entity& entity, const Camera& camera)
 	{
 		const auto& transform = entity.GetComponent<TransformComponent>();
 		const auto& collider = entity.GetComponent<CircleColliderComponent>();
+
+		Vector2 centerScreen = Camera::WorldToScreen(collider.globalCenter, camera);
+		Graphics::DrawCircle(
+			Vector2(centerScreen.x, centerScreen.y),
+			collider.radius, // Note: might need to scale radius based on camera zoom if implemented
+			36
+		);
 
 		Graphics::DrawCircle(collider.globalCenter, collider.radius, 36);
 
 		// For rotation line, using rotation angle to find the circle's edge
 		const float outlineX = collider.radius * cos(transform.rotation) + collider.globalCenter.x;
 		const float outlineY = collider.radius * sin(transform.rotation) + collider.globalCenter.y;
-		Graphics::DrawLine(collider.globalCenter, Vector2(outlineX, outlineY));
+		const Vector2 outlineScreen = Camera::WorldToScreen(Vector2(outlineX, outlineY), camera);
+		Graphics::DrawLine(
+			Vector2(centerScreen.x, centerScreen.y),
+			Vector2(outlineScreen.x, outlineScreen.y)
+		);
 
 	}
 
-	static void DrawPolygonCollider(const Entity& entity)
+	static void DrawPolygonCollider(const Entity& entity, const Camera& camera)
 	{
 		const auto& collider = entity.GetComponent<PolygonColliderComponent>();
-		Graphics::DrawPolygon(collider.globalVertices);
+		const auto transformedVertices = Camera::TransformVertices(collider.globalVertices, camera);
+		Graphics::DrawPolygon(transformedVertices);
 	}
 };

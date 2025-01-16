@@ -5,6 +5,7 @@
 
 #include "src/InputManagement/InputEnums.h"
 #include "src/Physics/Constants.h"
+#include "src/Physics/Camera.h"
 
 enum class ColliderType;
 class Coordinator;
@@ -47,5 +48,7 @@ private:
 	//------------------------------------------------------------------------
 
 	float G = -Physics::gravity;
+	Camera m_camera;
+
 	void SpawnShape(Vector2 position, ColliderType colliderType) const;
 };

@@ -14,6 +14,7 @@
 #include "src/Utils/GraphicsUtils.h"
 #include "src/Utils/Math.h"
 #include "src/Utils/Random.h"
+#include "src/Physics/Camera.h"
 
 void ParticleEffectSystem::Update(const float deltaTime)
 {
@@ -123,7 +124,7 @@ void ParticleEffectSystem::EmitParticle(const ParticleProps& particleProps)
 	m_poolIndex = (m_poolIndex - 1) % m_particlePool.size();
 }
 
-void ParticleEffectSystem::Render() const
+void ParticleEffectSystem::Render(const Camera& camera) const
 {
 	for (const auto& particle : m_particlePool)
 	{
@@ -155,13 +156,19 @@ void ParticleEffectSystem::Render() const
 					particle.position.y + halfSize * sinAngle
 				);
 
+				start = Camera::WorldToScreen(start, camera);
+				end = Camera::WorldToScreen(end, camera);
+
 				Graphics::DrawLine(start, end, color);
 				break;
 			}
 
 			case ParticleShape::CIRCLE:
-				Graphics::DrawFillCircle(particle.position, size / 2.f, 6, color);
+			{
+				const Vector2 screenPos = Camera::WorldToScreen(particle.position, camera);
+				Graphics::DrawFillCircle(screenPos, size / 2.f, 6, color);
 				break;
+			}
 
 			case ParticleShape::SQUARE:
 			{
@@ -170,7 +177,7 @@ void ParticleEffectSystem::Render() const
 				const float sinAngle = std::sin(particle.rotation);
 
 				// Calculate rotated corners
-				std::vector<Vector2> corners = {
+				std::vector<Vector2> worldVertex = {
 					// Top-left
 					Vector2(
 						particle.position.x - halfSize * cosAngle + halfSize * sinAngle,
@@ -193,7 +200,14 @@ void ParticleEffectSystem::Render() const
 						)
 				};
 
-				Graphics::DrawFillPolygon(corners, color);
+				std::vector<Vector2> screenVertex;
+				screenVertex.reserve(worldVertex.size());
+				for (const auto& vertex : worldVertex)
+				{
+					screenVertex.push_back(Camera::WorldToScreen(vertex, camera));
+				}
+
+				Graphics::DrawFillPolygon(screenVertex, color);
 				break;
 			}
 		}

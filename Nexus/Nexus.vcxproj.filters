@@ -41,6 +41,7 @@
     <ClCompile Include="Games\UI\UIEffects.cpp" />
     <ClCompile Include="src\Systems\ParticleEffectSystem.cpp" />
     <ClCompile Include="src\Utils\Random.cpp" />
+    <ClCompile Include="src\Physics\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="src\Utils\Math.h" />
     <ClInclude Include="src\Components\ParticleEmitterComponent.h" />
     <ClInclude Include="src\Physics\Particle.h" />
+    <ClInclude Include="src\Physics\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

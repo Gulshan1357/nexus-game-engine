@@ -2,6 +2,7 @@
 
 #include "src/ECS/Coordinator.h"
 
+class Camera;
 struct Vector2;
 struct TransformComponent;
 struct ParticleEmitterComponent;
@@ -32,7 +33,7 @@ public:
 	void EmitParticle(const ParticleProps& particleProps);
 
 	// Render all the exiting particles
-	void Render() const;
+	void Render(const Camera& camera) const;
 
 private:
 	std::vector<Particle> m_particlePool;
