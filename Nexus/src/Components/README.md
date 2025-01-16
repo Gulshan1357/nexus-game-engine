@@ -56,7 +56,10 @@ Components store data and define the properties of entities in the game.
        - and 'jacobian' matrix, 'cachedLambda' (for impulse) and `bias` (for Baumgarte stabilization) also computed by the `ConstraintSystem`. 
 
 9. **Particle Emitter Component**  
-   - Informs the particle effect system how to emit the particles. 
+   - Informs the `ParticleEffectSystem` how to emit the particles.
+
+10. **CameraFollow Component**  
+   - Inform `CameraFollowSystem` which entities to follow. `CameraFollowSystem` can follow 2 entities at most.  
 
 ---
 

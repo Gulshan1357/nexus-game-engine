@@ -205,6 +205,7 @@
     <ClInclude Include="src\AudioManagement\AudioManager.h" />
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
+    <ClInclude Include="src\Components\CameraFollowComponent.h" />
     <ClInclude Include="src\Components\CircleColliderComponent.h" />
     <ClInclude Include="src\Components\ColliderTypeComponent.h" />
     <ClInclude Include="src\Components\ConstraintTypeComponent.h" />
@@ -235,6 +236,7 @@
     <ClInclude Include="src\Physics\PenetrationConstraint.h" />
     <ClInclude Include="src\Physics\PhysicsEngine.h" />
     <ClInclude Include="src\Systems\AnimationSystem.h" />
+    <ClInclude Include="src\Systems\CameraFollowSystem.h" />
     <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Systems\ConstraintSystem.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />

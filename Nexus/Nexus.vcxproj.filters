@@ -133,6 +133,8 @@
     <ClInclude Include="src\Components\ParticleEmitterComponent.h" />
     <ClInclude Include="src\Physics\Particle.h" />
     <ClInclude Include="src\Physics\Camera.h" />
+    <ClInclude Include="src\Systems\CameraFollowSystem.h" />
+    <ClInclude Include="src\Components\CameraFollowComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

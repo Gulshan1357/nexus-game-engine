@@ -67,3 +67,8 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
    - Purpose:
      - The `Update` function maintain existing particles and emit new particles based on the `ParticleEmitterComponent`.
      - The `Render` function draw all the exiting particles.
+
+11. **Camera Follow System**
+   - Requires: `TransformComponent` and `CameraFollowComponent`.
+   - Purpose: System that handles camera movement to follow one or two players.
+   - Features: Have dead zone and movement smoothening effect (via lerp).

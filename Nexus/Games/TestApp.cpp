@@ -24,6 +24,7 @@
 #include "src/Components/CircleColliderComponent.h"
 #include "src/Components/PolygonColliderComponent.h"
 #include "src/Components/AnimationComponent.h"
+#include "src/Components/CameraFollowComponent.h"
 #include "src/Components/ConstraintTypeComponent.h"
 #include "src/Components/ParticleEmitterComponent.h"
 
@@ -43,6 +44,7 @@
 #include "src/Utils/Logger.h"
 
 #include "src/Events/ActionChangeEvent.h"
+#include "src/Systems/CameraFollowSystem.h"
 
 TestApp::TestApp()
 {
@@ -90,6 +92,7 @@ void TestApp::LoadLevel(int level)
 	m_coordinator->AddSystem<PhysicsSystem>();
 	m_coordinator->AddSystem<ConstraintSystem>();
 	m_coordinator->AddSystem<ParticleEffectSystem>();
+	m_coordinator->AddSystem<CameraFollowSystem>();
 
 	// Add assets to the asset manager
 	m_assetManager->AddSprite("player1-test-image", R"(.\Assets\Sprites\Test.bmp)", 8, 4);
@@ -136,9 +139,11 @@ void TestApp::LoadLevel(int level)
 	test.AddComponent<TransformComponent>(Vector2(350.f, 250.f), Vector2(1.f, 1.f));
 	test.AddComponent<RigidBodyComponent>(Vector2(0.00f, 0.0f), Vector2(), false, 0.0f);
 	test.AddComponent<SpriteComponent>("player1-test-image", 2, Asset::DemoPlayer::ANIM_BACKWARDS); // Only prints a default sprite
+	// test.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	// test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
-	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 18.f, 18.0f, 18.f, 18.f);
+	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 2018.f, 2018.0f, 2018.f, 2018.f);
 	test.AddComponent<AnimationComponent>(false, 8, true);
+	// test.AddComponent<CameraFollowComponent>();
 	test.Tag("Player1");
 	test.Group("Player");
 
@@ -192,6 +197,7 @@ void TestApp::LoadLevel(int level)
 	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	// redBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
+	redBall.AddComponent<CameraFollowComponent>();
 	redBall.Tag("Player2");
 	redBall.Group("Player");
 
@@ -343,8 +349,8 @@ void TestApp::PrintTiles(const std::string& tileMapAssetId, float scale, const s
 
 void TestApp::Update(float deltaTime)
 {
-	Vector2 position = m_coordinator->GetEntityByTag("Player2").GetComponent<TransformComponent>().position;
-	m_camera.SetPosition(position);
+	// Vector2 position = m_coordinator->GetEntityByTag("Player2").GetComponent<TransformComponent>().position;
+	// m_camera.SetPosition(position);
 	ProcessInput();
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
@@ -374,6 +380,7 @@ void TestApp::Update(float deltaTime)
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);
 	// [Physics system End]
 	m_coordinator->GetSystem<ParticleEffectSystem>().Update(dt);
+	m_coordinator->GetSystem<CameraFollowSystem>().Update(m_camera);
 }
 
 //------------------------------------------------------------------------
