@@ -18,12 +18,23 @@ public:
 		RequireComponent<UITextComponent>();
 	}
 
-	void Update() const
+	void Update(const Camera& camera) const
 	{
 		for (auto entity : GetSystemEntities())
 		{
 			const UITextComponent& uiText = entity.GetComponent<UITextComponent>();
-			Graphics::PrintText(uiText.text, uiText.position, uiText.color);
+
+			Vector2 screenPos;
+			if (uiText.isWorldSpace)
+			{
+				screenPos = Camera::WorldToScreen(uiText.position, camera);
+			}
+			else
+			{
+				screenPos = uiText.position;
+			}
+
+			Graphics::PrintText(uiText.text, screenPos, uiText.color);
 		}
 	}
 };

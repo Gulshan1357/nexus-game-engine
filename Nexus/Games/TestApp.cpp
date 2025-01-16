@@ -169,8 +169,8 @@ void TestApp::LoadLevel(int level)
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
 
-	// Entity uiTextHello = m_coordinator->CreateEntity();
-	// uiTextHello.AddComponent<UITextComponent>("New Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18);
+	Entity uiTextHello = m_coordinator->CreateEntity();
+	uiTextHello.AddComponent<UITextComponent>("Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18, true);
 
 	// Polygon local vertices for red-ball sprite
 	std::vector<Vector2> redballPolygonVertices;
@@ -471,7 +471,7 @@ void TestApp::Render()
 	// Update Render Systems
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager, m_camera);
 	m_coordinator->GetSystem<ParticleEffectSystem>().Render(m_camera);
-	m_coordinator->GetSystem<RenderTextSystem>().Update();
+	m_coordinator->GetSystem<RenderTextSystem>().Update(m_camera);
 
 	if (m_isDebug)
 	{

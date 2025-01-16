@@ -32,6 +32,7 @@ Components store data and define the properties of entities in the game.
      - Position.  
      - Color.  
      - Font type.
+     - isWorldSpace (Is position relative to world or camera)
 
 6. **Animation Component**  
    - Stores animation-related data:  
