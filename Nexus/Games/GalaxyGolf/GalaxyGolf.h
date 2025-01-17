@@ -7,6 +7,7 @@
 #include "src/Physics/Constants.h"
 #include "src/Physics/Camera.h"
 
+enum class MapType;
 enum class ColliderType;
 class Coordinator;
 class EventManager;
@@ -18,10 +19,10 @@ struct Vector2;
 class GalaxyGolf
 {
 public:
-	GalaxyGolf();
+	GalaxyGolf(MapType mapType);
 	~GalaxyGolf();
 
-	void Initialize();
+	void Initialize(MapType mapType);
 	void LoadLevel(int level);
 	void Update(float deltaTime);
 	void ProcessInput();
@@ -48,5 +49,5 @@ private:
 	float G = -Physics::gravity;
 	Camera m_camera;
 
-	void SpawnShape(Vector2 position, ColliderType colliderType) const;
+	MapType m_mapType;
 };

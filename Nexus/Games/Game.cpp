@@ -4,9 +4,11 @@
 #include "App/app.h"
 
 #include "GalaxyGolf/GalaxyGolf.h"
+#include "GalaxyGolf/MapType.h"
 
 #include "src/Physics/Constants.h"
 #include "src/Utils/GraphicsUtils.h"
+#include "src/Utils/Logger.h"
 #include "src/Utils/Vector2.h"
 #include "UI/UIEffects.h"
 
@@ -16,9 +18,13 @@ Game::Game() : m_currentState(GameState::MENU)
 Game::~Game() = default;
 
 void Game::Initialize()
+{}
+
+void Game::InitializeMap(MapType mapType)
 {
-	game = std::make_unique<GalaxyGolf>();
-	game->Initialize();
+	game = std::make_unique<GalaxyGolf>(mapType);
+	game->Initialize(mapType);
+	m_isMapInitialized = true;
 }
 
 void Game::Update(const float deltaTime)
@@ -28,7 +34,11 @@ void Game::Update(const float deltaTime)
 		case GameState::MENU:
 			UpdateMenu(deltaTime);
 			break;
+		case GameState::MAP_SELECT:
+			UpdateMapSelection(deltaTime);
+			break;
 		case GameState::PLAYING:
+			if (!m_isMapInitialized) InitializeMap(m_selectedMap);
 			UpdateGame(deltaTime);
 			break;
 		case GameState::PAUSED:
@@ -45,11 +55,35 @@ void Game::UpdateMenu(float deltaTime)
 	// Enter to play
 	if (App::IsKeyPressed(VK_RETURN))
 	{
-		Game::Initialize();
-		m_currentState = GameState::PLAYING;
+		m_currentState = GameState::MAP_SELECT;
 	}
 
 	// App/main.h watch the APP_QUIT_KEY which is 'F1'. When pressed anytime the game quits.
+}
+
+void Game::UpdateMapSelection(float deltaTime)
+{
+	if (App::IsKeyPressed('1'))
+	{
+		m_selectedMap = MapType::EARTH;
+		m_currentState = GameState::PLAYING;
+	}
+	if (App::IsKeyPressed('2'))
+	{
+		m_selectedMap = MapType::MARS;
+		m_currentState = GameState::PLAYING;
+	}
+	if (App::IsKeyPressed('3'))
+	{
+		m_selectedMap = MapType::JUPITER;
+		m_currentState = GameState::PLAYING;
+	}
+
+	// Return to main menu
+	if (App::IsKeyPressed(VK_ESCAPE))
+	{
+		m_currentState = GameState::MENU;
+	}
 }
 
 void Game::UpdateGame(const float deltaTime)
@@ -73,6 +107,8 @@ void Game::UpdatePaused(float deltaTime)
 	if (App::IsKeyPressed(VK_SPACE))
 	{
 		m_currentState = GameState::MENU;
+		m_isMapInitialized = false;
+		game.reset();
 	}
 }
 
@@ -82,6 +118,8 @@ void Game::UpdateGameOver(float deltaTime)
 	if (App::IsKeyPressed(VK_SPACE) || App::IsKeyPressed(VK_ESCAPE))
 	{
 		m_currentState = GameState::MENU;
+		m_isMapInitialized = false;
+		game.reset();
 	}
 }
 
@@ -91,6 +129,9 @@ void Game::Render() const
 	{
 		case GameState::MENU:
 			RenderMenu();
+			break;
+		case GameState::MAP_SELECT:
+			RenderMapSelection();
 			break;
 		case GameState::PLAYING:
 			RenderGame();
@@ -143,9 +184,58 @@ void Game::RenderMenu() const
 	}
 }
 
+void Game::RenderMapSelection() const
+{
+	RenderUILayout();
+
+	constexpr float centerX = Physics::SCREEN_WIDTH / 2.f;
+	constexpr float startY = Physics::SCREEN_HEIGHT / 2.f;
+
+	Graphics::PrintText(
+		"SELECT WORLD!",
+		Vector2(centerX - 80.f, startY + 150.f),
+		m_fontPrimary,
+		GLUT_BITMAP_TIMES_ROMAN_24
+	);
+
+	Graphics::DrawLine(
+		Vector2(centerX - 150, startY + 80),
+		Vector2(centerX + 150, startY + 80),
+		m_accentPrimary
+	);
+
+	const std::vector<std::pair<std::string, std::string>> menuItems = {
+		{"EARTH", "[1]"},
+		{"MARS", "[2]"},
+		{"JUPITER", "[3]"}
+	};
+
+	float currentY = startY + 50;
+	for (const auto& [text, shortcut] : menuItems)
+	{
+		Graphics::PrintText(
+			text,
+			Vector2(centerX - 140, currentY),
+			m_fontSecondary,
+			GLUT_BITMAP_HELVETICA_18
+		);
+		if (!shortcut.empty())
+		{
+			Graphics::PrintText(
+				shortcut,
+				Vector2(centerX + 70, currentY),
+				m_fontPrimary,
+				GLUT_BITMAP_HELVETICA_18
+			);
+		}
+		currentY -= m_menuSpacing;
+	}
+	
+}
+
 void Game::RenderGame() const
 {
-	game->Render();
+	if (game) game->Render();
 }
 
 void Game::RenderPaused() const

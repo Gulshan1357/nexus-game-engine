@@ -3,9 +3,11 @@
 #include <memory>
 
 #include "GameState.h"
+#include "GalaxyGolf/MapType.h"
 #include "src/Physics/Constants.h"
 #include "src/Utils/Color.h"
 
+enum class MapType;
 struct Color;
 class GalaxyGolf;
 
@@ -16,16 +18,18 @@ public:
 	~Game();
 
 	void Initialize();
-
+	void InitializeMap(MapType mapType);
 
 	void Update(float deltaTime);
 	void UpdateMenu(float deltaTime);
+	void UpdateMapSelection(float deltaTime);
 	void UpdateGame(float deltaTime);
 	void UpdatePaused(float deltaTime);
 	void UpdateGameOver(float deltaTime);
 
 	void Render() const;
 	void RenderMenu() const;
+	void RenderMapSelection() const;
 	void RenderGame() const;
 	void RenderPaused() const;
 	void RenderGameOver() const;
@@ -39,6 +43,10 @@ private:
 	GameState m_currentState;
 	std::unique_ptr<GalaxyGolf> game;
 
+	// Map
+	MapType m_selectedMap = MapType::EARTH;
+	bool m_isMapInitialized = false;
+	
 	//------------------------------------------------------------------------
 	// UI Styling
 	//------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "MapType.h"
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
 #include "src/EventManagement/EventManager.h"
@@ -43,16 +44,18 @@
 
 #include "src/Events/ActionChangeEvent.h"
 
-GalaxyGolf::GalaxyGolf()
+GalaxyGolf::GalaxyGolf(MapType mapType)
 {
 	m_isDebug = true;
+
+	m_mapType = mapType;
 
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_unique<EventManager>();
 	m_inputManager = std::make_unique<InputManager>();
 	m_assetManager = std::make_unique<AssetManager>();
 	m_audioManager = std::make_unique<AudioManager>();
-	Logger::Log("Game constructor called!");
+	Logger::Log("Game constructor called! " + std::to_string(static_cast<int>(m_mapType)));
 }
 
 GalaxyGolf::~GalaxyGolf()
@@ -60,7 +63,7 @@ GalaxyGolf::~GalaxyGolf()
 	Logger::Warn("Game destructor called!");
 }
 
-void GalaxyGolf::Initialize()
+void GalaxyGolf::Initialize(MapType mapType)
 {
 	Logger::Log("TestApp::Initialize()");
 
@@ -107,6 +110,7 @@ void GalaxyGolf::LoadLevel(int level)
 
 void GalaxyGolf::Update(float deltaTime)
 {
+	Logger
 	ProcessInput();
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
