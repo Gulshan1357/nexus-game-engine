@@ -192,9 +192,9 @@ void TestApp::LoadLevel(int level)
 	redBall.AddComponent<SpriteComponent>("red-ball", 3);
 	redBall.AddComponent<TransformComponent>(Vector2(400.f, 300.f), Vector2(1.f, 1.f), -0.3f);
 	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
-	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	// redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") * 4);
-	redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
+	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
+	// redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	// redBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
 	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
 	redBall.AddComponent<CameraFollowComponent>();

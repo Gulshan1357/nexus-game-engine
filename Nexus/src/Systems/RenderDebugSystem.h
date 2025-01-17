@@ -119,8 +119,6 @@ public:
 			36
 		);
 
-		Graphics::DrawCircle(collider.globalCenter, collider.radius, 36);
-
 		// For rotation line, using rotation angle to find the circle's edge
 		const float outlineX = collider.radius * cos(transform.rotation) + collider.globalCenter.x;
 		const float outlineY = collider.radius * sin(transform.rotation) + collider.globalCenter.y;
