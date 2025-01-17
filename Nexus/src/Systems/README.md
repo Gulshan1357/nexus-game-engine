@@ -18,7 +18,6 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
    - Requires: `BoxColliderComponent`.
    - Purpose: Handles damage logic on collision.
      - It doesn't update every frame. Instead, it has an `onCollision` function that is triggered by other systems/events as a callback.
-     - Currently, it kills the collided entities.
 
 4. **Render Text System**
    - Requires: `UITextComponent`.

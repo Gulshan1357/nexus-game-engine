@@ -26,5 +26,8 @@
 8. [**Asset Management**](AssetManagement/)  
    - Stores all `CSimpleSprite` objects in a map `<tile-map, CSimpleSprite>`. Provides helper functions like `AddSprite()` and `GetSprite()` to enable reuse of sprites in the game.
 
-9. [**Physics**](Physics/)  
+9. [**Audio Management**](AssetManagement/)  
+   - Contains `AudioAsset` class that encapsulates the file path of the audio asset along with `AudioManager` to manage everything.
+
+10. [**Physics**](Physics/)  
    - Contains the Physics Engine, which provides functions to generate various forces and torques and integrate them into position and rotation.
