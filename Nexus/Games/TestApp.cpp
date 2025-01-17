@@ -169,10 +169,10 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->CreateAnimation("player2-test-image", Asset::DemoPlayer::ANIM_FORWARDS, 1.0f / 15.0f, { 24,25,26,27,28,29,30,31 });
 
 	// Add Key bindings for player 1
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_UP, Input::PlayerAction::MOVE_UP);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_UP, Input::PlayerAction::MOVE_UP);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_RIGHT, Input::PlayerAction::MOVE_RIGHT);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_DOWN, Input::PlayerAction::MOVE_DOWN);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LEFT, Input::PlayerAction::MOVE_LEFT);
 
 	Entity uiTextHello = m_coordinator->CreateEntity();
 	uiTextHello.AddComponent<UITextComponent>("Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18, true);
@@ -202,10 +202,10 @@ void TestApp::LoadLevel(int level)
 	redBall.Group("Player");
 
 	// Add Key bindings for player 2
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'W', Input::PlayerAction::MOVE_UP);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'D', Input::PlayerAction::MOVE_RIGHT);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'S', Input::PlayerAction::MOVE_DOWN);
-	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'W', Input::PlayerAction::MOVE_UP);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'D', Input::PlayerAction::MOVE_RIGHT);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'S', Input::PlayerAction::MOVE_DOWN);
+	// m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_2, 'A', Input::PlayerAction::MOVE_LEFT);
 
 	// // Constraints
 	// std::vector<Entity> joinedEntities;

@@ -26,6 +26,7 @@ public:
 	void LoadLevel(int level);
 	void Update(float deltaTime);
 	void ProcessInput();
+	void ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag);
 	void Render();
 	void Shutdown();
 
@@ -34,7 +35,6 @@ private:
 	// Engine
 	//------------------------------------------------------------------------
 	bool m_isDebug; // Trigger debug mode using 'B' key
-	bool m_bWasLMousePressedPast = false;
 
 	std::unique_ptr<Coordinator> m_coordinator;
 	std::unique_ptr<EventManager> m_eventManager;
@@ -45,9 +45,6 @@ private:
 	//------------------------------------------------------------------------
 	// World
 	//------------------------------------------------------------------------
-
-	float G = -Physics::gravity;
 	Camera m_camera;
-
 	MapType m_mapType;
 };

@@ -229,6 +229,7 @@
     <ClInclude Include="src\EventManagement\IEvent.h" />
     <ClInclude Include="src\EventManagement\EventManager.h" />
     <ClInclude Include="src\EventManagement\EventCallback.h" />
+    <ClInclude Include="src\Events\DrawShootEvent.h" />
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
     <ClInclude Include="src\Physics\Camera.h" />

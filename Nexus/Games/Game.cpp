@@ -18,7 +18,10 @@ Game::Game() : m_currentState(GameState::MENU)
 Game::~Game() = default;
 
 void Game::Initialize()
-{}
+{
+	// For debug
+	m_currentState = GameState::PLAYING;
+}
 
 void Game::InitializeMap(MapType mapType)
 {

@@ -4,12 +4,13 @@ namespace Input
 {
 	enum class PlayerAction
 	{
-		JUMP,
-		MOVE_UP,
-		MOVE_RIGHT,
-		MOVE_DOWN,
-		MOVE_LEFT,
-		ATTACK
+		LMOUSE
+		// JUMP,
+		// MOVE_UP,
+		// MOVE_RIGHT,
+		// MOVE_DOWN,
+		// MOVE_LEFT,
+		// ATTACK
 	};
 
 	enum class PlayerID

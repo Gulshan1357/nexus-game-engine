@@ -55,30 +55,18 @@ GalaxyGolf::GalaxyGolf(MapType mapType)
 	m_inputManager = std::make_unique<InputManager>();
 	m_assetManager = std::make_unique<AssetManager>();
 	m_audioManager = std::make_unique<AudioManager>();
-	Logger::Log("Game constructor called! " + std::to_string(static_cast<int>(m_mapType)));
+	Logger::Log("GalaxyGolf Game constructor called! " + std::to_string(static_cast<int>(m_mapType)));
 }
 
 GalaxyGolf::~GalaxyGolf()
 {
-	Logger::Warn("Game destructor called!");
+	Logger::Warn("GalaxyGolf Game destructor called!");
 }
 
 void GalaxyGolf::Initialize(MapType mapType)
 {
-	Logger::Log("TestApp::Initialize()");
+	Logger::Log("GalaxyGolf::Initialize()");
 
-	LoadLevel(1);
-
-	// Before the main Update loop is started add the entities to the systems. So that system's entities are populate and we can call the InitializeEntityPhysics()
-	m_coordinator->Update();
-	// Calculate inverse mass, angular mass and inverse angular mass of entities with RigidBody
-	m_coordinator->GetSystem<PhysicsSystem>().InitializeEntityPhysics();
-	// Calculate the local coordinates of the connected entities in the joint w.r.t anchor(self entity)
-	m_coordinator->GetSystem<ConstraintSystem>().InitializeLocalCoordinates();
-}
-
-void GalaxyGolf::LoadLevel(int level)
-{
 	// Camera
 	m_camera.SetPosition(Physics::SCREEN_WIDTH / 2.f, Physics::SCREEN_HEIGHT / 2.f);
 	// Add Systems
@@ -94,6 +82,18 @@ void GalaxyGolf::LoadLevel(int level)
 	m_coordinator->AddSystem<ParticleEffectSystem>();
 	m_coordinator->AddSystem<CameraFollowSystem>();
 
+	LoadLevel(1);
+
+	// Before the main Update loop is started add the entities to the systems. So that system's entities are populate and we can call the InitializeEntityPhysics()
+	m_coordinator->Update();
+	// Calculate inverse mass, angular mass and inverse angular mass of entities with RigidBody
+	m_coordinator->GetSystem<PhysicsSystem>().InitializeEntityPhysics();
+	// Calculate the local coordinates of the connected entities in the joint w.r.t anchor(self entity)
+	m_coordinator->GetSystem<ConstraintSystem>().InitializeLocalCoordinates();
+}
+
+void GalaxyGolf::LoadLevel(int level)
+{
 	// Walls and grounds
 	Entity ground = m_coordinator->CreateEntity();
 	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -240.0f), Vector2(1.f, 1.f));
@@ -102,15 +102,27 @@ void GalaxyGolf::LoadLevel(int level)
 	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) - 10, 500.0f);
 	ground.Tag("ground");
 
-	Entity uiTextHello = m_coordinator->CreateEntity();
-	uiTextHello.AddComponent<UITextComponent>("Render Text System!", Vector2(100, 100), Color(Colors::CYAN), FontType::HELVETICA_18, true);
+	// Add assets to the asset manager
+	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
 
+	// Red ball is the new Player 2
+	Entity redBall = m_coordinator->CreateEntity();
+	redBall.AddComponent<SpriteComponent>("red-ball", 3);
+	redBall.AddComponent<TransformComponent>(Vector2(400.f, 300.f), Vector2(1.f, 1.f), -0.3f);
+	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
+	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
+	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
+	redBall.AddComponent<CameraFollowComponent>();
+	redBall.Tag("Player1");
+	redBall.Group("Player");
+
+	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
 }
 
 void GalaxyGolf::Update(float deltaTime)
 {
-	Logger
 	ProcessInput();
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
@@ -148,6 +160,28 @@ void GalaxyGolf::ProcessInput()
 	if (App::IsKeyPressed('B'))
 	{
 		m_isDebug = !m_isDebug;
+	}
+
+	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
+}
+
+void GalaxyGolf::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag)
+{
+	// bool noKeyPressed = true;
+	// For every keyState check if currently pressed and compare the new state(bIsPressed) with old state(bIsPressed)
+	for (auto& keyState : m_inputManager->GetAllKeys(playerId))
+	{
+		if (App::IsKeyPressed(keyState.keyCode) != keyState.bIsPressed) // Key state is different
+		{
+			// store the current key state
+			keyState.bIsPressed = !keyState.bIsPressed;
+
+			m_inputManager->UpdateActionStatus(playerId, m_inputManager->GetActionEnum(playerId, keyState.keyCode), keyState.bIsPressed);
+
+			const Input::PlayerAction action = m_inputManager->GetActionEnum(playerId, keyState.keyCode);
+			const bool actionStatus = m_inputManager->GetActionStatus(playerId, action);
+			m_eventManager->EmitEvent<ActionChangeEvent>(m_coordinator->GetEntityByTag(playerTag), playerId, action, actionStatus);
+		}
 	}
 }
 
