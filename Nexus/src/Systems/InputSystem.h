@@ -11,7 +11,7 @@
 #include "src/Events/ActionChangeEvent.h"
 #include "src/InputManagement/InputEnums.h"
 
-#include "src/Components/InputComponent.h"
+#include "src/Components/PlayerComponent.h"
 #include "src/Components/RigidBodyComponent.h"
 
 #include "src/Physics/Constants.h"
@@ -24,7 +24,7 @@ class InputSystem : public System
 public:
 	InputSystem()
 	{
-		RequireComponent<InputComponent>();
+		RequireComponent<PlayerComponent>();
 		RequireComponent<AnimationComponent>();
 	}
 

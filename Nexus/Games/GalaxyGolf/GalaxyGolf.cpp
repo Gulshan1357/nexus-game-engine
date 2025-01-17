@@ -16,7 +16,7 @@
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
 #include "src/Components/UITextComponent.h"
-#include "src/Components/InputComponent.h"
+#include "src/Components/PlayerComponent.h"
 #include "src/Components/ColliderTypeComponent.h"
 #include "src/Components/BoxColliderComponent.h"
 #include "src/Components/CircleColliderComponent.h"
@@ -112,7 +112,7 @@ void GalaxyGolf::LoadLevel(int level)
 	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
-	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
+	redBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
 	redBall.AddComponent<CameraFollowComponent>();
 	redBall.Tag("Player1");
 	redBall.Group("Player");

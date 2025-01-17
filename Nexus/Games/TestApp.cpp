@@ -18,7 +18,7 @@
 #include "src/Components/TransformComponent.h"
 #include "src/Components/SpriteComponent.h"
 #include "src/Components/UITextComponent.h"
-#include "src/Components/InputComponent.h"
+#include "src/Components/PlayerComponent.h"
 #include "src/Components/ColliderTypeComponent.h"
 #include "src/Components/BoxColliderComponent.h"
 #include "src/Components/CircleColliderComponent.h"
@@ -141,7 +141,7 @@ void TestApp::LoadLevel(int level)
 	test.AddComponent<SpriteComponent>("player1-test-image", 2, Asset::DemoPlayer::ANIM_BACKWARDS); // Only prints a default sprite
 	// test.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	// test.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player1-test-image") / 2, m_assetManager->GetSpriteHeight("player1-test-image"), Vector2());
-	test.AddComponent<InputComponent>(Input::PlayerID::PLAYER_1, 2018.f, 2018.0f, 2018.f, 2018.f);
+	test.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
 	test.AddComponent<AnimationComponent>(false, 8, true);
 	// test.AddComponent<CameraFollowComponent>();
 	test.Tag("Player1");
@@ -158,7 +158,7 @@ void TestApp::LoadLevel(int level)
 	// test2.AddComponent<RigidBodyComponent>(Vector2(-0.00f, 0.0f), false, 1.0f);
 	// test2.AddComponent<SpriteComponent>("player2-test-image", 2, Asset::DemoPlayer::ANIM_FORWARDS);
 	// test2.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("player2-test-image") / 4, m_assetManager->GetSpriteHeight("player2-test-image"), Vector2());
-	// test2.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
+	// test2.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_2, 18.f, 18.0f, 18.f, 18.f);
 	// test2.Tag("Player2");
 	// test2.Group("Player");
 
@@ -196,7 +196,7 @@ void TestApp::LoadLevel(int level)
 	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
 	// redBall.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball"), Vector2());
 	// redBall.AddComponent<PolygonColliderComponent>(redballPolygonVertices);
-	redBall.AddComponent<InputComponent>(Input::PlayerID::PLAYER_2, 2018.f, 2018.0f, 2018.f, 2018.f);
+	redBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_2);
 	redBall.AddComponent<CameraFollowComponent>();
 	redBall.Tag("Player2");
 	redBall.Group("Player");

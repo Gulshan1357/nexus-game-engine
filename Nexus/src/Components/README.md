@@ -42,10 +42,9 @@ Components store data and define the properties of entities in the game.
      - **`animationFramesRow`**: Indicates the active animation in a sprite containing multiple animations.  
      - **`playFromBeginning`**: If an animation is stopped before completion, this determines whether it starts from the beginning or resumes where it left off when reactivated.
 
-7. **Input Component**  
+7. **Player Component**  
    - Stores player input information, such as:  
      - Player identifier (`Input::PlayerID playerId`).  
-     - Input values, e.g., `upVelocity`, `rightVelocity`, `downVelocity`, and `leftVelocity`.
 
 8. **ConstraintType Component**  
    - Informs the constraint system of the constraint's type. Possible values: `JOINT`.  

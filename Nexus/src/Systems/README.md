@@ -24,7 +24,7 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
    - Purpose: Encapsulates the `App::Print()` function to render text on screen.
 
 5. **Input System**
-   - Requires: `InputComponent` and `AnimationComponent`.
+   - Requires: `PlayerComponent` and `AnimationComponent`.
    - The input system enables multiple players to control entities simultaneously. It consists of:
      - **`InputEnum`**: Contains Enums for `PlayerAction` (e.g., `Jump`, `Move_up`, `Attack`) and `PlayerId` (currently only `Player_1`, `Player_2`).
      - **`KeyBindings`**: Stores all key mappings and their corresponding actions, along with functions to add and retrieve key bindings.

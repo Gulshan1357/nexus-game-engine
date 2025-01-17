@@ -211,7 +211,7 @@
     <ClInclude Include="src\Components\CircleColliderComponent.h" />
     <ClInclude Include="src\Components\ColliderTypeComponent.h" />
     <ClInclude Include="src\Components\ConstraintTypeComponent.h" />
-    <ClInclude Include="src\Components\InputComponent.h" />
+    <ClInclude Include="src\Components\PlayerComponent.h" />
     <ClInclude Include="src\Components\JointConstraintComponent.h" />
     <ClInclude Include="src\Components\ParticleEmitterComponent.h" />
     <ClInclude Include="src\Components\PolygonColliderComponent.h" />
@@ -246,6 +246,7 @@
     <ClInclude Include="src\Systems\InputSystem.h" />
     <ClInclude Include="src\Systems\ParticleEffectSystem.h" />
     <ClInclude Include="src\Systems\PhysicsSystem.h" />
+    <ClInclude Include="src\Systems\PlayerSystem.h" />
     <ClInclude Include="src\Systems\RenderDebugSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
     <ClInclude Include="src\Systems\RenderTextSystem.h" />
