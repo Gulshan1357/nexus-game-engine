@@ -10,6 +10,8 @@ struct PlayerComponent
 {
 	Input::PlayerID playerId;
 
+	int totalStrokes = 0;
+
 	explicit PlayerComponent(const Input::PlayerID playerId = Input::PlayerID::PLAYER_1) :
 		playerId(playerId)
 	{}

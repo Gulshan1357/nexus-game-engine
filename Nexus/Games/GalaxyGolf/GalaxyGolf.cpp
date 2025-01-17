@@ -37,6 +37,7 @@
 #include "src/Systems/AnimationSystem.h"
 #include "src/Systems/ConstraintSystem.h"
 #include "src/Systems/ParticleEffectSystem.h"
+#include "src/Systems/RenderHUDSystem.h"
 
 #include "src/Physics/Particle.h"
 #include "src/Utils/Vector2.h"
@@ -81,6 +82,7 @@ void GalaxyGolf::Initialize(MapType mapType)
 	m_coordinator->AddSystem<ConstraintSystem>();
 	m_coordinator->AddSystem<ParticleEffectSystem>();
 	m_coordinator->AddSystem<CameraFollowSystem>();
+	m_coordinator->AddSystem<RenderHUDSystem>();
 
 	LoadLevel(1);
 
@@ -99,7 +101,7 @@ void GalaxyGolf::LoadLevel(int level)
 	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -240.0f), Vector2(1.f, 1.f));
 	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.3f, 0.7f);
 	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) - 10, 500.0f);
+	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) * 10, 500.0f);
 	ground.Tag("ground");
 
 	// Add assets to the asset manager
@@ -196,6 +198,8 @@ void GalaxyGolf::Render()
 	{
 		m_coordinator->GetSystem<RenderDebugSystem>().Update(m_camera);
 	}
+
+	m_coordinator->GetSystem<RenderHUDSystem>().Update(m_camera);
 }
 
 void GalaxyGolf::Shutdown()

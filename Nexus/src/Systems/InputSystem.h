@@ -25,7 +25,6 @@ public:
 	InputSystem()
 	{
 		RequireComponent<PlayerComponent>();
-		RequireComponent<AnimationComponent>();
 	}
 
 	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
@@ -86,6 +85,8 @@ private:
         
 			// Apply the force to the rigidbody
 			player.GetComponent<RigidBodyComponent>().AddForce(force);
+			
+			player.GetComponent<PlayerComponent>().totalStrokes += 1;
 		}
 	}
 };
