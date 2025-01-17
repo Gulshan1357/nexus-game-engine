@@ -59,10 +59,10 @@ public:
 		{
 			if (IsCollidingCircleCircle(a, b, contacts))
 			{
-				Logger::Log("Circle-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
-				Logger::Log("Collision Depth: ");
-				for (const auto& contact : contacts)
-					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
+				// Logger::Log("Circle-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+				// Logger::Log("Collision Depth: ");
+				// for (const auto& contact : contacts)
+				// 	Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
@@ -71,10 +71,10 @@ public:
 		{
 			if (IsCollidingPolygonPolygon(a, b, contacts))
 			{
-				Logger::Log("Polygon-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
-				Logger::Log("Collision Depth: ");
-				for (const auto& contact : contacts)
-					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
+				// Logger::Log("Polygon-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+				// Logger::Log("Collision Depth: ");
+				// for (const auto& contact : contacts)
+				// 	Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
@@ -84,10 +84,10 @@ public:
 		{
 			if (IsCollidingCirclePolygon(a, b, contacts))
 			{
-				Logger::Log("Circle-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
-				Logger::Log("Collision Depth: ");
-				for (const auto& contact : contacts)
-					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
+				// Logger::Log("Circle-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+				// Logger::Log("Collision Depth: ");
+				// for (const auto& contact : contacts)
+				// 	Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
@@ -97,10 +97,10 @@ public:
 		{
 			if (IsCollidingCirclePolygon(b, a, contacts))
 			{
-				Logger::Log("Polygon-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
-				Logger::Log("Collision Depth: ");
-				for (const auto& contact : contacts)
-					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
+				// Logger::Log("Polygon-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+				// Logger::Log("Collision Depth: ");
+				// for (const auto& contact : contacts)
+				// 	Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
