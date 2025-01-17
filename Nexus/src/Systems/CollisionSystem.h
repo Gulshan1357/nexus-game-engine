@@ -60,6 +60,9 @@ public:
 			if (IsCollidingCircleCircle(a, b, contacts))
 			{
 				Logger::Log("Circle-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+				Logger::Log("Collision Depth: ");
+				for (const auto& contact : contacts)
+					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
@@ -69,6 +72,9 @@ public:
 			if (IsCollidingPolygonPolygon(a, b, contacts))
 			{
 				Logger::Log("Polygon-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+				Logger::Log("Collision Depth: ");
+				for (const auto& contact : contacts)
+					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
@@ -79,7 +85,9 @@ public:
 			if (IsCollidingCirclePolygon(a, b, contacts))
 			{
 				Logger::Log("Circle-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
-				// Logger::Log("Collision Depth: " + std::to_string(collisionInfo.value().penetrationDepth));
+				Logger::Log("Collision Depth: ");
+				for (const auto& contact : contacts)
+					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
@@ -90,7 +98,9 @@ public:
 			if (IsCollidingCirclePolygon(b, a, contacts))
 			{
 				Logger::Log("Polygon-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
-				// Logger::Log("Collision Depth: " + std::to_string(collisionInfo.value().penetrationDepth));
+				Logger::Log("Collision Depth: ");
+				for (const auto& contact : contacts)
+					Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
 				return true;
 			}
 		}
@@ -253,14 +263,23 @@ public:
 				}
 				else
 				{
-					// Collision detected in region 1
-					Vector2 collisionNormal = toCircleFromStart.Normalize();
-					float penetrationDepth = circleRadius - toCircleFromStart.Magnitude();
+					// Collision detected in region 1 (vertex)
+					Vector2 vertexNormal = toCircleFromStart.Normalize();
+					Vector2 edgeNormal = (closestEdgeEnd - closestEdgeStart).Normal();
 
-					// // Blending the penetration depth between vertex and edge regions to avoid sudden jumps (find a better way)
-					// float vertexDepth = circleRadius - toCircleFromStart.Magnitude();
-					// float edgeDepth = circleRadius - maxProjection;
-					// float penetrationDepth = std::min<float>(vertexDepth, edgeDepth);
+					// Calculate blend factor based on how close we are to the edge
+					float blendRegionSize = circleRadius * 0.5f;  // Match region 2
+					float distanceAlongEdge = toCircleFromStart.Dot(edgeStartToEnd.Normalize());  // Use consistent direction
+					float blendFactor = std::max<float>(0.0f, std::min<float>(1.0f, -distanceAlongEdge / blendRegionSize));
+
+					// Simple blend between vertex and edge normal (like region 2)
+					Vector2 collisionNormal = (vertexNormal * blendFactor + edgeNormal * (1.0f - blendFactor)).Normalize();
+
+					// Blend penetration depths (match region 2's approach)
+					float vertexDepth = circleRadius - toCircleFromStart.Magnitude();
+					float edgeDepth = circleRadius - maxProjection;
+					float penetrationDepth = std::min<float>(vertexDepth, edgeDepth);
+					penetrationDepth *= (0.8f + 0.2f * (1.0f - blendFactor));  // Match region 2's scaling
 
 					Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 					Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
@@ -283,9 +302,24 @@ public:
 					}
 					else
 					{
-						// Collision detected in region 2
-						Vector2 collisionNormal = toCircleFromEnd.Normalize();
-						float penetrationDepth = circleRadius - toCircleFromEnd.Magnitude();
+						// Collision detected in region 2 (vertex)
+						Vector2 vertexNormal = toCircleFromEnd.Normalize();
+						Vector2 edgeNormal = (closestEdgeEnd - closestEdgeStart).Normal();
+
+						// Calculate blend factor based on how close we are to the edge
+						float blendRegionSize = circleRadius * 0.5f;
+						float distanceAlongEdge = toCircleFromEnd.Dot(edgeEndToStart.Normalize());
+						float blendFactor = std::max<float>(0.0f, std::min<float>(1.0f, -distanceAlongEdge / blendRegionSize));
+
+						// Blend between vertex and edge normal
+						Vector2 collisionNormal = (vertexNormal * blendFactor + edgeNormal * (1.0f - blendFactor)).Normalize();
+
+						// Blend penetration depths
+						float vertexDepth = circleRadius - toCircleFromEnd.Magnitude();
+						float edgeDepth = circleRadius - maxProjection;
+						float penetrationDepth = std::min<float>(vertexDepth, edgeDepth);
+						penetrationDepth *= (0.8f + 0.2f * (1.0f - blendFactor));
+
 						Vector2 startContactPoint = circleCenter - (collisionNormal * circleRadius);
 						Vector2 endContactPoint = startContactPoint + (collisionNormal * penetrationDepth);
 						outContacts.emplace_back(startContactPoint, endContactPoint, collisionNormal, penetrationDepth);
