@@ -2,6 +2,7 @@
 
 #include "Color.h"
 #include "Vector2.h"
+#include <algorithm>
 
 namespace Math
 {

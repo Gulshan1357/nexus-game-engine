@@ -42,6 +42,7 @@
     <ClCompile Include="src\Systems\ParticleEffectSystem.cpp" />
     <ClCompile Include="src\Utils\Random.cpp" />
     <ClCompile Include="src\Physics\Camera.cpp" />
+    <ClCompile Include="Games\GalaxyGolf\GalaxyGolf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="src\Physics\Camera.h" />
     <ClInclude Include="src\Systems\CameraFollowSystem.h" />
     <ClInclude Include="src\Components\CameraFollowComponent.h" />
+    <ClInclude Include="Games\GalaxyGolf\GalaxyGolf.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "Game.h"
 
-#include "TestApp.h"
 #include "App/app.h"
+
+#include "GalaxyGolf/GalaxyGolf.h"
+
 #include "src/Physics/Constants.h"
 #include "src/Utils/GraphicsUtils.h"
 #include "src/Utils/Vector2.h"
@@ -15,7 +17,7 @@ Game::~Game() = default;
 
 void Game::Initialize()
 {
-	game = std::make_unique<TestApp>();
+	game = std::make_unique<GalaxyGolf>();
 	game->Initialize();
 }
 
@@ -299,7 +301,7 @@ void Game::RenderUILayout() const
 
 	// Title 
 	Graphics::PrintText(
-		"GAME TITLE",
+		"GALAXY GOLF",
 		Vector2(m_leftMargin, m_titleY),
 		m_fontTitle,
 		GLUT_BITMAP_TIMES_ROMAN_24

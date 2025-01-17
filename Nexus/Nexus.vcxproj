@@ -193,6 +193,7 @@
     <ClInclude Include="App\SimpleController.h" />
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
+    <ClInclude Include="Games\GalaxyGolf\GalaxyGolf.h" />
     <ClInclude Include="Games\Game.h" />
     <ClInclude Include="Games\GameState.h" />
     <ClInclude Include="Games\OriginalDemo.h" />
@@ -266,6 +267,7 @@
     <ClCompile Include="App\SimpleController.cpp" />
     <ClCompile Include="App\SimpleSound.cpp" />
     <ClCompile Include="App\SimpleSprite.cpp" />
+    <ClCompile Include="Games\GalaxyGolf\GalaxyGolf.cpp" />
     <ClCompile Include="Games\Game.cpp" />
     <ClCompile Include="Games\OriginalDemo.cpp" />
     <ClCompile Include="Games\TestApp.cpp" />

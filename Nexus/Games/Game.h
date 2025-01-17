@@ -7,7 +7,7 @@
 #include "src/Utils/Color.h"
 
 struct Color;
-class TestApp;
+class GalaxyGolf;
 
 class Game
 {
@@ -37,7 +37,7 @@ public:
 	void Shutdown();
 private:
 	GameState m_currentState;
-	std::unique_ptr<TestApp> game;
+	std::unique_ptr<GalaxyGolf> game;
 
 	//------------------------------------------------------------------------
 	// UI Styling
