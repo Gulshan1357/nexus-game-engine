@@ -4,9 +4,10 @@
 #include <string>
 
 #include "src/InputManagement/InputEnums.h"
-#include "src/Physics/Constants.h"
 #include "src/Physics/Camera.h"
 
+struct Score;
+enum class GameState;
 enum class MapType;
 enum class ColliderType;
 class Coordinator;
@@ -19,14 +20,15 @@ struct Vector2;
 class GalaxyGolf
 {
 public:
-	GalaxyGolf(MapType mapType);
+	GalaxyGolf(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score);
 	~GalaxyGolf();
 
-	void Initialize(MapType mapType);
+	void Initialize();
 	void LoadLevel(int level);
 	void Update(float deltaTime);
 	void ProcessInput();
 	void ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag);
+	void PropagateScore(); // Retrieve the scores from player component and populate the Game::Score
 	void Render();
 	void Shutdown();
 
@@ -46,5 +48,9 @@ private:
 	// World
 	//------------------------------------------------------------------------
 	Camera m_camera;
+
+	// Game state and score
 	MapType m_mapType;
+	std::weak_ptr<GameState> m_gameState;
+	std::weak_ptr<Score> m_score;
 };

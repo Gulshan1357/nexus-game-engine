@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "GameState.h"
+#include "Score.h"
 #include "GalaxyGolf/MapType.h"
 #include "src/Physics/Constants.h"
 #include "src/Utils/Color.h"
@@ -17,11 +18,11 @@ public:
 	Game();
 	~Game();
 
-	void Initialize();
-	void InitializeMap(MapType mapType);
+	void Initialize() const;
+	void InitializeMap(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score);
 
 	void Update(float deltaTime);
-	void UpdateMenu(float deltaTime);
+	void UpdateMenu(float deltaTime) const;
 	void UpdateMapSelection(float deltaTime);
 	void UpdateGame(float deltaTime);
 	void UpdatePaused(float deltaTime);
@@ -40,13 +41,16 @@ public:
 
 	void Shutdown();
 private:
-	GameState m_currentState;
-	std::unique_ptr<GalaxyGolf> game;
+	std::unique_ptr<GalaxyGolf> m_game;
+	std::shared_ptr<GameState> m_currentGameState;
 
 	// Map
 	MapType m_selectedMap = MapType::EARTH;
 	bool m_isMapInitialized = false;
-	
+
+	// Player Score
+	std::shared_ptr<Score> m_score;
+
 	//------------------------------------------------------------------------
 	// UI Styling
 	//------------------------------------------------------------------------
@@ -65,4 +69,7 @@ private:
 	Color m_fontTitle = Color(1.0f, 0.8f, 0.0f); // yellow
 	Color m_fontPrimary = Color(1.0f, 0.35f, 0.3f); // red;
 	Color m_fontSecondary = Color(0.31f, 0.81f, 0.87f); // blue;
+
+	//
+	bool m_isScoreUpToDate = false;
 };

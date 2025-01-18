@@ -198,6 +198,7 @@
     <ClInclude Include="Games\Game.h" />
     <ClInclude Include="Games\GameState.h" />
     <ClInclude Include="Games\OriginalDemo.h" />
+    <ClInclude Include="Games\Score.h" />
     <ClInclude Include="Games\TestApp.h" />
     <ClInclude Include="Games\UI\UIEffects.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Systems\ConstraintSystem.h" />
     <ClInclude Include="src\Systems\DamageSystem.h" />
+    <ClInclude Include="src\Systems\GameplaySystem.h" />
     <ClInclude Include="src\Systems\InputSystem.h" />
     <ClInclude Include="src\Systems\ParticleEffectSystem.h" />
     <ClInclude Include="src\Systems\PhysicsSystem.h" />

@@ -138,6 +138,9 @@
     <ClInclude Include="src\Components\CameraFollowComponent.h" />
     <ClInclude Include="Games\GalaxyGolf\GalaxyGolf.h" />
     <ClInclude Include="Games\GalaxyGolf\MapType.h" />
+    <ClInclude Include="src\Systems\GameplaySystem.h" />
+    <ClInclude Include="src\Systems\RenderHUDSystem.h" />
+    <ClInclude Include="Games\Score.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

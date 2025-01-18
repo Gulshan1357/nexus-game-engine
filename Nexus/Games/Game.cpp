@@ -12,27 +12,34 @@
 #include "src/Utils/Vector2.h"
 #include "UI/UIEffects.h"
 
-Game::Game() : m_currentState(GameState::MENU)
-{}
-
-Game::~Game() = default;
-
-void Game::Initialize()
+Game::Game()
 {
-	// For debug
-	m_currentState = GameState::PLAYING;
+	m_currentGameState = std::make_shared<GameState>();
+	m_score = std::make_shared<Score>();
 }
 
-void Game::InitializeMap(MapType mapType)
+Game::~Game()
 {
-	game = std::make_unique<GalaxyGolf>(mapType);
-	game->Initialize(mapType);
+	m_currentGameState.reset();
+	m_score.reset();
+};
+
+void Game::Initialize() const
+{
+	// For debug
+	*m_currentGameState = GameState::PLAYING;
+}
+
+void Game::InitializeMap(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
+{
+	m_game = std::make_unique<GalaxyGolf>(mapType, std::move(gameState), std::move(score));
+	m_game->Initialize();
 	m_isMapInitialized = true;
 }
 
 void Game::Update(const float deltaTime)
 {
-	switch (m_currentState)
+	switch (*m_currentGameState)
 	{
 		case GameState::MENU:
 			UpdateMenu(deltaTime);
@@ -41,7 +48,6 @@ void Game::Update(const float deltaTime)
 			UpdateMapSelection(deltaTime);
 			break;
 		case GameState::PLAYING:
-			if (!m_isMapInitialized) InitializeMap(m_selectedMap);
 			UpdateGame(deltaTime);
 			break;
 		case GameState::PAUSED:
@@ -53,12 +59,12 @@ void Game::Update(const float deltaTime)
 	}
 }
 
-void Game::UpdateMenu(float deltaTime)
+void Game::UpdateMenu(float deltaTime) const
 {
 	// Enter to play
 	if (App::IsKeyPressed(VK_RETURN))
 	{
-		m_currentState = GameState::MAP_SELECT;
+		*m_currentGameState = GameState::MAP_SELECT;
 	}
 
 	// App/main.h watch the APP_QUIT_KEY which is 'F1'. When pressed anytime the game quits.
@@ -69,34 +75,37 @@ void Game::UpdateMapSelection(float deltaTime)
 	if (App::IsKeyPressed('1'))
 	{
 		m_selectedMap = MapType::EARTH;
-		m_currentState = GameState::PLAYING;
+		*m_currentGameState = GameState::PLAYING;
 	}
 	if (App::IsKeyPressed('2'))
 	{
 		m_selectedMap = MapType::MARS;
-		m_currentState = GameState::PLAYING;
+		*m_currentGameState = GameState::PLAYING;
 	}
 	if (App::IsKeyPressed('3'))
 	{
 		m_selectedMap = MapType::JUPITER;
-		m_currentState = GameState::PLAYING;
+		*m_currentGameState = GameState::PLAYING;
 	}
 
 	// Return to main menu
 	if (App::IsKeyPressed(VK_ESCAPE))
 	{
-		m_currentState = GameState::MENU;
+		*m_currentGameState = GameState::MENU;
 	}
 }
 
 void Game::UpdateGame(const float deltaTime)
 {
+	if (!m_isMapInitialized) InitializeMap(m_selectedMap, m_currentGameState, m_score);
+	if (m_isScoreUpToDate) m_isScoreUpToDate = false; // Since game is in progress the Game::score won't be up-to-date
+
 	// While playing press ESC to pause
 	if (App::IsKeyPressed(VK_ESCAPE))
 	{
-		m_currentState = GameState::PAUSED;
+		*m_currentGameState = GameState::PAUSED;
 	}
-	game->Update(deltaTime);
+	m_game->Update(deltaTime);
 }
 
 void Game::UpdatePaused(float deltaTime)
@@ -104,31 +113,38 @@ void Game::UpdatePaused(float deltaTime)
 	// While paused ENTER to play
 	if (App::IsKeyPressed(VK_RETURN))
 	{
-		m_currentState = GameState::PLAYING;
+		*m_currentGameState = GameState::PLAYING;
 	}
-	// While paused press SPACEBAR to main menu
+	// While paused press SPACE BAR to main menu
 	if (App::IsKeyPressed(VK_SPACE))
 	{
-		m_currentState = GameState::MENU;
+		*m_currentGameState = GameState::MENU;
 		m_isMapInitialized = false;
-		game.reset();
+		m_game.reset();
 	}
 }
 
 void Game::UpdateGameOver(float deltaTime)
 {
-	// While gameover press SPACEBAR or ESC to main menu
+	// Update the score before closing the game
+	if (!m_isScoreUpToDate)
+	{
+		m_game->PropagateScore();
+		m_isScoreUpToDate = true;
+	}
+
+	// While game over press SPACE BAR or ESC to main menu
 	if (App::IsKeyPressed(VK_SPACE) || App::IsKeyPressed(VK_ESCAPE))
 	{
-		m_currentState = GameState::MENU;
+		*m_currentGameState = GameState::MENU;
 		m_isMapInitialized = false;
-		game.reset();
+		m_game.reset();
 	}
 }
 
 void Game::Render() const
 {
-	switch (m_currentState)
+	switch (*m_currentGameState)
 	{
 		case GameState::MENU:
 			RenderMenu();
@@ -233,12 +249,12 @@ void Game::RenderMapSelection() const
 		}
 		currentY -= m_menuSpacing;
 	}
-	
+
 }
 
 void Game::RenderGame() const
 {
-	if (game) game->Render();
+	if (m_game) m_game->Render();
 }
 
 void Game::RenderPaused() const
@@ -336,13 +352,13 @@ void Game::RenderGameOver() const
 
 	currentY -= m_menuSpacing;
 	Graphics::PrintText(
-		"playerName",
+		"Player 1",
 		Vector2(centerX - 140, currentY),
 		m_fontPrimary,
 		GLUT_BITMAP_9_BY_15
 	);
 	Graphics::PrintText(
-		std::to_string(13244),
+		std::to_string(m_score->playerOneTotalShots),
 		Vector2(centerX + 60, currentY),
 		m_fontSecondary,
 		GLUT_BITMAP_9_BY_15
@@ -445,9 +461,12 @@ void Game::RenderUIControls() const
 
 void Game::Shutdown()
 {
-	if (game)
+	if (m_game)
 	{
-		game->Shutdown();
-		game.reset();
+		m_game->Shutdown();
+		m_game.reset();
 	}
+
+	Logger::Warn("Game::Shutdown(): " + std::to_string(m_score->playerOneTotalShots));
+
 }

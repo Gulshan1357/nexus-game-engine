@@ -2,8 +2,11 @@
 #include "GalaxyGolf.h"
 
 #include <memory>
+#include <utility>
 
 #include "MapType.h"
+#include "Games/GameState.h"
+#include "Games/Score.h"
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
 #include "src/EventManagement/EventManager.h"
@@ -44,19 +47,38 @@
 #include "src/Utils/Logger.h"
 
 #include "src/Events/ActionChangeEvent.h"
+#include "src/Systems/GameplaySystem.h"
 
-GalaxyGolf::GalaxyGolf(MapType mapType)
+GalaxyGolf::GalaxyGolf(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
+	: m_mapType(mapType), m_gameState(std::move(gameState)), m_score(std::move(score))
 {
 	m_isDebug = true;
-
-	m_mapType = mapType;
 
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_unique<EventManager>();
 	m_inputManager = std::make_unique<InputManager>();
 	m_assetManager = std::make_unique<AssetManager>();
 	m_audioManager = std::make_unique<AudioManager>();
-	Logger::Log("GalaxyGolf Game constructor called! " + std::to_string(static_cast<int>(m_mapType)));
+	Logger::Log("GalaxyGolf Game constructor called! ");
+	Logger::Log("MapType: " + std::to_string(static_cast<int>(m_mapType)));
+
+	if (auto gmState = m_gameState.lock())
+	{
+		Logger::Log("GameState is accessible.");
+	}
+	else
+	{
+		Logger::Err("GameState is no longer valid.");
+	}
+
+	if (auto sc = m_score.lock())
+	{
+		Logger::Log("Score is accessible.");
+	}
+	else
+	{
+		Logger::Err("Score is no longer valid.");
+	}
 }
 
 GalaxyGolf::~GalaxyGolf()
@@ -64,7 +86,7 @@ GalaxyGolf::~GalaxyGolf()
 	Logger::Warn("GalaxyGolf Game destructor called!");
 }
 
-void GalaxyGolf::Initialize(MapType mapType)
+void GalaxyGolf::Initialize()
 {
 	Logger::Log("GalaxyGolf::Initialize()");
 
@@ -83,6 +105,7 @@ void GalaxyGolf::Initialize(MapType mapType)
 	m_coordinator->AddSystem<ParticleEffectSystem>();
 	m_coordinator->AddSystem<CameraFollowSystem>();
 	m_coordinator->AddSystem<RenderHUDSystem>();
+	m_coordinator->AddSystem<GameplaySystem>();
 
 	LoadLevel(1);
 
@@ -106,6 +129,7 @@ void GalaxyGolf::LoadLevel(int level)
 
 	// Add assets to the asset manager
 	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
+	m_assetManager->AddSprite("hole", R"(.\Assets\Sprites\hole.bmp)", 1, 1);
 
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
@@ -115,12 +139,19 @@ void GalaxyGolf::LoadLevel(int level)
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
 	redBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
-	redBall.AddComponent<CameraFollowComponent>();
+	// redBall.AddComponent<CameraFollowComponent>();
 	redBall.Tag("Player1");
 	redBall.Group("Player");
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
+	Entity hole = m_coordinator->CreateEntity();
+	hole.AddComponent<SpriteComponent>("hole", 3);
+	hole.AddComponent<TransformComponent>(Vector2(600.f, 0.f), Vector2(1.f, 1.f));
+	hole.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
+	hole.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	hole.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("hole") / 2.f, Vector2(0.0f, m_assetManager->GetSpriteHeight("hole") / 1.5f));
+	hole.Tag("Hole");
 }
 
 void GalaxyGolf::Update(float deltaTime)
@@ -138,7 +169,7 @@ void GalaxyGolf::Update(float deltaTime)
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
 	// m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
 	m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
-
+	m_coordinator->GetSystem<GameplaySystem>().SubscribeToEvents(m_eventManager);
 	//------------------------------------------------------------------------
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
@@ -164,6 +195,19 @@ void GalaxyGolf::ProcessInput()
 		m_isDebug = !m_isDebug;
 	}
 
+	if (App::IsKeyPressed('P'))
+	{
+		if (auto gmState = m_gameState.lock())
+		{
+			Logger::Log("GalaxyGolf::ProcessInput() GameState is accessible.");
+			*gmState = GameState::GAME_OVER;
+		}
+		else
+		{
+			Logger::Err("GalaxyGolf::ProcessInput() GameState is no longer valid.");
+		}
+	}
+
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
 }
 
@@ -187,6 +231,20 @@ void GalaxyGolf::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& 
 	}
 }
 
+void GalaxyGolf::PropagateScore()
+{
+	if (auto sc = m_score.lock())
+	{
+		// Update Score based on the player component so that the GameOverScreen can display it
+		sc->playerOneTotalShots = m_coordinator->GetEntityByTag("Player1").GetComponent<PlayerComponent>().totalStrokes;
+		Logger::Warn(std::to_string(sc->playerOneTotalShots));
+	}
+	else
+	{
+		Logger::Err("Score is no longer valid.");
+	}
+}
+
 void GalaxyGolf::Render()
 {
 	// Update Render Systems
@@ -204,5 +262,6 @@ void GalaxyGolf::Render()
 
 void GalaxyGolf::Shutdown()
 {
-	Logger::Warn("TestApp::Shutdown()");
+	PropagateScore();
+	Logger::Warn("GalaxyGolf::Shutdown()");
 }

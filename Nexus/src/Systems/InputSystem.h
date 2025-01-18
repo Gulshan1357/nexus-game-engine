@@ -39,13 +39,14 @@ public:
 	{
 		// Currently we are sending events when action gets activated and also when it gets deactivated.
 		// TODO: Improve the control flow. Example: what happens when both MOVE_UP and MOVE_RIGHT are active?
-		if (actionEvent.action == Input::PlayerAction::LMOUSE )
+		if (actionEvent.action == Input::PlayerAction::LMOUSE)
 		{
 			if (m_isDragging == false)
 			{
 				m_isDragging = true;
 				App::GetMousePos(clickAndDrag.startMousePos.x, clickAndDrag.startMousePos.y);
-			} else
+			}
+			else
 			{
 				m_isDragging = false;
 				App::GetMousePos(clickAndDrag.endMousePos.x, clickAndDrag.endMousePos.y);
@@ -63,29 +64,29 @@ private:
 		Vector2 endMousePos;
 	};
 	ClickAndDrag clickAndDrag;
-	
+
 	//------------------------------------------------------------------------
 	// Definition of all the actions. Action can be tailored to each player using playerID
 	// ------------------------------------------------------------------------
 	void LaunchBall(const Entity& player, ClickAndDrag clickAndDrag)
 	{
-		Logger::Log(clickAndDrag.startMousePos.ToString());
-		Logger::Log(clickAndDrag.endMousePos.ToString());
+		// Logger::Log(clickAndDrag.startMousePos.ToString());
+		// Logger::Log(clickAndDrag.endMousePos.ToString());
 		if (player.HasTag("Player1"))
 		{
 			// Calculate force and direction
 			Vector2 direction = clickAndDrag.endMousePos - clickAndDrag.startMousePos;
-        
+
 			// Keep direction normalized but maintain the original magnitude for force
 			float magnitude = direction.MagnitudeSquared();
 			direction = -direction.Normalize();
-        
+
 			// Apply force directly proportional to drag distance
 			Vector2 force = direction * magnitude;
-        
+
 			// Apply the force to the rigidbody
 			player.GetComponent<RigidBodyComponent>().AddForce(force);
-			
+
 			player.GetComponent<PlayerComponent>().totalStrokes += 1;
 		}
 	}
