@@ -62,16 +62,20 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
      - Contact Caching, Continuous Collision Detection, split collision detection into broad and narrow phase. 
 
 10. **Particle Effect System**
-   - Requires: `TransformComponent` and `ParticleEmitterComponent`.
-   - Purpose:
-     - The `Update` function maintain existing particles and emit new particles based on the `ParticleEmitterComponent`.
-     - The `Render` function draw all the exiting particles.
+    - Requires: `TransformComponent` and `ParticleEmitterComponent`.
+    - Purpose:
+      - The `Update` function maintain existing particles and emit new particles based on the `ParticleEmitterComponent`.
+      - The `Render` function draw all the exiting particles.
 
 11. **Camera Follow System**
-   - Requires: `TransformComponent` and `CameraFollowComponent`.
-   - Purpose: System that handles camera movement to follow one or two players.
-   - Features: Have dead zone and movement smoothening effect (via lerp).
+    - Requires: `TransformComponent` and `CameraFollowComponent`.
+    - Purpose: System that handles camera movement to follow one or two players.
+    - Features: Have dead zone and movement smoothening effect (via lerp).
 
 12. **Player System**
-   - Requires: `PlayerComponent`.
-   - Purpose: Emit `Player State Change` event so that other systems like `Particle Effect System` can act accordingly.
+    - Requires: `PlayerComponent`.
+    - Purpose: Emit `Player State Change` event so that other systems like `Particle Effect System` can act accordingly.
+
+13. **Trajectory System**
+    - Requires: `PlayerComponent`.
+    - Purpose: Calculate and renders the probable trajectory  of the ball before it is launched.

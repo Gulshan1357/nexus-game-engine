@@ -62,24 +62,18 @@ private:
 	// ------------------------------------------------------------------------
 	void LaunchBall(const Entity& player, const Vector2& startMousePos, const Vector2& endMousePos)
 	{
-		// Logger::Log(clickAndDrag.startMousePos.ToString());
-		// Logger::Log(clickAndDrag.endMousePos.ToString());
-		if (player.HasTag("Player1"))
-		{
-			// Calculate force and direction
-			Vector2 direction = endMousePos - startMousePos;
+		// Calculate force and direction
+		Vector2 direction = endMousePos - startMousePos;
 
-			// Keep direction normalized but maintain the original magnitude for force
-			float magnitude = direction.MagnitudeSquared();
-			direction = -direction.Normalize();
+		float magnitude = direction.MagnitudeSquared();
+		direction = -direction.Normalize();
 
-			// Apply force directly proportional to drag distance
-			Vector2 force = direction * magnitude;
+		Vector2 force = direction * magnitude;
 
-			// Apply the force to the rigidbody
-			player.GetComponent<RigidBodyComponent>().AddForce(force);
+		// Apply the force to the RigidBody
+		player.GetComponent<RigidBodyComponent>().AddForce(force);
+		auto& playerComponent = player.GetComponent<PlayerComponent>();
 
-			player.GetComponent<PlayerComponent>().totalStrokes += 1;
-		}
+		playerComponent.totalStrokes += 1;
 	}
 };

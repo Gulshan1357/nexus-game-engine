@@ -49,6 +49,7 @@
 #include "src/Events/ActionChangeEvent.h"
 #include "src/Systems/GameplaySystem.h"
 #include "src/Systems/PlayerSystem.h"
+#include "src/Systems/TrajectorySystem.h"
 
 GalaxyGolf::GalaxyGolf(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
 	: m_mapType(mapType), m_gameState(std::move(gameState)), m_score(std::move(score))
@@ -108,6 +109,7 @@ void GalaxyGolf::Initialize()
 	m_coordinator->AddSystem<RenderHUDSystem>();
 	m_coordinator->AddSystem<GameplaySystem>();
 	m_coordinator->AddSystem<PlayerSystem>();
+	m_coordinator->AddSystem<TrajectorySystem>();
 
 	LoadLevel(1);
 
@@ -191,6 +193,7 @@ void GalaxyGolf::Update(float deltaTime)
 	m_coordinator->GetSystem<ParticleEffectSystem>().Update(dt);
 	m_coordinator->GetSystem<CameraFollowSystem>().Update(m_camera);
 	m_coordinator->GetSystem<PlayerSystem>().Update(m_eventManager);
+	m_coordinator->GetSystem<TrajectorySystem>().Update(dt); // If left click hold then store mouse position for trajectory calculations
 }
 
 void GalaxyGolf::ProcessInput()
@@ -256,6 +259,7 @@ void GalaxyGolf::Render()
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager, m_camera);
 	m_coordinator->GetSystem<ParticleEffectSystem>().Render(m_camera);
 	m_coordinator->GetSystem<RenderTextSystem>().Update(m_camera);
+	m_coordinator->GetSystem<TrajectorySystem>().Render(m_camera);
 
 	if (m_isDebug)
 	{

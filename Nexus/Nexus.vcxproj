@@ -254,6 +254,7 @@
     <ClInclude Include="src\Systems\RenderHUDSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
     <ClInclude Include="src\Systems\RenderTextSystem.h" />
+    <ClInclude Include="src\Systems\TrajectorySystem.h" />
     <ClInclude Include="src\Utils\Color.h" />
     <ClInclude Include="src\Utils\GraphicsUtils.h" />
     <ClInclude Include="src\Utils\Font.h" />
