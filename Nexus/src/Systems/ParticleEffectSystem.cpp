@@ -2,9 +2,14 @@
 
 #include "ParticleEffectSystem.h"
 
+#include <functional>
+
 #include "App/AppSettings.h"
 
 #include "src/ECS/Coordinator.h"
+#include "src/EventManagement/EventManager.h"
+#include "src/Events/PlayerStateChangeEvent.h"
+
 #include "src/Components/TransformComponent.h"
 #include "src/Components/ParticleEmitterComponent.h"
 
@@ -214,6 +219,41 @@ void ParticleEffectSystem::Render(const Camera& camera) const
 	}
 }
 
+void ParticleEffectSystem::SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
+{
+	using CallbackType = std::function<void(ParticleEffectSystem*, PlayerStateChangeEvent&)>;
+	const CallbackType callback = [this](auto&&, auto&& placeholder2) { OnPlayerStateChange(std::forward<decltype(placeholder2)>(placeholder2)); };
+	eventManager->SubscribeToEvent<PlayerStateChangeEvent>(this, callback);
+	//  std::placeholders::_2 tells std::bind that the second argument (the event) will be provided when the resulting function is called. This allows us to create a callable object that matches the required function signature of SubscribeToEvent, where the first argument is the instance (PhysicsSystem*), and the second argument is the event (CollisionEvent&).
+}
+
+void ParticleEffectSystem::OnPlayerStateChange(const PlayerStateChangeEvent& event)
+{
+
+	Logger::Log("ParticleEffectSystem receives PlayerStateChangeEvent");
+
+	if (event.isMoving)
+	{
+		switch (event.activeAbility)
+		{
+			case Ability::NORMAL_SHOT:
+				PlayNormalShotEffect(event.player);
+				break;
+			case Ability::POWER_SHOT:
+				PlayPowerShotEffect(event.player);
+				break;
+			case Ability::SNIPER_SHOT:
+				PlaySniperShotEffect(event.player);
+				break;
+		}
+	}
+	else
+	{
+		PlayIdleEffect(event.player);
+	}
+
+}
+
 Vector2 ParticleEffectSystem::CalculateEmissionPosition(const Vector2 emitterPos, const ParticleEmitterComponent& emitter)
 {
 	// If EmissionShape is CIRCLE then randomize the emitterPos w.r.t emitter radius
@@ -228,4 +268,121 @@ Vector2 ParticleEffectSystem::CalculateEmissionPosition(const Vector2 emitterPos
 	}
 
 	return emitterPos;
+}
+
+void ParticleEffectSystem::PlayIdleEffect(const Entity& entity)
+{
+	if (!entity.HasComponent<ParticleEmitterComponent>())
+		return;
+
+	auto& particleEmitter = entity.GetComponent<ParticleEmitterComponent>();
+
+	// Regular movement - white meteor effect
+	ParticleProps idleParticle;
+	idleParticle.particleShape = ParticleShape::CIRCLE;
+	idleParticle.colorBegin = Color(0.95f, 0.95f, 1.0f);    // Almost white with slight blue tint
+	idleParticle.colorEnd = Color(0.85f, 0.85f, 0.95f);     // Slightly darker/blueish
+	idleParticle.sizeBegin = 2.5f;
+	idleParticle.sizeEnd = 0.5f;
+	idleParticle.sizeVariations = 0.3f;
+	idleParticle.lifeTime = 1.5f;
+	idleParticle.velocity = { 0.0f, 30.0f };
+	idleParticle.velocityVariations = { 15.0f, 15.0f };
+	idleParticle.position = { 0.0f, 0.0f };
+	idleParticle.useGravity = false;
+	idleParticle.gravityStrength = 5.0f;
+
+	particleEmitter.properties = idleParticle;
+	particleEmitter.emissionRate = 2.f;
+	particleEmitter.isActive = true;
+	particleEmitter.emissionShape = EmissionShape::CIRCLE;
+	particleEmitter.emissionRadius = 20.f;
+	particleEmitter.timeSinceLastEmission = 0.0f;
+}
+
+void ParticleEffectSystem::PlayNormalShotEffect(const Entity& entity)
+{
+	if (!entity.HasComponent<ParticleEmitterComponent>())
+		return;
+
+	auto& particleEmitter = entity.GetComponent<ParticleEmitterComponent>();
+
+	// Regular movement - white meteor effect
+	ParticleProps normalShotParticle;
+	normalShotParticle.particleShape = ParticleShape::CIRCLE;
+	normalShotParticle.colorBegin = Color(1.0f, 1.0f, 1.0f);      // Pure white
+	normalShotParticle.colorEnd = Color(0.85f, 0.85f, 0.9f);      // Light blue-white
+	normalShotParticle.sizeBegin = 8.0f;
+	normalShotParticle.sizeEnd = 0.5f;
+	normalShotParticle.sizeVariations = 0.5f;
+	normalShotParticle.lifeTime = 0.6f;
+	normalShotParticle.velocity = { 0.0f, 0.0f };
+	normalShotParticle.velocityVariations = { 10.0f, 10.0f };
+	normalShotParticle.position = { 0.0f, 0.0f };
+	normalShotParticle.useGravity = false;
+
+	particleEmitter.properties = normalShotParticle;
+	particleEmitter.emissionRate = 20.f;
+	particleEmitter.isActive = true;
+	particleEmitter.emissionShape = EmissionShape::POINT;
+	particleEmitter.emissionRadius = 0.f;
+	particleEmitter.timeSinceLastEmission = 0.0f;
+}
+
+void ParticleEffectSystem::PlayPowerShotEffect(const Entity& entity)
+{
+	if (!entity.HasComponent<ParticleEmitterComponent>())
+		return;
+
+	auto& particleEmitter = entity.GetComponent<ParticleEmitterComponent>();
+
+	// Power shot - intense red effect
+	ParticleProps powerShotParticle;
+	powerShotParticle.particleShape = ParticleShape::CIRCLE;
+	powerShotParticle.colorBegin = Color(1.0f, 0.8f, 0.3f);       // Bright orange-yellow
+	powerShotParticle.colorEnd = Color(0.9f, 0.15f, 0.0f);        // Deep red
+	powerShotParticle.sizeBegin = 15.0f;
+	powerShotParticle.sizeEnd = 0.8f;
+	powerShotParticle.sizeVariations = 0.5f;
+	powerShotParticle.lifeTime = 0.8f;
+	powerShotParticle.velocity = { 0.0f, 10.0f };
+	powerShotParticle.velocityVariations = { 50.0f, 50.0f };
+	powerShotParticle.position = { 0.0f, 0.0f };
+	powerShotParticle.useGravity = false;
+
+	particleEmitter.properties = powerShotParticle;
+	particleEmitter.emissionRate = 20.f;
+	particleEmitter.isActive = true;
+	particleEmitter.emissionShape = EmissionShape::POINT;
+	particleEmitter.emissionRadius = 0.f;
+	particleEmitter.timeSinceLastEmission = 0.0f;
+}
+
+void ParticleEffectSystem::PlaySniperShotEffect(const Entity& entity)
+{
+	if (!entity.HasComponent<ParticleEmitterComponent>())
+		return;
+
+	auto& particleEmitter = entity.GetComponent<ParticleEmitterComponent>();
+
+	// Sniper shot - precise purple effect
+	ParticleProps sniperShotParticle;
+	sniperShotParticle.particleShape = ParticleShape::SQUARE;
+	sniperShotParticle.colorBegin = Color(0.4f, 0.75f, 1.0f);     // Almost white with slight blue tint
+	sniperShotParticle.colorEnd = Color(0.0f, 0.2f, 0.6f);        // Deep dark blue
+	sniperShotParticle.sizeBegin = 10.0f;
+	sniperShotParticle.sizeEnd = 0.5f;
+	sniperShotParticle.sizeVariations = 0.5f;
+	sniperShotParticle.lifeTime = 1.0f;
+	sniperShotParticle.velocity = { 0.0f, 0.0f };
+	sniperShotParticle.velocityVariations = { 10.0f, 10.0f };
+	sniperShotParticle.position = { 0.0f, 0.0f };
+	sniperShotParticle.useGravity = false;
+
+	particleEmitter.properties = sniperShotParticle;
+	particleEmitter.emissionRate = 20.f;
+	particleEmitter.isActive = true;
+	particleEmitter.emissionShape = EmissionShape::POINT;
+	particleEmitter.emissionRadius = 0.f;
+	particleEmitter.timeSinceLastEmission = 0.0f;
 }

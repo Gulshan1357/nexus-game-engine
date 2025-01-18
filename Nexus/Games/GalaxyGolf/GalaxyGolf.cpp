@@ -48,6 +48,7 @@
 
 #include "src/Events/ActionChangeEvent.h"
 #include "src/Systems/GameplaySystem.h"
+#include "src/Systems/PlayerSystem.h"
 
 GalaxyGolf::GalaxyGolf(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
 	: m_mapType(mapType), m_gameState(std::move(gameState)), m_score(std::move(score))
@@ -106,6 +107,7 @@ void GalaxyGolf::Initialize()
 	m_coordinator->AddSystem<CameraFollowSystem>();
 	m_coordinator->AddSystem<RenderHUDSystem>();
 	m_coordinator->AddSystem<GameplaySystem>();
+	m_coordinator->AddSystem<PlayerSystem>();
 
 	LoadLevel(1);
 
@@ -139,9 +141,10 @@ void GalaxyGolf::LoadLevel(int level)
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
 	redBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
-	// redBall.AddComponent<CameraFollowComponent>();
+	redBall.AddComponent<CameraFollowComponent>();
 	redBall.Tag("Player1");
 	redBall.Group("Player");
+	redBall.AddComponent<ParticleEmitterComponent>(); // The type of emission is handled by Particle Effect system
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
@@ -170,6 +173,7 @@ void GalaxyGolf::Update(float deltaTime)
 	// m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
 	m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
 	m_coordinator->GetSystem<GameplaySystem>().SubscribeToEvents(m_eventManager);
+	m_coordinator->GetSystem<ParticleEffectSystem>().SubscribeToEvents(m_eventManager); // Change particles based on the shot type
 	//------------------------------------------------------------------------
 	// Update the coordinator to process the entities that are waiting to be created/deleted
 	m_coordinator->Update();
@@ -186,6 +190,7 @@ void GalaxyGolf::Update(float deltaTime)
 	// [Physics system End]
 	m_coordinator->GetSystem<ParticleEffectSystem>().Update(dt);
 	m_coordinator->GetSystem<CameraFollowSystem>().Update(m_camera);
+	m_coordinator->GetSystem<PlayerSystem>().Update(m_eventManager);
 }
 
 void GalaxyGolf::ProcessInput()
@@ -237,7 +242,7 @@ void GalaxyGolf::PropagateScore()
 	{
 		// Update Score based on the player component so that the GameOverScreen can display it
 		sc->playerOneTotalShots = m_coordinator->GetEntityByTag("Player1").GetComponent<PlayerComponent>().totalStrokes;
-		Logger::Warn(std::to_string(sc->playerOneTotalShots));
+		// Logger::Warn(std::to_string(sc->playerOneTotalShots));
 	}
 	else
 	{

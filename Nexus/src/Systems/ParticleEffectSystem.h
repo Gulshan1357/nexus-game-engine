@@ -2,6 +2,8 @@
 
 #include "src/ECS/Coordinator.h"
 
+class EventManager;
+class PlayerStateChangeEvent;
 class Camera;
 struct Vector2;
 struct TransformComponent;
@@ -35,9 +37,19 @@ public:
 	// Render all the exiting particles
 	void Render(const Camera& camera) const;
 
+	// Galaxy Golf Game: Subscribe to Player State change event
+	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager);
+	static void OnPlayerStateChange(const PlayerStateChangeEvent& event);
+
 private:
 	std::vector<Particle> m_particlePool;
 	size_t m_poolIndex = 999;
 
 	static Vector2 CalculateEmissionPosition(const Vector2 emitterPos, const ParticleEmitterComponent& emitter);
+
+	// Galaxy Golf Game: Particle effects for different shots
+	static void PlayIdleEffect(const Entity& entity);
+	static void PlayNormalShotEffect(const Entity& entity);
+	static void PlayPowerShotEffect(const Entity& entity);
+	static void PlaySniperShotEffect(const Entity& entity);
 };

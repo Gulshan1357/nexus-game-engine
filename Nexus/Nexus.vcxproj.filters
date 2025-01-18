@@ -141,6 +141,8 @@
     <ClInclude Include="src\Systems\GameplaySystem.h" />
     <ClInclude Include="src\Systems\RenderHUDSystem.h" />
     <ClInclude Include="Games\Score.h" />
+    <ClInclude Include="src\Systems\PlayerSystem.h" />
+    <ClInclude Include="Games\GalaxyGolf\AbilitiesEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

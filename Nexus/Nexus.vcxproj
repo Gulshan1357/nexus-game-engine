@@ -193,6 +193,7 @@
     <ClInclude Include="App\SimpleController.h" />
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
+    <ClInclude Include="Games\GalaxyGolf\AbilitiesEnum.h" />
     <ClInclude Include="Games\GalaxyGolf\GalaxyGolf.h" />
     <ClInclude Include="Games\GalaxyGolf\MapType.h" />
     <ClInclude Include="Games\Game.h" />
@@ -230,6 +231,7 @@
     <ClInclude Include="src\EventManagement\IEvent.h" />
     <ClInclude Include="src\EventManagement\EventManager.h" />
     <ClInclude Include="src\EventManagement\EventCallback.h" />
+    <ClInclude Include="src\Events\PlayerStateChangeEvent.h" />
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
     <ClInclude Include="src\Physics\Camera.h" />
@@ -247,6 +249,7 @@
     <ClInclude Include="src\Systems\InputSystem.h" />
     <ClInclude Include="src\Systems\ParticleEffectSystem.h" />
     <ClInclude Include="src\Systems\PhysicsSystem.h" />
+    <ClInclude Include="src\Systems\PlayerSystem.h" />
     <ClInclude Include="src\Systems\RenderDebugSystem.h" />
     <ClInclude Include="src\Systems\RenderHUDSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />

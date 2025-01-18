@@ -71,3 +71,7 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
    - Requires: `TransformComponent` and `CameraFollowComponent`.
    - Purpose: System that handles camera movement to follow one or two players.
    - Features: Have dead zone and movement smoothening effect (via lerp).
+
+12. **Player System**
+   - Requires: `PlayerComponent`.
+   - Purpose: Emit `Player State Change` event so that other systems like `Particle Effect System` can act accordingly.

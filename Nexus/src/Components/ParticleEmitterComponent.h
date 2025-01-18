@@ -22,6 +22,16 @@ struct ParticleEmitterComponent
 	float emissionRadius;
 	float timeSinceLastEmission;
 
+	// Default constructor for cases when the type of particle emission is handled by other systems
+	explicit ParticleEmitterComponent()
+		: properties({}),
+		emissionRate(0.0f),
+		isActive(false),
+		emissionShape(EmissionShape::POINT),
+		emissionRadius(0.0f),
+		timeSinceLastEmission(0.0f)
+	{}
+
 	explicit ParticleEmitterComponent(
 		const ParticleProps& properties,
 		const float emissionRate = 10.0f,
