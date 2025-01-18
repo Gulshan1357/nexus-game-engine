@@ -1,9 +1,7 @@
 #pragma once
 
-#include <iostream>
 #include <memory>
 
-#include "src/Components/AnimationComponent.h"
 #include "src/ECS/System.h"
 #include "src/ECS/Entity.h"
 #include "src/EventManagement/EventManager.h"
@@ -14,7 +12,6 @@
 #include "src/Components/PlayerComponent.h"
 #include "src/Components/RigidBodyComponent.h"
 
-#include "src/Physics/Constants.h"
 
 //------------------------------------------------------------------------
 // The input system listens to Input events (Keyboard key press) and perform necessary action.
@@ -41,41 +38,36 @@ public:
 		// TODO: Improve the control flow. Example: what happens when both MOVE_UP and MOVE_RIGHT are active?
 		if (actionEvent.action == Input::PlayerAction::LMOUSE)
 		{
-			if (m_isDragging == false)
+			auto& playerComponent = actionEvent.player.GetComponent<PlayerComponent>();
+			if (playerComponent.bIsMouseClickHold == false)
 			{
-				m_isDragging = true;
-				App::GetMousePos(clickAndDrag.startMousePos.x, clickAndDrag.startMousePos.y);
+				playerComponent.bIsMouseClickHold = true;
+				App::GetMousePos(m_startMousePos.x, m_startMousePos.y);
 			}
 			else
 			{
-				m_isDragging = false;
-				App::GetMousePos(clickAndDrag.endMousePos.x, clickAndDrag.endMousePos.y);
-				LaunchBall(actionEvent.player, clickAndDrag);
+				playerComponent.bIsMouseClickHold = false;
+				App::GetMousePos(m_endMousePos.x, m_endMousePos.y);
+				LaunchBall(actionEvent.player, m_startMousePos, m_endMousePos);
 			}
 		}
 	}
 
 private:
-
-	bool m_isDragging = false;
-	struct ClickAndDrag
-	{
-		Vector2 startMousePos;
-		Vector2 endMousePos;
-	};
-	ClickAndDrag clickAndDrag;
+	Vector2 m_startMousePos;
+	Vector2 m_endMousePos;
 
 	//------------------------------------------------------------------------
 	// Definition of all the actions. Action can be tailored to each player using playerID
 	// ------------------------------------------------------------------------
-	void LaunchBall(const Entity& player, ClickAndDrag clickAndDrag)
+	void LaunchBall(const Entity& player, const Vector2& startMousePos, const Vector2& endMousePos)
 	{
 		// Logger::Log(clickAndDrag.startMousePos.ToString());
 		// Logger::Log(clickAndDrag.endMousePos.ToString());
 		if (player.HasTag("Player1"))
 		{
 			// Calculate force and direction
-			Vector2 direction = clickAndDrag.endMousePos - clickAndDrag.startMousePos;
+			Vector2 direction = endMousePos - startMousePos;
 
 			// Keep direction normalized but maintain the original magnitude for force
 			float magnitude = direction.MagnitudeSquared();

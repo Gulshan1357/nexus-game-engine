@@ -30,13 +30,13 @@ public:
 			const float currentVelocity = rigidbody.velocity.MagnitudeSquared();
 
 			// Check player speed to emit event from/to idle position
-			if (player.bIsMoving)
+			if (player.bIsBallMovingAboveThresh)
 			{
 				// Check if player has stopped (velocity dropped below threshold)
 				if (currentVelocity < velocity_threshold)
 				{
-					player.bIsMoving = false;
-					eventManager->EmitEvent<PlayerStateChangeEvent>(entity, player.bIsMoving, player.activeAbility);
+					player.bIsBallMovingAboveThresh = false;
+					eventManager->EmitEvent<PlayerStateChangeEvent>(entity, player.bIsBallMovingAboveThresh, player.activeAbility);
 				}
 			}
 			else
@@ -44,8 +44,8 @@ public:
 				// Check if player has started moving (velocity exceeded threshold)
 				if (currentVelocity > velocity_threshold)
 				{
-					player.bIsMoving = true;
-					eventManager->EmitEvent<PlayerStateChangeEvent>(entity, player.bIsMoving, player.activeAbility);
+					player.bIsBallMovingAboveThresh = true;
+					eventManager->EmitEvent<PlayerStateChangeEvent>(entity, player.bIsBallMovingAboveThresh, player.activeAbility);
 				}
 			}
 
@@ -62,8 +62,6 @@ public:
 			{
 				player.activeAbility = Ability::SNIPER_SHOT;
 			}
-
-			Logger::Log(std::to_string(rigidbody.velocity.MagnitudeSquared()));
 		}
 	}
 
