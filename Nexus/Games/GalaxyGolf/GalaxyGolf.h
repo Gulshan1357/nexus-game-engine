@@ -53,4 +53,7 @@ private:
 	MapType m_mapType;
 	std::weak_ptr<GameState> m_gameState;
 	std::weak_ptr<Score> m_score;
+
+	// Obstacle
+	void AddObstacleLaser(Vector2 position, bool isHorizontal = true);
 };

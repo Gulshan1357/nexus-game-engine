@@ -7,6 +7,7 @@
 #include "MapType.h"
 #include "Games/GameState.h"
 #include "Games/Score.h"
+#include "Games/UI/UIEffects.h"
 #include "src/ECS/Entity.h"
 #include "src/ECS/Coordinator.h"
 #include "src/EventManagement/EventManager.h"
@@ -132,7 +133,7 @@ void GalaxyGolf::LoadLevel(int level)
 	ground.Tag("ground");
 
 	// Add assets to the asset manager
-	m_assetManager->AddSprite("backgroundGrass", R"(.\Assets\Sprites\kenney_background\backgroundColorGrass.bmp)", 1, 1);
+	// m_assetManager->AddSprite("backgroundGrass", R"(.\Assets\Sprites\kenney_background\backgroundColorGrass.bmp)", 1, 1);
 	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
 	m_assetManager->AddSprite("golf-ball", R"(.\Assets\Sprites\golf.bmp)", 1, 1);
 	m_assetManager->AddSprite("hole", R"(.\Assets\Sprites\hole.bmp)", 1, 1);
@@ -141,15 +142,15 @@ void GalaxyGolf::LoadLevel(int level)
 	// Animations
 	m_assetManager->CreateAnimation("flag", 0, 1.0f / 15.0f, { 0,1,2,3,4,5,6 });
 
-	Entity background = m_coordinator->CreateEntity();
-	background.AddComponent<SpriteComponent>("backgroundGrass", 0);
-	background.AddComponent<TransformComponent>(Vector2(), Vector2(1.f, 1.f));
-	background.Tag("Background");
+	// Entity background = m_coordinator->CreateEntity();
+	// background.AddComponent<SpriteComponent>("backgroundGrass", 0);
+	// background.AddComponent<TransformComponent>(Vector2(), Vector2(1.f, 1.f));
+	// background.Tag("Background");
 
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
 	redBall.AddComponent<SpriteComponent>("golf-ball", 3);
-	redBall.AddComponent<TransformComponent>(Vector2(400.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
+	redBall.AddComponent<TransformComponent>(Vector2(0.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
 	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
@@ -172,6 +173,12 @@ void GalaxyGolf::LoadLevel(int level)
 	flag.AddComponent<TransformComponent>(Vector2(675.f, 45.f), Vector2(1.f, 1.f));
 	flag.AddComponent<SpriteComponent>("flag", 3);
 	flag.AddComponent<AnimationComponent>(true, 7, true);
+
+	// Entity flag2 = m_coordinator->CreateEntity();
+	// flag2.AddComponent<TransformComponent>(Vector2(250.f, 45.f), Vector2(1.f, 1.f));
+	// flag2.AddComponent<SpriteComponent>("flag", 3);
+
+	AddObstacleLaser(Vector2(250.f, 45.f), true);
 
 }
 
@@ -212,9 +219,8 @@ void GalaxyGolf::Update(float deltaTime)
 	m_coordinator->GetSystem<TrajectorySystem>().Update(dt); // If left click hold then store mouse position for trajectory calculations
 
 
-
 	// Move background w.r.t camera for parallax effect.
-	m_coordinator->GetEntityByTag("Background").GetComponent<TransformComponent>().position = m_camera.GetPosition();
+	// m_coordinator->GetEntityByTag("Background").GetComponent<TransformComponent>().position = m_camera.GetPosition();
 }
 
 void GalaxyGolf::ProcessInput()
@@ -276,6 +282,10 @@ void GalaxyGolf::PropagateScore()
 
 void GalaxyGolf::Render()
 {
+	// Background
+	UIEffects::RenderFadingBackground(Color(Colors::BG_DARK_BLUE), 2.5f);
+	UIEffects::RenderStartField(Color(Colors::WHITE), 100, 12345);
+
 	// Update Render Systems
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager, m_camera);
 	m_coordinator->GetSystem<ParticleEffectSystem>().Render(m_camera);
@@ -294,4 +304,63 @@ void GalaxyGolf::Shutdown()
 {
 	PropagateScore();
 	Logger::Warn("GalaxyGolf::Shutdown()");
+}
+
+void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
+{
+	// Add sprites for the laser and laser shooter
+	m_assetManager->AddSprite("laser", R"(.\Assets\Sprites\Obstacles\laser.bmp)", 1, 1);
+	m_assetManager->AddSprite("laser_shooter", R"(.\Assets\Sprites\Obstacles\laser_shooter.bmp)", 1, 1);
+
+	// Create the laser entity
+	Entity laser = m_coordinator->CreateEntity();
+	laser.AddComponent<SpriteComponent>("laser", 3);
+	laser.AddComponent<TransformComponent>(
+		position,
+		Vector2(1.f, 1.f),
+		isHorizontal ? PI * 0.5f : 0.0f
+	);
+	laser.AddComponent<RigidBodyComponent>(
+		Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f
+	);
+	laser.AddComponent<CircleColliderComponent>(
+		m_assetManager->GetSpriteWidth("laser") / 2.f,
+		Vector2(0.0f, m_assetManager->GetSpriteHeight("laser") / 1.5f)
+	);
+	laser.Tag("Laser");
+	laser.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	if (isHorizontal) laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9);
+	else laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9);
+
+	// Create the first laser shooter entity (top or left)
+	Entity shooter1 = m_coordinator->CreateEntity();
+	shooter1.AddComponent<SpriteComponent>("laser_shooter", 3);
+	shooter1.AddComponent<TransformComponent>(
+		isHorizontal
+		? Vector2(position.x - m_assetManager->GetSpriteHeight("laser") * 0.6f, position.y)
+		: Vector2(position.x, position.y - m_assetManager->GetSpriteHeight("laser") * 0.6f),
+		Vector2(1.f, 1.f), // Scale
+		isHorizontal ? -PI * 0.5 : 0 // Rotation
+	);
+	shooter1.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	shooter1.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42);
+	shooter1.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
+
+	shooter1.Tag("LaserShooter");
+
+	// Create the second laser shooter entity (bottom or right)
+	Entity shooter2 = m_coordinator->CreateEntity();
+	shooter2.AddComponent<SpriteComponent>("laser_shooter", 3);
+	shooter2.AddComponent<TransformComponent>(
+		isHorizontal
+		? Vector2(position.x + m_assetManager->GetSpriteHeight("laser") * 0.6f, position.y)
+		: Vector2(position.x, position.y + m_assetManager->GetSpriteHeight("laser") * 0.6f),
+		Vector2(1.f, 1.f),
+		isHorizontal ? PI * 0.5 : PI // Rotation
+	);
+	shooter2.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	shooter2.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42);
+	shooter2.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
+	shooter2.Tag("LaserShooter");
+
 }
