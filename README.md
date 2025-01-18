@@ -6,13 +6,20 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 
 ## Credits
 
-1. **Isometric Blocks (Kenney Vleugels)**  
-   - [Asset Link](https://www.kenney.nl/assets/isometric-blocks)  
-   - [License](Nexus/Assets/Sprites/License.txt)  
-   - *Used for isometric tiles.*
+1. **Platformer Art Extended Tileset (Kenney Vleugels)**  
+   - [Asset Link](https://www.kenney.nl/assets/platformer-art-extended-tileset)  
+   - [License](Nexus/Assets/Sprites/kenney_tileset/License.txt)
+2. **Background Elements Redux (Kenney Vleugels)**  
+   - [Asset Link](https://www.kenney.nl/assets/background-elements-redux)  
+   - [License](Nexus/Assets/Sprites/kenney_background/Backgrounds/License.txt)   
 2. **Royalty Free Sound Effects Archive: GameAudioGDC (Sonniss.com)**  
    - [Asset Link](https://sonniss.com/gameaudiogdc)  
    - [License](Nexus/Assets/Audio/License.pdf)  
+3. **Rainbow + White Pixel Flag Animation Bundle**  
+   - [Asset Link](https://decrebrian.itch.io/pixel-flag-animation-bundle)  
+4. **Sport Balls Pixel-art Pack**  
+   - [Asset Link](https://beemaxstudio.itch.io/sport-balls-pixel-pack)
+   - *For golf ball*  
 
 ---
 

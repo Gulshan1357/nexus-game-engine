@@ -132,16 +132,27 @@ void GalaxyGolf::LoadLevel(int level)
 	ground.Tag("ground");
 
 	// Add assets to the asset manager
+	m_assetManager->AddSprite("backgroundGrass", R"(.\Assets\Sprites\kenney_background\backgroundColorGrass.bmp)", 1, 1);
 	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
+	m_assetManager->AddSprite("golf-ball", R"(.\Assets\Sprites\golf.bmp)", 1, 1);
 	m_assetManager->AddSprite("hole", R"(.\Assets\Sprites\hole.bmp)", 1, 1);
+	m_assetManager->AddSprite("flag", R"(.\Assets\Sprites\Flags\FlagRed.bmp)", 7, 1);
+
+	// Animations
+	m_assetManager->CreateAnimation("flag", 0, 1.0f / 15.0f, { 0,1,2,3,4,5,6 });
+
+	Entity background = m_coordinator->CreateEntity();
+	background.AddComponent<SpriteComponent>("backgroundGrass", 0);
+	background.AddComponent<TransformComponent>(Vector2(), Vector2(1.f, 1.f));
+	background.Tag("Background");
 
 	// Red ball is the new Player 2
 	Entity redBall = m_coordinator->CreateEntity();
-	redBall.AddComponent<SpriteComponent>("red-ball", 3);
-	redBall.AddComponent<TransformComponent>(Vector2(400.f, 300.f), Vector2(1.f, 1.f), -0.3f);
+	redBall.AddComponent<SpriteComponent>("golf-ball", 3);
+	redBall.AddComponent<TransformComponent>(Vector2(400.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
 	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
 	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2.f);
+	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
 	redBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
 	redBall.AddComponent<CameraFollowComponent>();
 	redBall.Tag("Player1");
@@ -157,6 +168,11 @@ void GalaxyGolf::LoadLevel(int level)
 	hole.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	hole.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("hole") / 2.f, Vector2(0.0f, m_assetManager->GetSpriteHeight("hole") / 1.5f));
 	hole.Tag("Hole");
+	Entity flag = m_coordinator->CreateEntity();
+	flag.AddComponent<TransformComponent>(Vector2(675.f, 45.f), Vector2(1.f, 1.f));
+	flag.AddComponent<SpriteComponent>("flag", 3);
+	flag.AddComponent<AnimationComponent>(true, 7, true);
+
 }
 
 void GalaxyGolf::Update(float deltaTime)
@@ -194,6 +210,11 @@ void GalaxyGolf::Update(float deltaTime)
 	m_coordinator->GetSystem<CameraFollowSystem>().Update(m_camera);
 	m_coordinator->GetSystem<PlayerSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<TrajectorySystem>().Update(dt); // If left click hold then store mouse position for trajectory calculations
+
+
+
+	// Move background w.r.t camera for parallax effect.
+	m_coordinator->GetEntityByTag("Background").GetComponent<TransformComponent>().position = m_camera.GetPosition();
 }
 
 void GalaxyGolf::ProcessInput()
