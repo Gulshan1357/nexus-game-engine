@@ -56,7 +56,10 @@ private:
 
 	// Level settings
 	WorldSettings m_worldSettings;
+	std::vector<Vector2> terrainVertices;
 
+	void AddTerrain(const float elasticity, const float friction);
 	// Obstacle
 	void AddObstacleLaser(Vector2 position, bool isHorizontal = true);
+	void SpawnShape(Vector2 position, ColliderType colliderType) const;
 };

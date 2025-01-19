@@ -146,6 +146,7 @@
     <ClInclude Include="src\Systems\TrajectorySystem.h" />
     <ClInclude Include="Games\GalaxyGolf\WorldSettings.h" />
     <ClInclude Include="src\Events\LaunchBallEvent.h" />
+    <ClInclude Include="Games\GalaxyGolf\TerrainGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

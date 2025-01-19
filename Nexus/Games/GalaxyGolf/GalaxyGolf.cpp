@@ -4,6 +4,7 @@
 #include <memory>
 #include <utility>
 
+#include "TerrainGenerator.h"
 #include "Games/GameState.h"
 #include "Games/Score.h"
 #include "Games/UI/UIEffects.h"
@@ -122,12 +123,18 @@ void GalaxyGolf::Initialize()
 
 void GalaxyGolf::LoadLevel(int level)
 {
-	// Walls and grounds
-	Entity ground = m_coordinator->CreateEntity();
-	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -240.0f), Vector2(1.f, 1.f));
-	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) * 10, 500.0f);
-	ground.Tag("ground");
+	// Ground
+	TerrainGenerator generator;
+	TerrainGenerator::Config config = { 50.0f,
+		 150.0f,
+		-100.0f,
+		100.0f,
+		0.5f,
+		 100.0f,
+		700.0f,
+		 20
+	};
+	terrainVertices = generator.GenerateTerrain(-300.f, 0.f, config);
 
 	// Configure world settings
 	switch (m_worldType)
@@ -138,8 +145,8 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.gravity = -9.8f;
 			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
-			// Last two values of the RigidBody are Elasticity and Friction
-			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.5f, 0.7f);
+			m_worldSettings.groundColor = Color(Colors::GRAY);
+			AddTerrain(0.5f, 0.7f);
 			break;
 		}
 
@@ -149,8 +156,8 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.gravity = -9.0f;
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
 			m_worldSettings.atmosphereDrag = 0.0005f;
-			// Last two values of the RigidBody are Elasticity and Friction
-			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.9f, 0.3f);
+			m_worldSettings.groundColor = Color(Colors::RED);
+			AddTerrain(0.9f, 0.3f);
 			break;
 		}
 		case WorldType::SUPER_EARTH:
@@ -159,8 +166,8 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.gravity = -20.8f;
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
-			// Last two values of the RigidBody are Elasticity and Friction
-			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.9f, 1.f);
+			m_worldSettings.groundColor = Color(Colors::DARK_GRAY);
+			AddTerrain(0.9f, 0.1f);
 			break;
 		}
 	}
@@ -196,28 +203,29 @@ void GalaxyGolf::LoadLevel(int level)
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
-	Entity hole = m_coordinator->CreateEntity();
-	hole.AddComponent<SpriteComponent>("hole", 3);
-	hole.AddComponent<TransformComponent>(Vector2(600.f, 0.f), Vector2(1.f, 1.f));
-	hole.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
-	hole.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	hole.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("hole") / 2.f, Vector2(0.0f, m_assetManager->GetSpriteHeight("hole") / 1.5f));
-	hole.Tag("Hole");
-	Entity flag = m_coordinator->CreateEntity();
-	flag.AddComponent<TransformComponent>(Vector2(675.f, 45.f), Vector2(1.f, 1.f));
-	flag.AddComponent<SpriteComponent>("flag", 3);
-	flag.AddComponent<AnimationComponent>(true, 7, true);
-
-	// Entity flag2 = m_coordinator->CreateEntity();
-	// flag2.AddComponent<TransformComponent>(Vector2(250.f, 45.f), Vector2(1.f, 1.f));
-	// flag2.AddComponent<SpriteComponent>("flag", 3);
-
-	AddObstacleLaser(Vector2(250.f, 45.f), true);
+	// Entity hole = m_coordinator->CreateEntity();
+	// hole.AddComponent<SpriteComponent>("hole", 3);
+	// hole.AddComponent<TransformComponent>(Vector2(600.f, 0.f), Vector2(1.f, 1.f));
+	// hole.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
+	// hole.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	// hole.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("hole") / 2.f, Vector2(0.0f, m_assetManager->GetSpriteHeight("hole") / 1.5f));
+	// hole.Tag("Hole");
+	// Entity flag = m_coordinator->CreateEntity();
+	// flag.AddComponent<TransformComponent>(Vector2(675.f, 45.f), Vector2(1.f, 1.f));
+	// flag.AddComponent<SpriteComponent>("flag", 3);
+	// flag.AddComponent<AnimationComponent>(true, 7, true);
+	//
+	// // Entity flag2 = m_coordinator->CreateEntity();
+	// // flag2.AddComponent<TransformComponent>(Vector2(250.f, 45.f), Vector2(1.f, 1.f));
+	// // flag2.AddComponent<SpriteComponent>("flag", 3);
+	//
+	// AddObstacleLaser(Vector2(250.f, 45.f), true);
 
 }
 
 void GalaxyGolf::Update(float deltaTime)
 {
+
 	ProcessInput();
 	// TODO: For event system maybe find a more performant way to just subscribing the event once instead of resetting and subscribing over and over. Maybe a buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID. Example, when an entity is removed, remove all the events associated with that entity.
 
@@ -259,6 +267,7 @@ void GalaxyGolf::Update(float deltaTime)
 
 void GalaxyGolf::ProcessInput()
 {
+	// For debug mode
 	if (App::IsKeyPressed('B'))
 	{
 		m_isDebug = !m_isDebug;
@@ -289,7 +298,7 @@ void GalaxyGolf::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& 
 			catch ([[maybe_unused]] const std::out_of_range& e)
 			{
 				// Do
-				Logger::Err("ProcessPlayerKeys(): Couldn't find the enitity with player tag");
+				Logger::Err("ProcessPlayerKeys(): Couldn't find the entity with player tag");
 			}
 
 		}
@@ -301,6 +310,9 @@ void GalaxyGolf::Render()
 	// Background
 	UIEffects::RenderFadingBackground(Color(Colors::BG_DARK_BLUE), 2.5f);
 	UIEffects::RenderStartField(Color(Colors::WHITE), 100, 12345);
+
+	// Render Terrain
+	TerrainGenerator::Render(m_camera, terrainVertices, m_worldSettings.groundColor);
 
 	// Update Render Systems
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager, m_camera);
@@ -319,6 +331,41 @@ void GalaxyGolf::Render()
 void GalaxyGolf::Shutdown()
 {
 	Logger::Warn("GalaxyGolf::Shutdown()");
+}
+
+void GalaxyGolf::AddTerrain(const float elasticity, const float friction)
+{
+	for (size_t i = 0; i < terrainVertices.size() - 1; i++)
+	{
+		const Vector2& currentPos = terrainVertices[i];
+		const Vector2& nextPos = terrainVertices[i + 1];
+		float xDifference = nextPos.x - currentPos.x;
+		float yDifference = nextPos.y - currentPos.y;
+		float colliderDepth = 10.f;
+
+		// Terrain entity will be a point with polygon collider stretching till the next point
+		Entity terrain = m_coordinator->CreateEntity();
+		terrain.AddComponent<TransformComponent>(currentPos, Vector2(1.f, 1.f));
+
+		// Add collider type
+		terrain.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+		std::vector<Vector2> polygonVertices;
+		polygonVertices.emplace_back(0.f, -colliderDepth); // Bottom left
+		polygonVertices.emplace_back(xDifference, yDifference - colliderDepth);    // Bottom right
+		polygonVertices.emplace_back(xDifference, yDifference);    // Top right
+		polygonVertices.emplace_back(0.f, 0.f); // Top left
+		terrain.AddComponent<PolygonColliderComponent>(polygonVertices);
+		terrain.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, elasticity, friction);
+		terrain.Group("Terrain");
+
+		// Adding a circle collider between 2 points because the collision resolution b/w circle and polygon vertex is not stable
+		// Entity terrainConnector = m_coordinator->CreateEntity();
+		// terrainConnector.AddComponent<TransformComponent>(nextPos, Vector2(1.f, 1.f));
+		// terrainConnector.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, elasticity, friction);
+		// terrainConnector.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+		// terrainConnector.AddComponent<CircleColliderComponent>(1.f);
+		// terrainConnector.Group("Terrain");
+	}
 }
 
 void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
@@ -381,3 +428,39 @@ void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
 	shooter2.Tag("LaserShooter");
 
 }
+
+// void GalaxyGolf::SpawnShape(Vector2 position, ColliderType colliderType) const
+// {
+// 	// Polygon local vertices for red-ball sprite
+// 	std::vector<Vector2> polygonVertices;
+// 	// Going clockwise from top left
+// 	polygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+// 	polygonVertices.emplace_back(0.0f, -(m_assetManager->GetSpriteHeight("red-ball")));
+// 	polygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+// 	polygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+// 	polygonVertices.emplace_back(0.0f, (m_assetManager->GetSpriteHeight("red-ball")));
+// 	polygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
+//
+// 	Entity shape = m_coordinator->CreateEntity();
+// 	shape.AddComponent<SpriteComponent>("golf-ball", 3);
+// 	shape.AddComponent<TransformComponent>(position, Vector2(1.f, 1.f));
+// 	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), false, 5.0f, 0.0f, 0.0f, 0.3f, 0.1f);
+// 	shape.Tag("SpawnItem");
+// 	switch (colliderType)
+// 	{
+// 		case ColliderType::Box:
+// 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+// 			shape.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball") * 3, Vector2());
+// 			break;
+// 		case ColliderType::Polygon:
+// 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+// 			shape.AddComponent<PolygonColliderComponent>(polygonVertices);
+// 			break;
+// 		case ColliderType::Circle:
+// 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+// 			shape.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
+// 			break;
+// 	}
+// 	// We need to calculate the moment of Inertia, inverse mass etc. for the spawned entities
+// 	PhysicsEngine::InitializeEntityPhysics(shape);
+// }
