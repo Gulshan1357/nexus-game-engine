@@ -142,7 +142,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
 			// Last two values of the RigidBody are Elasticity and Friction
-			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.3f, 0.7f);
+			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.5f, 0.7f);
 			break;
 		}
 
@@ -158,7 +158,7 @@ void GalaxyGolf::LoadLevel(int level)
 		}
 		case WorldType::SUPER_EARTH:
 		{
-			Logger::Log("Jupiter selected!");
+			Logger::Log("Super Earth selected!");
 			m_worldSettings.gravity = -20.8f;
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
@@ -333,7 +333,7 @@ void GalaxyGolf::Render()
 		m_coordinator->GetSystem<RenderDebugSystem>().Update(m_camera);
 	}
 
-	m_coordinator->GetSystem<RenderHUDSystem>().Update(m_camera);
+	m_coordinator->GetSystem<RenderHUDSystem>().Update(m_camera, m_worldType, m_worldSettings, Color(Colors::WHITE));
 }
 
 void GalaxyGolf::Shutdown()
