@@ -358,9 +358,9 @@ void TestApp::Update(float deltaTime)
 
 	//------------------------------------------------------------------------
 	// Perform the subscription of the events for all systems
-	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
+	// m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
 	// m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
-	m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
+	// m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
 
 	//------------------------------------------------------------------------
 	// Update the coordinator to process the entities that are waiting to be created/deleted
@@ -372,7 +372,7 @@ void TestApp::Update(float deltaTime)
 	// [Physics system Start] Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
 	const float dt = deltaTime / 1000.0f; // Converting to seconds
 	// m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt);
-	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
+	// m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<ConstraintSystem>().Update(dt);
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);
 	// [Physics system End]

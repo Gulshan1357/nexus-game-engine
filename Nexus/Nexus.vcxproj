@@ -231,6 +231,7 @@
     <ClInclude Include="src\EventManagement\IEvent.h" />
     <ClInclude Include="src\EventManagement\EventManager.h" />
     <ClInclude Include="src\EventManagement\EventCallback.h" />
+    <ClInclude Include="src\Events\LaunchBallEvent.h" />
     <ClInclude Include="src\Events\PlayerStateChangeEvent.h" />
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
@@ -291,6 +292,7 @@
     <ClCompile Include="src\Physics\Camera.cpp" />
     <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="src\Systems\ConstraintSystem.cpp" />
+    <ClCompile Include="src\Systems\GameplaySystem.cpp" />
     <ClCompile Include="src\Systems\ParticleEffectSystem.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="src\Utils\Random.cpp" />

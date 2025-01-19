@@ -38,7 +38,7 @@ public:
 	void Render(const Camera& camera) const;
 
 	// Galaxy Golf Game: Subscribe to Player State change event
-	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager);
+	void SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager);
 	static void OnPlayerStateChange(const PlayerStateChangeEvent& event);
 
 private:

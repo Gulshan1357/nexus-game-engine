@@ -58,7 +58,7 @@ GalaxyGolf::GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, 
 	m_isDebug = true;
 
 	m_coordinator = std::make_unique<Coordinator>();
-	m_eventManager = std::make_unique<EventManager>();
+	m_eventManager = std::make_shared<EventManager>();
 	m_inputManager = std::make_unique<InputManager>();
 	m_assetManager = std::make_unique<AssetManager>();
 	m_audioManager = std::make_unique<AudioManager>();
@@ -106,7 +106,7 @@ void GalaxyGolf::Initialize()
 	m_coordinator->AddSystem<ParticleEffectSystem>();
 	m_coordinator->AddSystem<CameraFollowSystem>();
 	m_coordinator->AddSystem<RenderHUDSystem>();
-	m_coordinator->AddSystem<GameplaySystem>();
+	m_coordinator->AddSystem<GameplaySystem>(m_gameState);
 	m_coordinator->AddSystem<PlayerSystem>();
 	m_coordinator->AddSystem<TrajectorySystem>();
 
@@ -238,6 +238,7 @@ void GalaxyGolf::Update(float deltaTime)
 
 	//------------------------------------------------------------------------	
 	// Invoke all the systems that needs to be updated
+	m_coordinator->GetSystem<GameplaySystem>().Update();
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 	// [Physics system Start] Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
 	const float dt = deltaTime / 1000.0f; // Converting to seconds

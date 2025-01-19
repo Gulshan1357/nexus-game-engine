@@ -40,7 +40,7 @@ private:
 	bool m_isDebug; // Trigger debug mode using 'B' key
 
 	std::unique_ptr<Coordinator> m_coordinator;
-	std::unique_ptr<EventManager> m_eventManager;
+	std::shared_ptr<EventManager> m_eventManager;
 	std::unique_ptr<InputManager> m_inputManager;
 	std::unique_ptr<AssetManager> m_assetManager;
 	std::unique_ptr<AudioManager> m_audioManager;

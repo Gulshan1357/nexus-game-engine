@@ -34,7 +34,7 @@ void ConstraintSystem::InitializeLocalCoordinates() const
 }
 
 // Subscribe to collision events
-void ConstraintSystem::SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
+void ConstraintSystem::SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager)
 {
 	using CallbackType = std::function<void(ConstraintSystem*, CollisionEvent&)>;
 	const CallbackType callback = [this](auto&&, auto&& placeholder2) { onCollision(std::forward<decltype(placeholder2)>(placeholder2)); };

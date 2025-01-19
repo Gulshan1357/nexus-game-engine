@@ -25,7 +25,7 @@ public:
 	void InitializeLocalCoordinates() const;
 
 	// To populate the m_penetrations vector
-	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager);
+	void SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager);
 	void onCollision(const CollisionEvent& event);
 
 	// Execute all the steps (PreSolve, Solve and PostSolve) to resolve constrains

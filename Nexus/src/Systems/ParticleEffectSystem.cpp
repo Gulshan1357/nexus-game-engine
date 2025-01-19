@@ -219,7 +219,7 @@ void ParticleEffectSystem::Render(const Camera& camera) const
 	}
 }
 
-void ParticleEffectSystem::SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
+void ParticleEffectSystem::SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager)
 {
 	using CallbackType = std::function<void(ParticleEffectSystem*, PlayerStateChangeEvent&)>;
 	const CallbackType callback = [this](auto&&, auto&& placeholder2) { OnPlayerStateChange(std::forward<decltype(placeholder2)>(placeholder2)); };

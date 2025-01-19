@@ -11,6 +11,7 @@
 
 #include "src/Components/PlayerComponent.h"
 #include "src/Components/RigidBodyComponent.h"
+#include "src/Events/LaunchBallEvent.h"
 
 
 //------------------------------------------------------------------------
@@ -18,14 +19,20 @@
 // ------------------------------------------------------------------------
 class InputSystem : public System
 {
+private:
+	std::shared_ptr<EventManager> m_eventManager;
 public:
 	InputSystem()
 	{
 		RequireComponent<PlayerComponent>();
+
 	}
 
-	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
+	void SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager)
 	{
+		// Create a new shared pointer from the reference. Need it to emit launch ball event events.
+		m_eventManager = eventManager;
+
 		using CallbackType = std::function<void(InputSystem*, ActionChangeEvent&)>;
 		const CallbackType callback = [this](auto&&, auto&& placeholder2) { OnActionChange(std::forward<decltype(placeholder2)>(placeholder2)); };
 		eventManager->SubscribeToEvent<ActionChangeEvent>(this, callback);
@@ -48,7 +55,7 @@ public:
 			{
 				playerComponent.bIsMouseClickHold = false;
 				App::GetMousePos(m_endMousePos.x, m_endMousePos.y);
-				LaunchBall(actionEvent.player, m_startMousePos, m_endMousePos);
+				EmitLaunchBallEvent(actionEvent.player, actionEvent.playerId, m_startMousePos, m_endMousePos);
 			}
 		}
 	}
@@ -60,8 +67,9 @@ private:
 	//------------------------------------------------------------------------
 	// Definition of all the actions. Action can be tailored to each player using playerID
 	// ------------------------------------------------------------------------
-	void LaunchBall(const Entity& player, const Vector2& startMousePos, const Vector2& endMousePos)
+	void EmitLaunchBallEvent(const Entity& player, Input::PlayerID playerId, const Vector2& startMousePos, const Vector2& endMousePos)
 	{
+
 		// Calculate force and direction
 		Vector2 direction = endMousePos - startMousePos;
 
@@ -71,9 +79,7 @@ private:
 		Vector2 force = direction * magnitude;
 
 		// Apply the force to the RigidBody
-		player.GetComponent<RigidBodyComponent>().AddForce(force);
-		auto& playerComponent = player.GetComponent<PlayerComponent>();
+		m_eventManager->EmitEvent<LaunchBallEvent>(player, playerId, force);
 
-		playerComponent.totalStrokes += 1;
 	}
 };

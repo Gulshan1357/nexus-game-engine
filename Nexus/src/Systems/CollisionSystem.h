@@ -26,7 +26,7 @@ public:
 		RequireComponent<TransformComponent>();
 	}
 
-	void Update(const std::unique_ptr<EventManager>& eventManager) const
+	void Update(const std::shared_ptr<EventManager>& eventManager) const
 	{
 		auto entities = GetSystemEntities();
 

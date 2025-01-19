@@ -18,7 +18,7 @@ public:
 		RequireComponent<PlayerComponent>();
 	}
 
-	void Update(const std::unique_ptr<EventManager>& eventManager) const
+	void Update(const std::shared_ptr<EventManager>& eventManager) const
 	{
 		static constexpr float velocity_threshold = 5000.0f;
 
