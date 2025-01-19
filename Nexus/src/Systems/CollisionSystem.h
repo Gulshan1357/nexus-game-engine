@@ -43,7 +43,12 @@ public:
 				// If both entities are Terrain then skip
 				if (a.BelongsToGroup("Terrain") && b.BelongsToGroup("Terrain"))
 				{
-					// Logger::Log("Both are Terrains");
+					continue;
+				}
+
+				// Also ignore collision between Terrain and Hole
+				if ((a.HasTag("Hole") && b.BelongsToGroup("Terrain")) || (b.HasTag("Hole") && a.BelongsToGroup("Terrain")))
+				{
 					continue;
 				}
 

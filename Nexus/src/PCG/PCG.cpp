@@ -2,17 +2,99 @@
 
 #include "PCG.h"
 
+#include "src/AssetManagement/AssetManager.h"
+#include "src/Components/AnimationComponent.h"
 #include "src/ECS/Coordinator.h"
 #include "src/ECS/Entity.h"
 
 #include "src/Components/ColliderTypeComponent.h"
 #include "src/Components/PolygonColliderComponent.h"
 #include "src/Components/RigidBodyComponent.h"
+#include "src/Components/SpriteComponent.h"
 #include "src/Components/TransformComponent.h"
+#include "src/Components/BoxColliderComponent.h"
 
 #include "src/Physics/Camera.h"
 #include "src/Utils/Color.h"
 #include "src/Utils/GraphicsUtils.h"
+
+std::vector<Vector2> PCG::GenerateLevel(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, const PCGConfig pcgConfig)
+{
+	// First generate a random terrain
+	const TerrainGenerator::Config terrainConfig =
+	{
+		50.0f,
+		150.0f,
+		-100.0f,
+		100.0f,
+		0.5f,
+		100.0f,
+		pcgConfig.heightVariance,
+		pcgConfig.sizeOfLevel,
+	};
+	TerrainGenerator generator;
+
+	std::vector<Vector2> terrainVertices;
+
+	// Elevated first point
+	terrainVertices.emplace_back(-600.f, 600.f);
+	// PCG points
+	auto pcgPoints = generator.GenerateTerrain(-300.f, 0.f, terrainConfig);
+	terrainVertices.insert(terrainVertices.end(), pcgPoints.begin(), pcgPoints.end());
+
+	// Add a couple of points at the end so that the hole(goal) is on perfectly horizontal level
+	terrainVertices.emplace_back(terrainVertices.back().x + 50.f, terrainVertices.back().y);
+	terrainVertices.emplace_back(terrainVertices.back().x + 50.f, terrainVertices.back().y);
+
+	// Create a dip for Hole
+	terrainVertices.emplace_back(terrainVertices.back().x + 20.f, terrainVertices.back().y - 25.f);
+	SpawnHole(coordinator, assetManager, { terrainVertices.back().x + 10.f,terrainVertices.back().y + 25.f });
+	terrainVertices.emplace_back(terrainVertices.back().x + 20.f, terrainVertices.back().y);
+
+	// Return to level and add some more points
+	terrainVertices.emplace_back(terrainVertices.back().x + 20.f, terrainVertices.back().y + 25.f);
+	for (int i = 0; i < 5; i++) terrainVertices.emplace_back(terrainVertices.back().x + 50.f, terrainVertices.back().y);
+
+	// Elevated last point
+	terrainVertices.emplace_back(terrainVertices.back().x + 300.f, terrainVertices.back().y + 600.f);
+
+	// Place colliders on ground surface
+	AddTerrain(coordinator, terrainVertices, pcgConfig.elasticity, pcgConfig.friction);
+
+	// From this point don't modify terrainVertices these are used to render ground color
+
+	// TODO: obstacles
+
+	return terrainVertices;
+}
+
+void PCG::SpawnHole(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, Vector2 position)
+{
+	assetManager->AddSprite("hole", R"(.\Assets\Sprites\hole.bmp)", 1, 1);
+	assetManager->AddSprite("flag", R"(.\Assets\Sprites\Flags\FlagRed.bmp)", 7, 1);
+
+	Entity hole = coordinator->CreateEntity();
+	hole.AddComponent<SpriteComponent>("hole", 3);
+	hole.AddComponent<TransformComponent>(Vector2(position.x, position.y - 15.f), Vector2(1.f, 1.f));
+	hole.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
+	hole.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	hole.AddComponent<BoxColliderComponent>(
+		assetManager->GetSpriteWidth("hole") / 2.f,
+		assetManager->GetSpriteWidth("hole") / 2.f,
+		Vector2(0.f, -25.f) // offset
+	);
+	hole.Tag("Hole");
+
+
+	Entity flag = coordinator->CreateEntity();
+	flag.AddComponent<TransformComponent>(Vector2(position.x + 70.f, position.y + 30.f), Vector2(1.f, 1.f));
+	flag.AddComponent<SpriteComponent>("flag", 3);
+	flag.AddComponent<AnimationComponent>(true, 7, true);
+
+	// Entity flag2 = m_coordinator->CreateEntity();
+	// flag2.AddComponent<TransformComponent>(Vector2(250.f, 45.f), Vector2(1.f, 1.f));
+	// flag2.AddComponent<SpriteComponent>("flag", 3);
+}
 
 void PCG::AddTerrain(const std::unique_ptr<Coordinator>& coordinator, const std::vector<Vector2>& terrainVertices, const float elasticity, const float friction)
 {
@@ -22,7 +104,7 @@ void PCG::AddTerrain(const std::unique_ptr<Coordinator>& coordinator, const std:
 		const Vector2& nextPos = terrainVertices[i + 1];
 		float xDifference = nextPos.x - currentPos.x;
 		float yDifference = nextPos.y - currentPos.y;
-		const float colliderDepth = 500.f;
+		constexpr float colliderDepth = 500.f;
 
 		// Terrain entity will be a point with polygon collider stretching till the next point
 		Entity terrain = coordinator->CreateEntity();

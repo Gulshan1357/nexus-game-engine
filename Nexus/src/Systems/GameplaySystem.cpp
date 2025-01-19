@@ -53,29 +53,59 @@ void GameplaySystem::onCollision(const CollisionEvent& event)
 {
 	// Ignore collision for 1 sec
 	const auto currentTime = std::chrono::steady_clock::now();
-	const auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_gameStartTime);
-	if (timeElapsed < m_initialDelay) return;
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_gameStartTime) < m_initialDelay)
+		return;
 
-	// Groups : Killers (Kill player)
-	if (event.a.BelongsToGroup("Killers") && event.b.BelongsToGroup("Player"))
+	// Check if either entity is a player
+	const bool isAPlayer = event.a.BelongsToGroup("Player");
+	const bool isBPlayer = event.b.BelongsToGroup("Player");
+
+	// If neither is a player, exit early
+	if (!isAPlayer && !isBPlayer)
+		return;
+
+	const auto& playerEntity = isAPlayer ? event.a : event.b;
+	const auto& otherEntity = isAPlayer ? event.b : event.a;
+
+	// Handle Killers
+	if (otherEntity.BelongsToGroup("Killers"))
 	{
-		event.b.Kill();
-	}
-	else if (event.b.BelongsToGroup("Killers") && event.a.BelongsToGroup("Player"))
-	{
-		event.a.Kill();
+		playerEntity.Kill();
+		return;
 	}
 
-	// Hole
-	if ((event.a.BelongsToGroup("Player") && event.b.HasTag("Hole")) ||
-		(event.b.BelongsToGroup("Player") && event.a.HasTag("Hole")))
+	// Handle Hole
+	if (otherEntity.HasTag("Hole"))
 	{
-		Logger::Log("Hole!");
+		m_lastHoleCollisionTime = currentTime;
+
+		if (!m_ballInHole)
+		{
+			m_ballInHole = true;
+			m_holeEnterTime = currentTime;
+		}
+
+		const auto timeInHole = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_holeEnterTime);
+		if (timeInHole >= m_holeDelay)
+		{
+			Logger::Log("Hole!");
+			playerEntity.Kill();
+			m_ballInHole = false;
+		}
 	}
 }
 
 void GameplaySystem::Update()
 {
+	const auto currentTime = std::chrono::steady_clock::now();
+	// Check if we haven't received a hole collision recently
+	const auto timeSinceLastCollision = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_lastHoleCollisionTime);
+	if (timeSinceLastCollision > m_collisionTimeout)
+	{
+		// No collision between ball and hole for more than 0.5 seconds, reset state
+		m_ballInHole = false;
+	}
+
 	for (auto& player : GetSystemEntities())
 	{
 		UpdateScore(player);

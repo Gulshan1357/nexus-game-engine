@@ -136,7 +136,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
 			m_worldSettings.groundColor = Color(Colors::GRAY);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, { 700.f, 10, 0.5f, 0.7f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 4, 0.5f, 0.7f });
 			break;
 		}
 
@@ -147,7 +147,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
 			m_worldSettings.atmosphereDrag = 0.0005f;
 			m_worldSettings.groundColor = Color(Colors::RED);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, { 700.f, 10, 0.9f, 0.3f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 10, 0.9f, 0.3f });
 			break;
 		}
 		case WorldType::SUPER_EARTH:
@@ -157,7 +157,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
 			m_worldSettings.groundColor = Color(Colors::DARK_GRAY);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, { 700.f, 10, 0.9f, 0.1f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 10, 0.9f, 0.1f });
 			break;
 		}
 	}
@@ -166,8 +166,7 @@ void GalaxyGolf::LoadLevel(int level)
 	// m_assetManager->AddSprite("backgroundGrass", R"(.\Assets\Sprites\kenney_background\backgroundColorGrass.bmp)", 1, 1);
 	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
 	m_assetManager->AddSprite("golf-ball", R"(.\Assets\Sprites\golf.bmp)", 1, 1);
-	m_assetManager->AddSprite("hole", R"(.\Assets\Sprites\hole.bmp)", 1, 1);
-	m_assetManager->AddSprite("flag", R"(.\Assets\Sprites\Flags\FlagRed.bmp)", 7, 1);
+
 
 	// Animations
 	m_assetManager->CreateAnimation("flag", 0, 1.0f / 15.0f, { 0,1,2,3,4,5,6 });
@@ -193,21 +192,7 @@ void GalaxyGolf::LoadLevel(int level)
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
-	// Entity hole = m_coordinator->CreateEntity();
-	// hole.AddComponent<SpriteComponent>("hole", 3);
-	// hole.AddComponent<TransformComponent>(Vector2(600.f, 0.f), Vector2(1.f, 1.f));
-	// hole.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
-	// hole.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	// hole.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("hole") / 2.f, Vector2(0.0f, m_assetManager->GetSpriteHeight("hole") / 1.5f));
-	// hole.Tag("Hole");
-	// Entity flag = m_coordinator->CreateEntity();
-	// flag.AddComponent<TransformComponent>(Vector2(675.f, 45.f), Vector2(1.f, 1.f));
-	// flag.AddComponent<SpriteComponent>("flag", 3);
-	// flag.AddComponent<AnimationComponent>(true, 7, true);
-	//
-	// // Entity flag2 = m_coordinator->CreateEntity();
-	// // flag2.AddComponent<TransformComponent>(Vector2(250.f, 45.f), Vector2(1.f, 1.f));
-	// // flag2.AddComponent<SpriteComponent>("flag", 3);
+
 	//
 	// AddObstacleLaser(Vector2(250.f, 45.f), true);
 
