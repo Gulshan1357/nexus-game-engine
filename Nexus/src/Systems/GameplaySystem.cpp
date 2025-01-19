@@ -2,6 +2,7 @@
 #include "GameplaySystem.h"
 
 #include <functional>
+#include <utility>
 
 #include "src/ECS/Coordinator.h"
 #include "src/ECS/Entity.h"
@@ -10,6 +11,8 @@
 #include "src/Events/CollisionEvent.h"
 #include "src/Events/LaunchBallEvent.h"
 
+#include "src/AudioManagement/AudioManager.h"
+
 #include "src/Components/PlayerComponent.h"
 #include "src/Components/RigidBodyComponent.h"
 
@@ -17,8 +20,8 @@
 #include "Games/Score.h"
 #include "src/Utils/Logger.h"
 
-GameplaySystem::GameplaySystem(std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
-	: m_gameState(std::move(gameState)), m_score(std::move(score))
+GameplaySystem::GameplaySystem(std::shared_ptr<AudioManager> audioManager, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
+	: m_audioManager(std::move(audioManager)), m_gameState(std::move(gameState)), m_score(std::move(score))
 {
 	RequireComponent<PlayerComponent>();
 	m_gameStartTime = std::chrono::steady_clock::now();
@@ -43,7 +46,7 @@ void GameplaySystem::onBallLaunch(const LaunchBallEvent& event)
 	auto& playerComponent = event.player.GetComponent<PlayerComponent>();
 
 	playerComponent.totalStrokes += 1;
-	Logger::Log("onBallLaunch() from Gameplaye system");
+	m_audioManager->PlayAudio("golf_swing");
 }
 
 void GameplaySystem::onCollision(const CollisionEvent& event)

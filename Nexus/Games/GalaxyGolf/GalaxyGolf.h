@@ -42,7 +42,7 @@ private:
 	std::shared_ptr<EventManager> m_eventManager;
 	std::unique_ptr<InputManager> m_inputManager;
 	std::unique_ptr<AssetManager> m_assetManager;
-	std::unique_ptr<AudioManager> m_audioManager;
+	std::shared_ptr<AudioManager> m_audioManager;
 
 	//------------------------------------------------------------------------
 	// World

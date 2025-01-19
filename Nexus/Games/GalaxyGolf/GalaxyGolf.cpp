@@ -62,7 +62,7 @@ GalaxyGolf::GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, 
 	m_eventManager = std::make_shared<EventManager>();
 	m_inputManager = std::make_unique<InputManager>();
 	m_assetManager = std::make_unique<AssetManager>();
-	m_audioManager = std::make_unique<AudioManager>();
+	m_audioManager = std::make_shared<AudioManager>();
 	Logger::Log("GalaxyGolf Game constructor called! ");
 	Logger::Log("MapType: " + std::to_string(static_cast<int>(m_worldType)));
 
@@ -107,7 +107,7 @@ void GalaxyGolf::Initialize()
 	m_coordinator->AddSystem<ParticleEffectSystem>();
 	m_coordinator->AddSystem<CameraFollowSystem>();
 	m_coordinator->AddSystem<RenderHUDSystem>();
-	m_coordinator->AddSystem<GameplaySystem>(m_gameState, m_score);
+	m_coordinator->AddSystem<GameplaySystem>(m_audioManager, m_gameState, m_score);
 	m_coordinator->AddSystem<PlayerSystem>();
 	m_coordinator->AddSystem<TrajectorySystem>();
 
@@ -123,6 +123,9 @@ void GalaxyGolf::Initialize()
 
 void GalaxyGolf::LoadLevel(int level)
 {
+	// Sounds
+	m_audioManager->AddAudio("golf_swing", R"(.\Assets\Audio\golf_swing.wav)");
+
 	// Ground
 	TerrainGenerator generator;
 	TerrainGenerator::Config config = { 50.0f,

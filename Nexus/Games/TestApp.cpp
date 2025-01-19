@@ -102,8 +102,8 @@ void TestApp::LoadLevel(int level)
 	m_assetManager->AddSprite("red-ball-large", R"(.\Assets\Sprites\ball_red_large.bmp)", 1, 1);
 
 	// Add sounds to the audio manager
-	m_audioManager->AddAudio("gun-shot", R"(.\Assets\Audio\weapon_gun_shot_008.wav)");
-	m_audioManager->AddAudio("cannon-shot", R"(.\Assets\Audio\weapon_cannon_shot_002.wav)");
+	// m_audioManager->AddAudio("gun-shot", R"(.\Assets\Audio\weapon_gun_shot_008.wav)");
+	// m_audioManager->AddAudio("cannon-shot", R"(.\Assets\Audio\weapon_cannon_shot_002.wav)");
 
 	// Print TileMaps
 	PrintTiles("tile-map", static_cast<float>(0.7), R"(.\Assets\Sprites\test2.map)", 20, 20);

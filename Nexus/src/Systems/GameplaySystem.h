@@ -5,6 +5,7 @@
 
 #include "src/ECS/System.h"
 
+class AudioManager;
 struct Score;
 class CollisionEvent;
 class EventManager;
@@ -19,11 +20,12 @@ private:
 	std::chrono::steady_clock::time_point m_gameStartTime;
 	const std::chrono::milliseconds m_initialDelay{ 1000 }; // 1-second delay before be start detecting for damage
 
+	std::shared_ptr<AudioManager> m_audioManager;
 	std::weak_ptr<GameState> m_gameState;
 	std::weak_ptr<Score> m_score;
 
 public:
-	GameplaySystem(std::weak_ptr<GameState> gameState, std::weak_ptr<Score> m_score);
+	GameplaySystem(std::shared_ptr<AudioManager> audioManager, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> m_score);
 
 	// Subscribe to events
 	void SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager);

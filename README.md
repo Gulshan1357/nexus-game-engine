@@ -15,6 +15,9 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 2. **Royalty Free Sound Effects Archive: GameAudioGDC (Sonniss.com)**  
    - [Asset Link](https://sonniss.com/gameaudiogdc)  
    - [License](Nexus/Assets/Audio/License.pdf)  
+2. **Golf Swing (mixkit.co/)**  
+   - [Asset Link](https://mixkit.co/free-sound-effects/golf/)  
+   - [License](https://mixkit.co/license/#sfxFree)  
 3. **Rainbow + White Pixel Flag Animation Bundle**  
    - [Asset Link](https://decrebrian.itch.io/pixel-flag-animation-bundle)  
 4. **Sport Balls Pixel-art Pack**  
