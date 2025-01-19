@@ -14,9 +14,8 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
    - Requires: `TransformComponent` and `ColliderTypeComponent`.
    - Purpose: Detects collisions between entities using their colliders and triggers the appropriate reactions.
 
-3. **Damage System**
-   - Requires: `BoxColliderComponent`.
-   - Purpose: Handles damage logic on collision.
+3. **Gameplay System**
+   - Purpose: Handles logic on collision.
      - It doesn't update every frame. Instead, it has an `onCollision` function that is triggered by other systems/events as a callback.
 
 4. **Render Text System**

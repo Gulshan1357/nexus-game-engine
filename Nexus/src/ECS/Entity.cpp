@@ -7,6 +7,8 @@ size_t Entity::GetId() const { return m_id; }
 
 void Entity::Kill() const
 {
+	coordinator->RemoveEntityTag(*this);
+	coordinator->RemoveEntityGroup(*this);
 	coordinator->KillEntity(*this);
 }
 

@@ -15,10 +15,14 @@
 // ------------------------------------------------------------------------
 class GameplaySystem : public System
 {
+private:
+	std::chrono::steady_clock::time_point m_gameStartTime;
+	const std::chrono::milliseconds m_initialDelay{ 1000 }; // 1-second delay before be start detecting for damage
+
 public:
 	GameplaySystem()
 	{
-		// RequireComponent<PlayerComponent>();
+		m_gameStartTime = std::chrono::steady_clock::now();
 	}
 
 	void SubscribeToEvents(const std::unique_ptr<EventManager>& eventManager)
@@ -31,8 +35,22 @@ public:
 
 	void onCollision(const CollisionEvent& event)
 	{
-		// Logger::Log("Gameplay system received an event collision between entities " + std::to_string(event.a.GetId()) + " and " + std::to_string(event.b.GetId()));
+		// Ignore collision for 1 sec
+		const auto currentTime = std::chrono::steady_clock::now();
+		const auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_gameStartTime);
+		if (timeElapsed < m_initialDelay) return;
 
+		// Groups : Killers (Kill player)
+		if (event.a.BelongsToGroup("Killers") && event.b.BelongsToGroup("Player"))
+		{
+			event.b.Kill();
+		}
+		else if (event.b.BelongsToGroup("Killers") && event.a.BelongsToGroup("Player"))
+		{
+			event.a.Kill();
+		}
+
+		// Hole
 		if ((event.a.BelongsToGroup("Player") && event.b.HasTag("Hole")) ||
 			(event.b.BelongsToGroup("Player") && event.a.HasTag("Hole")))
 		{

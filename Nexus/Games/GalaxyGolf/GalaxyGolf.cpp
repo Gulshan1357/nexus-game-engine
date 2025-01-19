@@ -53,7 +53,6 @@
 #include "src/Utils/Random.h"
 #include "WorldSettings.h"
 
-
 GalaxyGolf::GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
 	: m_worldType(worldType), m_gameState(std::move(gameState)), m_score(std::move(score))
 {
@@ -186,7 +185,7 @@ void GalaxyGolf::LoadLevel(int level)
 	// Red ball is the new Player 2
 	Entity golfBall = m_coordinator->CreateEntity();
 	golfBall.AddComponent<SpriteComponent>("golf-ball", 3);
-	golfBall.AddComponent<TransformComponent>(Vector2(0.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
+	golfBall.AddComponent<TransformComponent>(Vector2(-100.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
 	golfBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 1.f, 0.7f);
 	golfBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	golfBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
@@ -195,6 +194,7 @@ void GalaxyGolf::LoadLevel(int level)
 	golfBall.Tag("Player1");
 	golfBall.Group("Player");
 	golfBall.AddComponent<ParticleEmitterComponent>(); // The type of emission is handled by Particle Effect system
+	Logger::Log("Golf ball id = " + std::to_string(golfBall.GetId()));
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
@@ -297,7 +297,16 @@ void GalaxyGolf::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& 
 
 			const Input::PlayerAction action = m_inputManager->GetActionEnum(playerId, keyState.keyCode);
 			const bool actionStatus = m_inputManager->GetActionStatus(playerId, action);
-			m_eventManager->EmitEvent<ActionChangeEvent>(m_coordinator->GetEntityByTag(playerTag), playerId, action, actionStatus);
+			try
+			{
+				m_eventManager->EmitEvent<ActionChangeEvent>(m_coordinator->GetEntityByTag(playerTag), playerId, action, actionStatus);
+			}
+			catch (const std::out_of_range& e)
+			{
+				// Do
+				Logger::Err("ProcessPlayerKeys(): Couldn't find the enitity with player tag");
+			}
+
 		}
 	}
 }
@@ -307,7 +316,14 @@ void GalaxyGolf::PropagateScore()
 	if (auto sc = m_score.lock())
 	{
 		// Update Score based on the player component so that the GameOverScreen can display it
-		sc->playerOneTotalShots = m_coordinator->GetEntityByTag("Player1").GetComponent<PlayerComponent>().totalStrokes;
+		try
+		{
+			sc->playerOneTotalShots = m_coordinator->GetEntityByTag("Player1").GetComponent<PlayerComponent>().totalStrokes;
+		}
+		catch (const std::out_of_range& e)
+		{
+			Logger::Err("PropagateScore(): Couldn't find the entity with player tag");
+		}
 		// Logger::Warn(std::to_string(sc->playerOneTotalShots));
 	}
 	else
@@ -364,9 +380,11 @@ void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
 		Vector2(0.0f, m_assetManager->GetSpriteHeight("laser") / 1.5f)
 	);
 	laser.Tag("Laser");
+	laser.Group("Killers");
 	laser.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	if (isHorizontal) laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9f);
 	else laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9f);
+	Logger::Log("Killers ball id = " + std::to_string(laser.GetId()));
 
 	// Create the first laser shooter entity (top or left)
 	Entity shooter1 = m_coordinator->CreateEntity();

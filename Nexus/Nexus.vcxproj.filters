@@ -94,7 +94,6 @@
     <ClInclude Include="src\EventManagement\EventManager.h" />
     <ClInclude Include="src\EventManagement\EventCallback.h" />
     <ClInclude Include="src\EventManagement\IEvent.h" />
-    <ClInclude Include="src\Systems\DamageSystem.h" />
     <ClInclude Include="src\Systems\RenderTextSystem.h" />
     <ClInclude Include="src\Components\UITextComponent.h" />
     <ClInclude Include="src\Utils\Font.h" />
