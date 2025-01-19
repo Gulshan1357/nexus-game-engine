@@ -32,7 +32,6 @@
 
 #include "src/Systems/RenderSystem.h"
 #include "src/Systems/CollisionSystem.h"
-#include "src/Systems/DamageSystem.h"
 #include "src/Systems/RenderTextSystem.h"
 #include "src/Systems/InputSystem.h"
 #include "src/Systems/RenderDebugSystem.h"
@@ -98,7 +97,6 @@ void GalaxyGolf::Initialize()
 	// Add Systems
 	m_coordinator->AddSystem<RenderSystem>();
 	m_coordinator->AddSystem<CollisionSystem>();
-	m_coordinator->AddSystem<DamageSystem>();
 	m_coordinator->AddSystem<RenderTextSystem>();
 	m_coordinator->AddSystem<InputSystem>();
 	m_coordinator->AddSystem<RenderDebugSystem>();
@@ -229,7 +227,6 @@ void GalaxyGolf::Update(float deltaTime)
 
 	//------------------------------------------------------------------------
 	// Perform the subscription of the events for all systems
-	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
 	// m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
 	m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
@@ -301,7 +298,7 @@ void GalaxyGolf::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& 
 			{
 				m_eventManager->EmitEvent<ActionChangeEvent>(m_coordinator->GetEntityByTag(playerTag), playerId, action, actionStatus);
 			}
-			catch (const std::out_of_range& e)
+			catch ([[maybe_unused]] const std::out_of_range& e)
 			{
 				// Do
 				Logger::Err("ProcessPlayerKeys(): Couldn't find the enitity with player tag");
@@ -320,7 +317,7 @@ void GalaxyGolf::PropagateScore()
 		{
 			sc->playerOneTotalShots = m_coordinator->GetEntityByTag("Player1").GetComponent<PlayerComponent>().totalStrokes;
 		}
-		catch (const std::out_of_range& e)
+		catch ([[maybe_unused]] const std::out_of_range& e)
 		{
 			Logger::Err("PropagateScore(): Couldn't find the entity with player tag");
 		}

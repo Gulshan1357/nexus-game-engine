@@ -30,7 +30,6 @@
 
 #include "src/Systems/RenderSystem.h"
 #include "src/Systems/CollisionSystem.h"
-#include "src/Systems/DamageSystem.h"
 #include "src/Systems/RenderTextSystem.h"
 #include "src/Systems/InputSystem.h"
 #include "src/Systems/RenderDebugSystem.h"
@@ -84,7 +83,6 @@ void TestApp::LoadLevel(int level)
 	// Add Systems
 	m_coordinator->AddSystem<RenderSystem>();
 	m_coordinator->AddSystem<CollisionSystem>();
-	m_coordinator->AddSystem<DamageSystem>();
 	m_coordinator->AddSystem<RenderTextSystem>();
 	m_coordinator->AddSystem<InputSystem>();
 	m_coordinator->AddSystem<RenderDebugSystem>();
@@ -360,7 +358,6 @@ void TestApp::Update(float deltaTime)
 
 	//------------------------------------------------------------------------
 	// Perform the subscription of the events for all systems
-	m_coordinator->GetSystem<DamageSystem>().SubscribeToEvents(m_eventManager);
 	m_coordinator->GetSystem<InputSystem>().SubscribeToEvents(m_eventManager);
 	// m_coordinator->GetSystem<PhysicsSystem>().SubscribeToEvents(m_eventManager); // For collision resolution on collision
 	m_coordinator->GetSystem<ConstraintSystem>().SubscribeToEvents(m_eventManager); // To clear the penetration vector and populate it on every collision
