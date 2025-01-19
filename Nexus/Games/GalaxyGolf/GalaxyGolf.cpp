@@ -106,7 +106,7 @@ void GalaxyGolf::Initialize()
 	m_coordinator->AddSystem<ParticleEffectSystem>();
 	m_coordinator->AddSystem<CameraFollowSystem>();
 	m_coordinator->AddSystem<RenderHUDSystem>();
-	m_coordinator->AddSystem<GameplaySystem>(m_gameState);
+	m_coordinator->AddSystem<GameplaySystem>(m_gameState, m_score);
 	m_coordinator->AddSystem<PlayerSystem>();
 	m_coordinator->AddSystem<TrajectorySystem>();
 
@@ -264,19 +264,6 @@ void GalaxyGolf::ProcessInput()
 		m_isDebug = !m_isDebug;
 	}
 
-	if (App::IsKeyPressed('P'))
-	{
-		if (auto gmState = m_gameState.lock())
-		{
-			Logger::Log("GalaxyGolf::ProcessInput() GameState is accessible.");
-			*gmState = GameState::GAME_OVER;
-		}
-		else
-		{
-			Logger::Err("GalaxyGolf::ProcessInput() GameState is no longer valid.");
-		}
-	}
-
 	ProcessPlayerKeys(Input::PlayerID::PLAYER_1, "Player1");
 }
 
@@ -309,27 +296,6 @@ void GalaxyGolf::ProcessPlayerKeys(Input::PlayerID playerId, const std::string& 
 	}
 }
 
-void GalaxyGolf::PropagateScore()
-{
-	if (auto sc = m_score.lock())
-	{
-		// Update Score based on the player component so that the GameOverScreen can display it
-		try
-		{
-			sc->playerOneTotalShots = m_coordinator->GetEntityByTag("Player1").GetComponent<PlayerComponent>().totalStrokes;
-		}
-		catch ([[maybe_unused]] const std::out_of_range& e)
-		{
-			Logger::Err("PropagateScore(): Couldn't find the entity with player tag");
-		}
-		// Logger::Warn(std::to_string(sc->playerOneTotalShots));
-	}
-	else
-	{
-		Logger::Err("Score is no longer valid.");
-	}
-}
-
 void GalaxyGolf::Render()
 {
 	// Background
@@ -352,7 +318,6 @@ void GalaxyGolf::Render()
 
 void GalaxyGolf::Shutdown()
 {
-	PropagateScore();
 	Logger::Warn("GalaxyGolf::Shutdown()");
 }
 

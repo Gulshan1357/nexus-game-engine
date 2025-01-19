@@ -14,9 +14,11 @@
 #include "src/Components/RigidBodyComponent.h"
 
 #include "../Games/GameState.h"
+#include "Games/Score.h"
 #include "src/Utils/Logger.h"
 
-GameplaySystem::GameplaySystem(std::weak_ptr<GameState> gameState) : m_gameState(std::move(gameState))
+GameplaySystem::GameplaySystem(std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
+	: m_gameState(std::move(gameState)), m_score(std::move(score))
 {
 	RequireComponent<PlayerComponent>();
 	m_gameStartTime = std::chrono::steady_clock::now();
@@ -69,11 +71,35 @@ void GameplaySystem::onCollision(const CollisionEvent& event)
 	}
 }
 
-void GameplaySystem::Update() const
+void GameplaySystem::Update()
 {
+	for (auto& player : GetSystemEntities())
+	{
+		UpdateScore(player);
+	}
 	if (GetSystemEntities().empty())
 	{
 		GameOver();
+	}
+}
+
+void GameplaySystem::UpdateScore(Entity& player1)
+{
+	if (auto sc = m_score.lock())
+	{
+		// Update Score based on the player component so that the GameOverScreen can display it
+		try
+		{
+			sc->playerOneTotalShots = player1.GetComponent<PlayerComponent>().totalStrokes;
+		}
+		catch ([[maybe_unused]] const std::out_of_range& e)
+		{
+			Logger::Err("GameplaySystem::UpdateScore(): Couldn't find the entity with player tag");
+		}
+	}
+	else
+	{
+		Logger::Err("GameplaySystem::UpdateScore(): Score is no longer valid.");
 	}
 }
 
@@ -88,3 +114,4 @@ void GameplaySystem::GameOver() const
 		Logger::Err("GameplaySystem::GameOver() GameState is no longer valid.");
 	}
 }
+

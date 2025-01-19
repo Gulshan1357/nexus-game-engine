@@ -29,7 +29,6 @@ public:
 	void Update(float deltaTime);
 	void ProcessInput();
 	void ProcessPlayerKeys(Input::PlayerID playerId, const std::string& playerTag);
-	void PropagateScore(); // Retrieve the scores from player component and populate the Game::Score
 	void Render();
 	void Shutdown();
 

@@ -128,7 +128,6 @@ void Game::UpdateGameOver(float deltaTime)
 	// Update the score before closing the game
 	if (!m_isScoreUpToDate)
 	{
-		m_game->PropagateScore();
 		m_isScoreUpToDate = true;
 	}
 
@@ -335,7 +334,7 @@ void Game::RenderGameOver() const
 		m_accentPrimary
 	);
 
-	const std::pair<std::string, std::string> headers = { "PLAYER", "SCORE" };
+	const std::pair<std::string, std::string> headers = { "PLAYER", "TOTAL STROKES" };
 	Graphics::PrintText(
 		headers.first,
 		Vector2(centerX - 140, currentY),
@@ -344,7 +343,7 @@ void Game::RenderGameOver() const
 	);
 	Graphics::PrintText(
 		headers.second,
-		Vector2(centerX + 60, currentY),
+		Vector2(centerX - 10, currentY),
 		m_fontSecondary,
 		GLUT_BITMAP_HELVETICA_18
 	);

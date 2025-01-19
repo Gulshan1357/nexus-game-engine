@@ -15,7 +15,7 @@
 
 
 //------------------------------------------------------------------------
-// The input system listens to Input events (Keyboard key press) and perform necessary action.
+// The input system listens to Input events (Keyboard key press) and perform emit necessary events.
 // ------------------------------------------------------------------------
 class InputSystem : public System
 {
@@ -25,7 +25,6 @@ public:
 	InputSystem()
 	{
 		RequireComponent<PlayerComponent>();
-
 	}
 
 	void SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager)
