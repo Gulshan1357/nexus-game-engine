@@ -195,7 +195,6 @@
     <ClInclude Include="App\SimpleSprite.h" />
     <ClInclude Include="Games\GalaxyGolf\AbilitiesEnum.h" />
     <ClInclude Include="Games\GalaxyGolf\GalaxyGolf.h" />
-    <ClInclude Include="Games\GalaxyGolf\TerrainGenerator.h" />
     <ClInclude Include="Games\GalaxyGolf\WorldSettings.h" />
     <ClInclude Include="Games\Game.h" />
     <ClInclude Include="Games\GameState.h" />
@@ -236,6 +235,8 @@
     <ClInclude Include="src\Events\PlayerStateChangeEvent.h" />
     <ClInclude Include="src\InputManagement\InputManager.h" />
     <ClInclude Include="src\InputManagement\InputEnums.h" />
+    <ClInclude Include="src\PCG\PCG.h" />
+    <ClInclude Include="src\PCG\TerrainGenerator.h" />
     <ClInclude Include="src\Physics\Camera.h" />
     <ClInclude Include="src\Physics\Constants.h" />
     <ClInclude Include="src\Physics\Contact.h" />
@@ -290,6 +291,8 @@
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\InputManagement\InputManager.cpp" />
+    <ClCompile Include="src\PCG\PCG.cpp" />
+    <ClCompile Include="src\PCG\TerrainGenerator.cpp" />
     <ClCompile Include="src\Physics\Camera.cpp" />
     <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="src\Systems\ConstraintSystem.cpp" />

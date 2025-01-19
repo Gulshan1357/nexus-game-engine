@@ -34,7 +34,7 @@ public:
 	// Emit a single Particle based on the ParticleProps
 	void EmitParticle(const ParticleProps& particleProps);
 
-	// Render all the exiting particles
+	// RenderTerrain all the exiting particles
 	void Render(const Camera& camera) const;
 
 	// Galaxy Golf Game: Subscribe to Player State change event

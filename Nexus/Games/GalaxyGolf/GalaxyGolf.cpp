@@ -4,7 +4,6 @@
 #include <memory>
 #include <utility>
 
-#include "TerrainGenerator.h"
 #include "Games/GameState.h"
 #include "Games/Score.h"
 #include "Games/UI/UIEffects.h"
@@ -52,6 +51,7 @@
 #include "src/Systems/TrajectorySystem.h"
 #include "src/Utils/Random.h"
 #include "WorldSettings.h"
+#include "src/PCG/PCG.h"
 
 GalaxyGolf::GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
 	: m_worldType(worldType), m_gameState(std::move(gameState)), m_score(std::move(score))
@@ -126,19 +126,6 @@ void GalaxyGolf::LoadLevel(int level)
 	// Sounds
 	m_audioManager->AddAudio("golf_swing", R"(.\Assets\Audio\golf_swing.wav)");
 
-	// Ground
-	TerrainGenerator generator;
-	TerrainGenerator::Config config = { 50.0f,
-		 150.0f,
-		-100.0f,
-		100.0f,
-		0.5f,
-		 100.0f,
-		700.0f,
-		 20
-	};
-	terrainVertices = generator.GenerateTerrain(-300.f, 0.f, config);
-
 	// Configure world settings
 	switch (m_worldType)
 	{
@@ -149,7 +136,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
 			m_worldSettings.groundColor = Color(Colors::GRAY);
-			AddTerrain(0.5f, 0.7f);
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, { 700.f, 10, 0.5f, 0.7f });
 			break;
 		}
 
@@ -160,7 +147,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
 			m_worldSettings.atmosphereDrag = 0.0005f;
 			m_worldSettings.groundColor = Color(Colors::RED);
-			AddTerrain(0.9f, 0.3f);
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, { 700.f, 10, 0.9f, 0.3f });
 			break;
 		}
 		case WorldType::SUPER_EARTH:
@@ -170,7 +157,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
 			m_worldSettings.groundColor = Color(Colors::DARK_GRAY);
-			AddTerrain(0.9f, 0.1f);
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, { 700.f, 10, 0.9f, 0.1f });
 			break;
 		}
 	}
@@ -315,9 +302,9 @@ void GalaxyGolf::Render()
 	UIEffects::RenderStartField(Color(Colors::WHITE), 100, 12345);
 
 	// Render Terrain
-	TerrainGenerator::Render(m_camera, terrainVertices, m_worldSettings.groundColor);
+	PCG::RenderTerrain(m_camera, m_terrainVertices, m_worldSettings.groundColor);
 
-	// Update Render Systems
+	// Update RenderTerrain Systems
 	m_coordinator->GetSystem<RenderSystem>().Update(m_assetManager, m_camera);
 	m_coordinator->GetSystem<ParticleEffectSystem>().Render(m_camera);
 	m_coordinator->GetSystem<RenderTextSystem>().Update(m_camera);
@@ -336,40 +323,7 @@ void GalaxyGolf::Shutdown()
 	Logger::Warn("GalaxyGolf::Shutdown()");
 }
 
-void GalaxyGolf::AddTerrain(const float elasticity, const float friction)
-{
-	for (size_t i = 0; i < terrainVertices.size() - 1; i++)
-	{
-		const Vector2& currentPos = terrainVertices[i];
-		const Vector2& nextPos = terrainVertices[i + 1];
-		float xDifference = nextPos.x - currentPos.x;
-		float yDifference = nextPos.y - currentPos.y;
-		float colliderDepth = 10.f;
 
-		// Terrain entity will be a point with polygon collider stretching till the next point
-		Entity terrain = m_coordinator->CreateEntity();
-		terrain.AddComponent<TransformComponent>(currentPos, Vector2(1.f, 1.f));
-
-		// Add collider type
-		terrain.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
-		std::vector<Vector2> polygonVertices;
-		polygonVertices.emplace_back(0.f, -colliderDepth); // Bottom left
-		polygonVertices.emplace_back(xDifference, yDifference - colliderDepth);    // Bottom right
-		polygonVertices.emplace_back(xDifference, yDifference);    // Top right
-		polygonVertices.emplace_back(0.f, 0.f); // Top left
-		terrain.AddComponent<PolygonColliderComponent>(polygonVertices);
-		terrain.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, elasticity, friction);
-		terrain.Group("Terrain");
-
-		// Adding a circle collider between 2 points because the collision resolution b/w circle and polygon vertex is not stable
-		// Entity terrainConnector = m_coordinator->CreateEntity();
-		// terrainConnector.AddComponent<TransformComponent>(nextPos, Vector2(1.f, 1.f));
-		// terrainConnector.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, elasticity, friction);
-		// terrainConnector.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-		// terrainConnector.AddComponent<CircleColliderComponent>(1.f);
-		// terrainConnector.Group("Terrain");
-	}
-}
 
 void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
 {

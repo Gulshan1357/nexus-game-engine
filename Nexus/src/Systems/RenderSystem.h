@@ -14,7 +14,6 @@
 
 #include "src/Physics/Camera.h"
 
-
 class RenderSystem : public System
 {
 public:
@@ -31,9 +30,9 @@ public:
 		// I decided to create a struct of transform component, add z-index sorted entities into it and render based on it.
 		// TODO: Think of a way to avoid the sorting every update()
 		//------------------------------------------------------------------------
-		
+
 		const auto entities = GetSystemEntities();
-		
+
 		m_renderQueue.clear();
 		m_renderQueue.reserve(entities.size());
 
@@ -56,15 +55,15 @@ public:
 			}
 		);
 
-		// Render the entities based on sorted renderQueue
+		// RenderTerrain the entities based on sorted renderQueue
 		for (const auto& [transformComponent, spriteComponent, bHasAnimationComponent] : m_renderQueue)
 		{
 			CSimpleSprite* sprite = assetManager->GetSprite(spriteComponent->assetId);
 			if (!sprite) continue;
-			
+
 			// Transform position through camera
 			const Vector2 screenPos = Camera::WorldToScreen(transformComponent->position, camera);
-			
+
 			// sprite->SetPosition(transformComponent->position.x, transformComponent->position.y);
 			sprite->SetPosition(screenPos.x, screenPos.y);
 			sprite->SetAngle(transformComponent->rotation);
@@ -81,7 +80,8 @@ public:
 	}
 
 private:
-	struct RenderableEntity {
+	struct RenderableEntity
+	{
 		const TransformComponent* transformComponent;
 		const SpriteComponent* spriteComponent;
 		// Need to decided if the render system should handle setting the frame or animation system
