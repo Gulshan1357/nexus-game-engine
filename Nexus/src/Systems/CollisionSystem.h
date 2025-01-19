@@ -13,7 +13,6 @@
 #include "src/Physics/Contact.h"
 
 #include "src/Physics/PhysicsEngine.h"
-#include "src/Utils/GraphicsUtils.h"
 
 #include "src/Utils/Logger.h"
 
@@ -264,10 +263,10 @@ public:
 			Vector2 edgeStartToEnd = closestEdgeEnd - closestEdgeStart; // the nearest edge
 			if (toCircleFromStart.Dot(edgeStartToEnd) < 0)
 			{
-				if (toCircleFromStart.Magnitude() > circleRadius)
-				{
-					return false; // No collision
-				}
+				// if (toCircleFromStart.Magnitude() > circleRadius)
+				// {
+				return false; // No collision
+				// }
 				// else
 				// {
 				// 	// Collision detected in region 1 (vertex)
@@ -296,16 +295,16 @@ public:
 			}
 			else
 			{
-				// //------------------------------------------------------------------------
-				// // Check if we are inside region 2 (Closest to the end of the closest edge)
-				// //------------------------------------------------------------------------
+				//------------------------------------------------------------------------
+				// Check if we are inside region 2 (Closest to the end of the closest edge)
+				//------------------------------------------------------------------------
 				// Vector2 toCircleFromEnd = circleCenter - closestEdgeEnd; // Vector from the next nearest vertex (in opposite direction) to the circle center
 				// Vector2 edgeEndToStart = closestEdgeStart - closestEdgeEnd; // the nearest edge
 				// if (toCircleFromEnd.Dot(edgeEndToStart) < 0)
 				// {
 				// 	if (toCircleFromEnd.Magnitude() > circleRadius)
 				// 	{
-				// 		return false; // No collision
+						// return false; // No collision
 				// 	}
 				// 	else
 				// 	{
