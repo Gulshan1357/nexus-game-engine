@@ -3,12 +3,11 @@
 #include <memory>
 
 #include "GameState.h"
+#include "GalaxyGolf/WorldSettings.h"
 #include "Score.h"
-#include "GalaxyGolf/MapType.h"
 #include "src/Physics/Constants.h"
 #include "src/Utils/Color.h"
 
-enum class MapType;
 struct Color;
 class GalaxyGolf;
 
@@ -19,7 +18,7 @@ public:
 	~Game();
 
 	void Initialize() const;
-	void InitializeMap(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score);
+	void InitializeMap(WorldType worldType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score);
 
 	void Update(float deltaTime);
 	void UpdateMenu(float deltaTime) const;
@@ -44,9 +43,9 @@ private:
 	std::unique_ptr<GalaxyGolf> m_game;
 	std::shared_ptr<GameState> m_currentGameState;
 
-	// Map
-	MapType m_selectedMap = MapType::EARTH;
-	bool m_isMapInitialized = false;
+	// World (level)
+	WorldType m_selectedWorld = WorldType::EARTH;
+	bool m_isWorldInitialized = false;
 
 	// Player Score
 	std::shared_ptr<Score> m_score;

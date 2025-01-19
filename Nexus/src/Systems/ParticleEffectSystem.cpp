@@ -230,7 +230,7 @@ void ParticleEffectSystem::SubscribeToEvents(const std::unique_ptr<EventManager>
 void ParticleEffectSystem::OnPlayerStateChange(const PlayerStateChangeEvent& event)
 {
 
-	Logger::Log("ParticleEffectSystem receives PlayerStateChangeEvent");
+	// Logger::Log("ParticleEffectSystem receives PlayerStateChangeEvent");
 
 	if (event.isMoving)
 	{

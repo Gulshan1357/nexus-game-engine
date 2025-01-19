@@ -6,6 +6,7 @@
 
 #include "src/Physics/PhysicsEngine.h"
 #include "src/Physics/Constants.h"
+#include "../Games/GalaxyGolf/WorldSettings.h"
 
 class PhysicsSystem : public System
 {
@@ -49,22 +50,27 @@ public:
 	}
 
 	// Add and integrate forces for non-kinematic bodies
-	void UpdateForces(const float deltaTime)
+	void UpdateForces(const float deltaTime, const WorldSettings& worldSettings)
 	{
 		for (auto entity : GetSystemEntities())
 		{
-			auto& transform = entity.GetComponent<TransformComponent>();
+			// auto& transform = entity.GetComponent<TransformComponent>();
 			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
 
 			if (!rigidBody.isKinematic)
 			{
+				// Adding weight force
+				Vector2 weight = Vector2(0.0f, (rigidBody.mass * worldSettings.gravity * Physics::PIXEL_PER_METER));
+				rigidBody.AddForce(weight);
+
+				// Adding wind force
+				Vector2 wind = Vector2(worldSettings.windSpeed, 0.0f);
+				rigidBody.AddForce(wind);
+
 				// Adding Drag force
-				Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, 0.01f);
+				Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, worldSettings.atmosphereDrag);
 				rigidBody.AddForce(drag);
 
-				// Adding weight force
-				Vector2 weight = Vector2(0.0f, rigidBody.mass * -Physics::gravity * Physics::PIXEL_PER_METER);
-				rigidBody.AddForce(weight);
 
 				// AddSpringForceToConnectedEntities(entity);
 
@@ -99,7 +105,7 @@ public:
 		for (auto entity : GetSystemEntities())
 		{
 			auto& transform = entity.GetComponent<TransformComponent>();
-			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
+			// auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
 
 			PhysicsEngine::UpdateColliderProperties(entity, transform);
 		}

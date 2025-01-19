@@ -137,12 +137,14 @@
     <ClInclude Include="src\Systems\CameraFollowSystem.h" />
     <ClInclude Include="src\Components\CameraFollowComponent.h" />
     <ClInclude Include="Games\GalaxyGolf\GalaxyGolf.h" />
-    <ClInclude Include="Games\GalaxyGolf\MapType.h" />
     <ClInclude Include="src\Systems\GameplaySystem.h" />
     <ClInclude Include="src\Systems\RenderHUDSystem.h" />
     <ClInclude Include="Games\Score.h" />
     <ClInclude Include="src\Systems\PlayerSystem.h" />
     <ClInclude Include="Games\GalaxyGolf\AbilitiesEnum.h" />
+    <ClInclude Include="src\Events\PlayerStateChangeEvent.h" />
+    <ClInclude Include="src\Systems\TrajectorySystem.h" />
+    <ClInclude Include="Games\GalaxyGolf\WorldSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

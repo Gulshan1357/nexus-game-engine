@@ -374,7 +374,7 @@ void TestApp::Update(float deltaTime)
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 	// [Physics system Start] Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
 	const float dt = deltaTime / 1000.0f; // Converting to seconds
-	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt);
+	// m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<ConstraintSystem>().Update(dt);
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);

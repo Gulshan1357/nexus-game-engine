@@ -5,6 +5,7 @@
 
 #include "src/InputManagement/InputEnums.h"
 #include "src/Physics/Camera.h"
+#include "WorldSettings.h"
 
 struct Score;
 enum class GameState;
@@ -20,7 +21,7 @@ struct Vector2;
 class GalaxyGolf
 {
 public:
-	GalaxyGolf(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score);
+	GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score);
 	~GalaxyGolf();
 
 	void Initialize();
@@ -50,9 +51,12 @@ private:
 	Camera m_camera;
 
 	// Game state and score
-	MapType m_mapType;
+	WorldType m_worldType; // Level
 	std::weak_ptr<GameState> m_gameState;
 	std::weak_ptr<Score> m_score;
+
+	// Level settings
+	WorldSettings m_worldSettings;
 
 	// Obstacle
 	void AddObstacleLaser(Vector2 position, bool isHorizontal = true);

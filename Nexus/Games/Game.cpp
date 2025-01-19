@@ -4,7 +4,6 @@
 #include "App/app.h"
 
 #include "GalaxyGolf/GalaxyGolf.h"
-#include "GalaxyGolf/MapType.h"
 
 #include "src/Physics/Constants.h"
 #include "src/Utils/GraphicsUtils.h"
@@ -27,14 +26,14 @@ Game::~Game()
 void Game::Initialize() const
 {
 	// For debug
-	*m_currentGameState = GameState::PLAYING;
+	// *m_currentGameState = GameState::PLAYING;
 }
 
-void Game::InitializeMap(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
+void Game::InitializeMap(WorldType worldType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
 {
-	m_game = std::make_unique<GalaxyGolf>(mapType, std::move(gameState), std::move(score));
+	m_game = std::make_unique<GalaxyGolf>(worldType, std::move(gameState), std::move(score));
 	m_game->Initialize();
-	m_isMapInitialized = true;
+	m_isWorldInitialized = true;
 }
 
 void Game::Update(const float deltaTime)
@@ -74,17 +73,17 @@ void Game::UpdateMapSelection(float deltaTime)
 {
 	if (App::IsKeyPressed('1'))
 	{
-		m_selectedMap = MapType::EARTH;
+		m_selectedWorld = WorldType::EARTH;
 		*m_currentGameState = GameState::PLAYING;
 	}
 	if (App::IsKeyPressed('2'))
 	{
-		m_selectedMap = MapType::MARS;
+		m_selectedWorld = WorldType::MARS;
 		*m_currentGameState = GameState::PLAYING;
 	}
 	if (App::IsKeyPressed('3'))
 	{
-		m_selectedMap = MapType::JUPITER;
+		m_selectedWorld = WorldType::SUPER_EARTH;
 		*m_currentGameState = GameState::PLAYING;
 	}
 
@@ -97,7 +96,7 @@ void Game::UpdateMapSelection(float deltaTime)
 
 void Game::UpdateGame(const float deltaTime)
 {
-	if (!m_isMapInitialized) InitializeMap(m_selectedMap, m_currentGameState, m_score);
+	if (!m_isWorldInitialized) InitializeMap(m_selectedWorld, m_currentGameState, m_score);
 	if (m_isScoreUpToDate) m_isScoreUpToDate = false; // Since game is in progress the Game::score won't be up-to-date
 
 	// While playing press ESC to pause
@@ -119,7 +118,7 @@ void Game::UpdatePaused(float deltaTime)
 	if (App::IsKeyPressed(VK_SPACE))
 	{
 		*m_currentGameState = GameState::MENU;
-		m_isMapInitialized = false;
+		m_isWorldInitialized = false;
 		m_game.reset();
 	}
 }
@@ -137,7 +136,7 @@ void Game::UpdateGameOver(float deltaTime)
 	if (App::IsKeyPressed(VK_SPACE) || App::IsKeyPressed(VK_ESCAPE))
 	{
 		*m_currentGameState = GameState::MENU;
-		m_isMapInitialized = false;
+		m_isWorldInitialized = false;
 		m_game.reset();
 	}
 }

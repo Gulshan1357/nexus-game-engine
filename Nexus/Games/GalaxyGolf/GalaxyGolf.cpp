@@ -4,7 +4,6 @@
 #include <memory>
 #include <utility>
 
-#include "MapType.h"
 #include "Games/GameState.h"
 #include "Games/Score.h"
 #include "Games/UI/UIEffects.h"
@@ -51,9 +50,12 @@
 #include "src/Systems/GameplaySystem.h"
 #include "src/Systems/PlayerSystem.h"
 #include "src/Systems/TrajectorySystem.h"
+#include "src/Utils/Random.h"
+#include "WorldSettings.h"
 
-GalaxyGolf::GalaxyGolf(MapType mapType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
-	: m_mapType(mapType), m_gameState(std::move(gameState)), m_score(std::move(score))
+
+GalaxyGolf::GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
+	: m_worldType(worldType), m_gameState(std::move(gameState)), m_score(std::move(score))
 {
 	m_isDebug = true;
 
@@ -63,7 +65,7 @@ GalaxyGolf::GalaxyGolf(MapType mapType, std::weak_ptr<GameState> gameState, std:
 	m_assetManager = std::make_unique<AssetManager>();
 	m_audioManager = std::make_unique<AudioManager>();
 	Logger::Log("GalaxyGolf Game constructor called! ");
-	Logger::Log("MapType: " + std::to_string(static_cast<int>(m_mapType)));
+	Logger::Log("MapType: " + std::to_string(static_cast<int>(m_worldType)));
 
 	if (auto gmState = m_gameState.lock())
 	{
@@ -92,7 +94,6 @@ GalaxyGolf::~GalaxyGolf()
 void GalaxyGolf::Initialize()
 {
 	Logger::Log("GalaxyGolf::Initialize()");
-
 	// Camera
 	m_camera.SetPosition(Physics::SCREEN_WIDTH / 2.f, Physics::SCREEN_HEIGHT / 2.f);
 	// Add Systems
@@ -127,10 +128,45 @@ void GalaxyGolf::LoadLevel(int level)
 	// Walls and grounds
 	Entity ground = m_coordinator->CreateEntity();
 	ground.AddComponent<TransformComponent>(Vector2(static_cast<float>(Physics::SCREEN_WIDTH) / 2, -240.0f), Vector2(1.f, 1.f));
-	ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.3f, 0.7f);
 	ground.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	ground.AddComponent<BoxColliderComponent>(static_cast<float>(Physics::SCREEN_WIDTH) * 10, 500.0f);
 	ground.Tag("ground");
+
+	// Configure world settings
+	switch (m_worldType)
+	{
+		case WorldType::EARTH:
+		{
+			Logger::Log("Earth selected!");
+			m_worldSettings.gravity = -9.8f;
+			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
+			m_worldSettings.atmosphereDrag = 0.01f;
+			// Last two values of the RigidBody are Elasticity and Friction
+			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.3f, 0.7f);
+			break;
+		}
+
+		case WorldType::MARS:
+		{
+			Logger::Log("Mars selected!");
+			m_worldSettings.gravity = -9.0f;
+			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
+			m_worldSettings.atmosphereDrag = 0.0005f;
+			// Last two values of the RigidBody are Elasticity and Friction
+			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.9f, 0.3f);
+			break;
+		}
+		case WorldType::SUPER_EARTH:
+		{
+			Logger::Log("Jupiter selected!");
+			m_worldSettings.gravity = -20.8f;
+			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
+			m_worldSettings.atmosphereDrag = 0.03f;
+			// Last two values of the RigidBody are Elasticity and Friction
+			ground.AddComponent<RigidBodyComponent>(Vector2(), Vector2(), false, 0.0f, 0.0f, 0.0f, 0.9f, 1.f);
+			break;
+		}
+	}
 
 	// Add assets to the asset manager
 	// m_assetManager->AddSprite("backgroundGrass", R"(.\Assets\Sprites\kenney_background\backgroundColorGrass.bmp)", 1, 1);
@@ -148,17 +184,17 @@ void GalaxyGolf::LoadLevel(int level)
 	// background.Tag("Background");
 
 	// Red ball is the new Player 2
-	Entity redBall = m_coordinator->CreateEntity();
-	redBall.AddComponent<SpriteComponent>("golf-ball", 3);
-	redBall.AddComponent<TransformComponent>(Vector2(0.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
-	redBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 0.1f, 0.1f);
-	redBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	redBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
-	redBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
-	redBall.AddComponent<CameraFollowComponent>();
-	redBall.Tag("Player1");
-	redBall.Group("Player");
-	redBall.AddComponent<ParticleEmitterComponent>(); // The type of emission is handled by Particle Effect system
+	Entity golfBall = m_coordinator->CreateEntity();
+	golfBall.AddComponent<SpriteComponent>("golf-ball", 3);
+	golfBall.AddComponent<TransformComponent>(Vector2(0.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
+	golfBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 1.f, 0.7f);
+	golfBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	golfBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
+	golfBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
+	golfBall.AddComponent<CameraFollowComponent>();
+	golfBall.Tag("Player1");
+	golfBall.Group("Player");
+	golfBall.AddComponent<ParticleEmitterComponent>(); // The type of emission is handled by Particle Effect system
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
@@ -208,7 +244,7 @@ void GalaxyGolf::Update(float deltaTime)
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 	// [Physics system Start] Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
 	const float dt = deltaTime / 1000.0f; // Converting to seconds
-	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt);
+	m_coordinator->GetSystem<PhysicsSystem>().UpdateForces(dt, m_worldSettings);
 	m_coordinator->GetSystem<CollisionSystem>().Update(m_eventManager);
 	m_coordinator->GetSystem<ConstraintSystem>().Update(dt);
 	m_coordinator->GetSystem<PhysicsSystem>().UpdateVelocities(dt);
@@ -329,8 +365,8 @@ void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
 	);
 	laser.Tag("Laser");
 	laser.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	if (isHorizontal) laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9);
-	else laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9);
+	if (isHorizontal) laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9f);
+	else laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9f);
 
 	// Create the first laser shooter entity (top or left)
 	Entity shooter1 = m_coordinator->CreateEntity();
@@ -340,10 +376,10 @@ void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
 		? Vector2(position.x - m_assetManager->GetSpriteHeight("laser") * 0.6f, position.y)
 		: Vector2(position.x, position.y - m_assetManager->GetSpriteHeight("laser") * 0.6f),
 		Vector2(1.f, 1.f), // Scale
-		isHorizontal ? -PI * 0.5 : 0 // Rotation
+		isHorizontal ? -PI * 0.5f : 0 // Rotation
 	);
 	shooter1.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	shooter1.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42);
+	shooter1.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42f);
 	shooter1.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
 
 	shooter1.Tag("LaserShooter");
@@ -356,10 +392,10 @@ void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
 		? Vector2(position.x + m_assetManager->GetSpriteHeight("laser") * 0.6f, position.y)
 		: Vector2(position.x, position.y + m_assetManager->GetSpriteHeight("laser") * 0.6f),
 		Vector2(1.f, 1.f),
-		isHorizontal ? PI * 0.5 : PI // Rotation
+		static_cast<float>(isHorizontal ? PI * 0.5 : PI) // Rotation
 	);
 	shooter2.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	shooter2.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42);
+	shooter2.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42f);
 	shooter2.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
 	shooter2.Tag("LaserShooter");
 
