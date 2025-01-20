@@ -11,7 +11,9 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
    - [License](Nexus/Assets/Sprites/kenney_tileset/License.txt)
 2. **Background Elements Redux (Kenney Vleugels)**  
    - [Asset Link](https://www.kenney.nl/assets/background-elements-redux)  
-   - [License](Nexus/Assets/Sprites/kenney_background/Backgrounds/License.txt)   
+2. **Physics Assets (Kenney Vleugels)**  
+   - [Asset Link](https://www.kenney.nl/assets/physics-assets)
+   - [License](Nexus/Assets/Sprites/kenney_physics-assets/License.txt)   
 2. **Royalty Free Sound Effects Archive: GameAudioGDC (Sonniss.com)**  
    - [Asset Link](https://sonniss.com/gameaudiogdc)  
    - [License](Nexus/Assets/Audio/License.pdf)  
@@ -23,6 +25,7 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 4. **Sport Balls Pixel-art Pack**  
    - [Asset Link](https://beemaxstudio.itch.io/sport-balls-pixel-pack)
    - *For golf ball*  
+  
 
 ---
 

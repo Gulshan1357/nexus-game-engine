@@ -67,15 +67,46 @@ std::vector<Vector2> PCG::GenerateLevel(const std::unique_ptr<Coordinator>& coor
 	// Elevated last point
 	terrainVertices.emplace_back(terrainVertices.back().x + 800.f, terrainVertices.back().y + 600.f);
 
+	AddObstacles(coordinator, assetManager, terrainVertices);
 	// Place colliders on ground surface
 	AddTerrain(coordinator, terrainVertices, pcgConfig.elasticity, pcgConfig.friction);
 
 	// From this point don't modify terrainVertices these are used to render ground color
 
-	// TODO: obstacles
-	AddObstacles(coordinator, assetManager, terrainVertices);
 
 	return terrainVertices;
+}
+
+void PCG::RenderTerrain(const Camera& camera, const std::vector<Vector2>& terrainVertices, const Color color)
+{
+	// Check if the terrain vertices are empty or invalid
+	if (terrainVertices.empty())
+	{
+		return;
+	}
+
+	// The terrainVertices are from left to right, but we need a polygon ordered anti-clockwise starting from bottom left
+	std::vector<Vector2> polygonVertices;
+	polygonVertices.reserve(terrainVertices.size() + 2); // +2 start and end vertex.
+
+	polygonVertices.emplace_back(terrainVertices.front().x, -600.f); // bottom left
+	polygonVertices.emplace_back(terrainVertices.back().x, -600.f); // bottom right
+	for (auto it = terrainVertices.rbegin(); it != terrainVertices.rend(); ++it)
+	{
+		polygonVertices.push_back(*it);
+	}
+
+	// Convert world-space terrain vertices to screen-space
+	std::vector<Vector2> screenVertices;
+	screenVertices.reserve(polygonVertices.size());
+	for (const auto& vertex : polygonVertices)
+	{
+		screenVertices.push_back(Camera::WorldToScreen(vertex, camera));
+		Graphics::DrawCircle(Camera::WorldToScreen(vertex, camera), 2.f, 4, Color(Colors::RED));
+	}
+
+	// Draw the filled polygon representing the terrain
+	Graphics::DrawFillPolygon(screenVertices, color);
 }
 
 void PCG::SpawnHole(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, Vector2 position)
@@ -141,41 +172,44 @@ void PCG::AddTerrain(const std::unique_ptr<Coordinator>& coordinator, const std:
 	}
 }
 
-void PCG::AddObstacles(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, const std::vector<Vector2>& terrainVertices)
+void PCG::AddObstacles(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, std::vector<Vector2>& terrainVertices)
 {
 	// Only spawn it once per map
 	bool isBeadsSpawned = false;
 
 	// Skip first and last couple of vertices to avoid ball spawn and the final hole
-	for (size_t i = 2; i < terrainVertices.size() - 6; i += 2)
+	for (size_t i = 2; i < terrainVertices.size() - 6; i++)
 	{
-		// Random chance to spawn an obstacle (30% chance)
-		if (Random::Float(0.0f, 1.0f) < .3f)
+		if (i % 2 == 0)
 		{
-			// Random obstacle type (1-3)
-			int obstacleType = Random::Int(1, 3);
-
-			// Spawn different obstacles based on random type
-			switch (obstacleType)
+			if (Random::Float(0.0f, 1.0f) < .3f)
 			{
-				case 1:
-					SpawnLaser(coordinator, assetManager, terrainVertices[i], terrainVertices[i + 1]);
-					break;
-				case 2:
-
-					SpawnPendulum(coordinator, assetManager, terrainVertices[i]);
-
-					break;
-				case 3:
+				SpawnShapes(coordinator, assetManager, terrainVertices[i]);
+			}
+		}
+		else
+		{
+			// Random chance to spawn an obstacle (30% chance)
+			if (Random::Float(0.0f, 1.0f) < .3f)
+			{
+				// Spawn different obstacles based on random type
+				switch (const int obstacleType = Random::Int(1, 3))
 				{
-					if (!isBeadsSpawned)
-					{
-						SpawnConnectedBeads(coordinator, assetManager, terrainVertices[i]);
-						isBeadsSpawned = true;
-					}
-					break;
+					case 1:
+						SpawnLaser(coordinator, assetManager, terrainVertices[i], terrainVertices[i + 1]);
+						break;
+					case 2:
+						SpawnPendulum(coordinator, assetManager, terrainVertices[i]);
+						break;
+					case 3:
+						if (!isBeadsSpawned)
+						{
+							SpawnConnectedBeads(coordinator, assetManager, terrainVertices[i]);
+							isBeadsSpawned = true;
+						}
+						break;
+					default:;
 				}
-				default:;
 			}
 		}
 	}
@@ -303,34 +337,217 @@ void PCG::SpawnConnectedBeads(const std::unique_ptr<Coordinator>& coordinator,
 	}
 }
 
-void PCG::RenderTerrain(const Camera& camera, const std::vector<Vector2>& terrainVertices, const Color color)
+void PCG::SpawnShapes(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, Vector2& terrainPoint)
 {
-	// Check if the terrain vertices are empty or invalid
-	if (terrainVertices.empty())
+	// Add sprites
+	assetManager->AddSprite("exploding-triangle", R"(.\Assets\Sprites\kenney_physics-assets\Explosive_elements\elementExplosive000.bmp)", 1, 1);
+	assetManager->AddSprite("exploding-square", R"(.\Assets\Sprites\kenney_physics-assets\Explosive_elements\elementExplosive014.bmp)", 1, 1);
+	assetManager->AddSprite("exploding-rectangle", R"(.\Assets\Sprites\kenney_physics-assets\Explosive_elements\elementExplosive015.bmp)", 1, 1);
+
+	assetManager->AddSprite("glass-triangle", R"(.\Assets\Sprites\kenney_physics-assets\Glass_elements\elementGlass045.bmp)", 1, 1);
+	assetManager->AddSprite("glass-square", R"(.\Assets\Sprites\kenney_physics-assets\Glass_elements\elementGlass047.bmp)", 1, 1);
+	assetManager->AddSprite("glass-rectangle", R"(.\Assets\Sprites\kenney_physics-assets\Glass_elements\elementGlass048.bmp)", 1, 1);
+
+	// For Filled or hollow
+	if (Random::Int(0, 1)) assetManager->AddSprite("wood-triangle", R"(.\Assets\Sprites\kenney_physics-assets\Wood_elements\elementWood054.bmp)", 1, 1);
+	else assetManager->AddSprite("wood-triangle", R"(.\Assets\Sprites\kenney_physics-assets\Wood_elements\elementWood002.bmp)", 1, 1);
+	if (Random::Int(0, 1)) assetManager->AddSprite("wood-square", R"(.\Assets\Sprites\kenney_physics-assets\Wood_elements\elementWood010.bmp)", 1, 1);
+	else assetManager->AddSprite("wood-square", R"(.\Assets\Sprites\kenney_physics-assets\Wood_elements\elementWood026.bmp)", 1, 1);
+	if (Random::Int(0, 1)) assetManager->AddSprite("wood-rectangle", R"(.\Assets\Sprites\kenney_physics-assets\Wood_elements\elementWood011.bmp)", 1, 1);
+	else assetManager->AddSprite("wood-rectangle", R"(.\Assets\Sprites\kenney_physics-assets\Wood_elements\elementWood027.bmp)", 1, 1);
+
+	if (Random::Int(0, 1)) assetManager->AddSprite("stone-triangle", R"(.\Assets\Sprites\kenney_physics-assets\Stone_elements\elementStone000.bmp)", 1, 1);
+	else assetManager->AddSprite("stone-triangle", R"(.\Assets\Sprites\kenney_physics-assets\Stone_elements\elementStone003.bmp)", 1, 1);
+	if (Random::Int(0, 1)) assetManager->AddSprite("stone-square", R"(.\Assets\Sprites\kenney_physics-assets\Stone_elements\elementStone011.bmp)", 1, 1);
+	else assetManager->AddSprite("stone-square", R"(.\Assets\Sprites\kenney_physics-assets\Stone_elements\elementStone027.bmp)", 1, 1);
+	if (Random::Int(0, 1)) assetManager->AddSprite("stone-rectangle", R"(.\Assets\Sprites\kenney_physics-assets\Stone_elements\elementStone012.bmp)", 1, 1);
+	else assetManager->AddSprite("stone-rectangle", R"(.\Assets\Sprites\kenney_physics-assets\Stone_elements\elementStone028.bmp)", 1, 1);
+
+	// Random shape
+	const auto shape = static_cast<ShapeType>(Random::Int(0, 2));
+	// Random material 
+	const int material = Random::Int(0, 3);
+	const float spriteHeight = assetManager->GetSpriteHeight("stone-square");
+
+	switch (material)
 	{
-		return;
+		case 0:
+			SpawnStoneShape(coordinator, assetManager, Vector2(terrainPoint.x, terrainPoint.y + spriteHeight), shape);
+			break;
+		case 1:
+			SpawnWoodenShape(coordinator, assetManager, Vector2(terrainPoint.x, terrainPoint.y + spriteHeight), shape);
+			break;
+		case 2:
+			SpawnGlassShape(coordinator, assetManager, Vector2(terrainPoint.x, terrainPoint.y + spriteHeight), shape);
+			break;
+		case 3:
+			SpawnExplosiveShape(coordinator, assetManager, Vector2(terrainPoint.x, terrainPoint.y + spriteHeight), shape);
+			break;
+		default:;
 	}
+}
 
-	// The terrainVertices are from left to right, but we need a polygon ordered anti-clockwise starting from bottom left
-	std::vector<Vector2> polygonVertices;
-	polygonVertices.reserve(terrainVertices.size() + 2); // +2 start and end vertex.
+void PCG::SpawnExplosiveShape(const std::unique_ptr<Coordinator>& coordinator,
+	const std::unique_ptr<AssetManager>& assetManager, Vector2 spawnPosition, ShapeType shapeType)
+{
+	// Vector2 spawnPosition = {terrainPoint.x, terrainPoint.y + 10.f };
 
-	polygonVertices.emplace_back(terrainVertices.front().x, -600.f); // bottom left
-	polygonVertices.emplace_back(terrainVertices.back().x, -600.f); // bottom right
-	for (auto it = terrainVertices.rbegin(); it != terrainVertices.rend(); ++it)
+	// Just for triangle sprites
+	const float spriteWidth = assetManager->GetSpriteWidth("exploding-triangle") / 2.f; // Since scaled down by half;
+	const float spriteHeight = assetManager->GetSpriteHeight("exploding-triangle") / 2.f;
+	std::vector<Vector2> polygonVertices = {
+		Vector2(-(spriteWidth / 2.f),  -(spriteHeight / 2.f)), //bottom left
+		Vector2((spriteWidth / 2.f),  -(spriteHeight / 2.f)), // bottom right
+		Vector2(0.f, (spriteHeight / 2.f)) // Top
+	};
+
+	Entity entity = coordinator->CreateEntity();
+
+	switch (shapeType)
 	{
-		polygonVertices.push_back(*it);
+		case ShapeType::TRIANGLE:
+			entity.AddComponent<SpriteComponent>("exploding-triangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+			entity.AddComponent<PolygonColliderComponent>(polygonVertices);
+			break;
+		case ShapeType::SQUARE:
+			entity.AddComponent<SpriteComponent>("exploding-square", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("exploding-square") / 2, assetManager->GetSpriteHeight("exploding-square") / 2);
+			break;
+		case ShapeType::RECTANGLE:
+			entity.AddComponent<SpriteComponent>("exploding-rectangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("exploding-rectangle") / 2, assetManager->GetSpriteHeight("exploding-rectangle") / 2);
+			break;
 	}
+	entity.Group("Explosive");
+}
 
-	// Convert world-space terrain vertices to screen-space
-	std::vector<Vector2> screenVertices;
-	screenVertices.reserve(polygonVertices.size());
-	for (const auto& vertex : polygonVertices)
+void PCG::SpawnGlassShape(const std::unique_ptr<Coordinator>& coordinator,
+	const std::unique_ptr<AssetManager>& assetManager, Vector2 spawnPosition, ShapeType shapeType)
+{
+	// Just for triangle sprites
+	const float spriteWidth = assetManager->GetSpriteWidth("exploding-triangle") / 2.f; // Since scaled down by half;
+	const float spriteHeight = assetManager->GetSpriteHeight("exploding-triangle") / 2.f;
+	std::vector<Vector2> polygonVertices = {
+		Vector2(-(spriteWidth / 2.f),  -(spriteHeight / 2.f)), //bottom left
+		Vector2((spriteWidth / 2.f),  -(spriteHeight / 2.f)), // bottom right
+		Vector2(0.f, (spriteHeight / 2.f)) // Top
+	};
+
+	Entity entity = coordinator->CreateEntity();
+
+	switch (shapeType)
 	{
-		screenVertices.push_back(Camera::WorldToScreen(vertex, camera));
-		Graphics::DrawCircle(Camera::WorldToScreen(vertex, camera), 2.f, 4, Color(Colors::RED));
+		case ShapeType::TRIANGLE:
+			entity.AddComponent<SpriteComponent>("glass-triangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+			entity.AddComponent<PolygonColliderComponent>(polygonVertices);
+			break;
+		case ShapeType::SQUARE:
+			entity.AddComponent<SpriteComponent>("glass-square", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("glass-square") / 2, assetManager->GetSpriteHeight("glass-square") / 2);
+			break;
+		case ShapeType::RECTANGLE:
+			entity.AddComponent<SpriteComponent>("glass-rectangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("glass-rectangle") / 2, assetManager->GetSpriteHeight("glass-rectangle") / 2);
+			break;
 	}
+	entity.Group("Glass");
+}
 
-	// Draw the filled polygon representing the terrain
-	Graphics::DrawFillPolygon(screenVertices, color);
+void PCG::SpawnWoodenShape(const std::unique_ptr<Coordinator>& coordinator,
+	const std::unique_ptr<AssetManager>& assetManager, Vector2 spawnPosition, ShapeType shapeType)
+{
+	// Just for triangle sprites
+	const float spriteWidth = assetManager->GetSpriteWidth("wood-triangle") / 2.f; // Since scaled down by half;
+	const float spriteHeight = assetManager->GetSpriteHeight("wood-triangle") / 2.f;
+	std::vector<Vector2> polygonVertices = {
+		Vector2(-(spriteWidth / 2.f),  -(spriteHeight / 2.f)), //bottom left
+		Vector2((spriteWidth / 2.f),  -(spriteHeight / 2.f)), // bottom right
+		Vector2(0.f, (spriteHeight / 2.f)) // Top
+	};
+
+	Entity entity = coordinator->CreateEntity();
+
+	switch (shapeType)
+	{
+		case ShapeType::TRIANGLE:
+			entity.AddComponent<SpriteComponent>("wood-triangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+			entity.AddComponent<PolygonColliderComponent>(polygonVertices);
+			break;
+		case ShapeType::SQUARE:
+			entity.AddComponent<SpriteComponent>("wood-square", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("wood-square") / 2, assetManager->GetSpriteHeight("wood-square") / 2);
+			break;
+		case ShapeType::RECTANGLE:
+			entity.AddComponent<SpriteComponent>("wood-rectangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("wood-rectangle") / 2, assetManager->GetSpriteHeight("wood-rectangle") / 2);
+			break;
+	}
+	entity.Group("Wood");
+}
+
+void PCG::SpawnStoneShape(const std::unique_ptr<Coordinator>& coordinator,
+	const std::unique_ptr<AssetManager>& assetManager, Vector2 spawnPosition, ShapeType shapeType)
+{
+	const float spriteWidth = assetManager->GetSpriteWidth("stone-triangle") / 2.f; // Since scaled down by half;
+	const float spriteHeight = assetManager->GetSpriteHeight("stone-triangle") / 2.f;
+	std::vector<Vector2> polygonVertices = {
+		Vector2(-(spriteWidth / 2.f),  -(spriteHeight / 2.f)), //bottom left
+		Vector2((spriteWidth / 2.f),  -(spriteHeight / 2.f)), // bottom right
+		Vector2(0.f, (spriteHeight / 2.f)) // Top
+	};
+
+	Entity entity = coordinator->CreateEntity();
+
+	switch (shapeType)
+	{
+		case ShapeType::TRIANGLE:
+			entity.AddComponent<SpriteComponent>("stone-triangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
+			entity.AddComponent<PolygonColliderComponent>(polygonVertices);
+			break;
+		case ShapeType::SQUARE:
+			entity.AddComponent<SpriteComponent>("stone-square", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("stone-square") / 2, assetManager->GetSpriteHeight("stone-square") / 2);
+			break;
+		case ShapeType::RECTANGLE:
+			entity.AddComponent<SpriteComponent>("stone-rectangle", 3);
+			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("stone-rectangle") / 2, assetManager->GetSpriteHeight("stone-rectangle") / 2);
+			break;
+	}
+	entity.Group("Stone");
 }

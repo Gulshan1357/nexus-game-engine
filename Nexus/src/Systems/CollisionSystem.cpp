@@ -16,10 +16,16 @@
 #include "src/Physics/PhysicsEngine.h"
 
 
-bool CollisionSystem::ShouldIgnoreCollision(Entity a, Entity b)
+bool CollisionSystem::ShouldIgnoreCollision(const Entity a, const Entity b)
 {
 	// Define groups and tags to ignore collisions between
-	const std::vector<std::string> groupsToIgnore = { "Terrain", "LaserShooter", "StaticKillers", "Anchor", "Spring" };
+	const std::vector<std::string> groupsToIgnore = {
+		"Terrain",
+		"LaserShooter",
+		"StaticKillers",
+		"Anchor",
+		"Spring"
+	};
 	const std::vector<std::string> tagsToIgnore = { "Hole" };
 
 	// Check if both entities belong to groups that should ignore collision
@@ -57,7 +63,7 @@ bool CollisionSystem::ShouldIgnoreCollision(Entity a, Entity b)
 
 void CollisionSystem::Update(const std::shared_ptr<EventManager>& eventManager) const
 {
-	auto& entities = GetSystemEntities();
+	auto entities = GetSystemEntities();
 
 	// Loop all entities that the system is interested in
 	for (auto i = entities.begin(); i != entities.end(); ++i)

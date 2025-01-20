@@ -18,10 +18,14 @@
 
 #include "../Games/GameState.h"
 #include "Games/Score.h"
+#include "src/AssetManagement/AssetManager.h"
+#include "src/Components/AnimationComponent.h"
+#include "src/Components/SpriteComponent.h"
+#include "src/Components/TransformComponent.h"
 #include "src/Utils/Logger.h"
 
-GameplaySystem::GameplaySystem(std::shared_ptr<AudioManager> audioManager, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
-	: m_audioManager(std::move(audioManager)), m_gameState(std::move(gameState)), m_score(std::move(score))
+GameplaySystem::GameplaySystem(std::unique_ptr<Coordinator>& coordinator, std::unique_ptr<AssetManager>& assetManager, std::shared_ptr<AudioManager> audioManager, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
+	: m_coordinator(coordinator.get()), m_assetManager(assetManager.get()), m_audioManager(std::move(audioManager)), m_gameState(std::move(gameState)), m_score(std::move(score))
 {
 	RequireComponent<PlayerComponent>();
 	m_gameStartTime = std::chrono::steady_clock::now();
@@ -93,6 +97,30 @@ void GameplaySystem::onCollision(const CollisionEvent& event)
 			m_ballInHole = false;
 		}
 	}
+
+	// Handle Explosives
+	if (otherEntity.BelongsToGroup("Explosive"))
+	{
+		// Get the location of the entity
+		// Delete this entity
+		// Create a new entity, group it as ToBeDeleted, Add exploding sprite animation(non looping)
+		// Create an entity refrence vector, push this entity there.
+		// In update check the entities inside vector, if the animation of any reached the end if yes then delete
+		const Vector2 position = otherEntity.GetComponent<TransformComponent>().position;
+		otherEntity.Kill();
+
+		m_assetManager->AddSprite("explosion", R"(.\Assets\Sprites\Obstacles\explosion4.bmp)", 1, 1);
+
+		Entity explosionEntity = m_coordinator->CreateEntity();
+		explosionEntity.AddComponent<SpriteComponent>("explosion", 3);
+		explosionEntity.AddComponent<TransformComponent>(position, Vector2(0.5f, 0.5f));
+		explosionEntity.Group("ToBeDeleted");
+		ExplosionDetail explosionDetail = { explosionEntity, std::chrono::steady_clock::now() };
+		m_explosionDetails.emplace_back(explosionDetail);
+
+		Vector2 explosionKickBackDir = playerEntity.GetComponent<TransformComponent>().position - otherEntity.GetComponent<TransformComponent>().position;
+		playerEntity.GetComponent<RigidBodyComponent>().AddForce(explosionKickBackDir * m_explosionStrength);
+	}
 }
 
 void GameplaySystem::Update()
@@ -113,6 +141,17 @@ void GameplaySystem::Update()
 	if (GetSystemEntities().empty())
 	{
 		GameOver();
+	}
+
+	// Remove the explosion sprites
+	for (auto& [entity, explodedAt] : m_explosionDetails)
+	{
+		const auto timeSinceExplosion = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - explodedAt);
+
+		if (timeSinceExplosion > m_explosionTimeout)
+		{
+			m_coordinator->KillEntity(entity);
+		}
 	}
 }
 

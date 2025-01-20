@@ -107,7 +107,7 @@ void GalaxyGolf::Initialize()
 	m_coordinator->AddSystem<ParticleEffectSystem>();
 	m_coordinator->AddSystem<CameraFollowSystem>();
 	m_coordinator->AddSystem<RenderHUDSystem>();
-	m_coordinator->AddSystem<GameplaySystem>(m_audioManager, m_gameState, m_score);
+	m_coordinator->AddSystem<GameplaySystem>(m_coordinator, m_assetManager, m_audioManager, m_gameState, m_score);
 	m_coordinator->AddSystem<PlayerSystem>();
 	m_coordinator->AddSystem<TrajectorySystem>();
 
@@ -194,6 +194,8 @@ void GalaxyGolf::LoadLevel(int level)
 
 	// Vector2 terrainPoint = {100.f, 300.f};
 	// Add sprites for the laser and laser shooter
+
+
 
 }
 
@@ -307,39 +309,3 @@ void GalaxyGolf::Shutdown()
 {
 	Logger::Warn("GalaxyGolf::Shutdown()");
 }
-
-// void GalaxyGolf::SpawnShape(Vector2 position, ColliderType colliderType) const
-// {
-// 	// Polygon local vertices for red-ball sprite
-// 	std::vector<Vector2> polygonVertices;
-// 	// Going clockwise from top left
-// 	polygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-// 	polygonVertices.emplace_back(0.0f, -(m_assetManager->GetSpriteHeight("red-ball")));
-// 	polygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), -(m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-// 	polygonVertices.emplace_back((m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-// 	polygonVertices.emplace_back(0.0f, (m_assetManager->GetSpriteHeight("red-ball")));
-// 	polygonVertices.emplace_back(-(m_assetManager->GetSpriteWidth("red-ball") / 2.f), (m_assetManager->GetSpriteHeight("red-ball") / 2.f));
-//
-// 	Entity shape = m_coordinator->CreateEntity();
-// 	shape.AddComponent<SpriteComponent>("golf-ball", 3);
-// 	shape.AddComponent<TransformComponent>(position, Vector2(1.f, 1.f));
-// 	shape.AddComponent<RigidBodyComponent>(Vector2(-00.0f, 1.0f), Vector2(), false, 5.0f, 0.0f, 0.0f, 0.3f, 0.1f);
-// 	shape.Tag("SpawnItem");
-// 	switch (colliderType)
-// 	{
-// 		case ColliderType::Box:
-// 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-// 			shape.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("red-ball"), m_assetManager->GetSpriteHeight("red-ball") * 3, Vector2());
-// 			break;
-// 		case ColliderType::Polygon:
-// 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
-// 			shape.AddComponent<PolygonColliderComponent>(polygonVertices);
-// 			break;
-// 		case ColliderType::Circle:
-// 			shape.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-// 			shape.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("red-ball") / 2);
-// 			break;
-// 	}
-// 	// We need to calculate the moment of Inertia, inverse mass etc. for the spawned entities
-// 	PhysicsEngine::InitializeEntityPhysics(shape);
-// }
