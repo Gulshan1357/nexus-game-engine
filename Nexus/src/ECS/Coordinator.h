@@ -62,7 +62,7 @@ public:
 	template <typename TComponent>
 	[[nodiscard]] bool HasComponent(Entity entity) const;
 	template <typename TComponent>
-	TComponent& GetComponent(Entity entity) const;
+	TComponent& GetComponent(Entity entity);
 
 	// System management
 	template <typename TSystem, typename... TArgs>
@@ -234,8 +234,8 @@ bool Coordinator::HasComponent(const Entity entity) const
 	return m_entityComponentSignatures[entityId].test(componentId);
 }
 
-template<typename TComponent>
-auto Coordinator::GetComponent(Entity entity) const -> TComponent&
+template <typename TComponent>
+TComponent& Coordinator::GetComponent(Entity entity)
 {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
