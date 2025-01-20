@@ -7,6 +7,7 @@
 #include "src/Physics/PhysicsEngine.h"
 #include "src/Physics/Constants.h"
 #include "../Games/GalaxyGolf/WorldSettings.h"
+#include "src/Events/CollisionEvent.h"
 
 class PhysicsSystem : public System
 {

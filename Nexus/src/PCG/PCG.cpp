@@ -13,10 +13,12 @@
 #include "src/Components/SpriteComponent.h"
 #include "src/Components/TransformComponent.h"
 #include "src/Components/BoxColliderComponent.h"
+#include "src/Components/CircleColliderComponent.h"
 
 #include "src/Physics/Camera.h"
 #include "src/Utils/Color.h"
 #include "src/Utils/GraphicsUtils.h"
+#include "src/Utils/Random.h"
 
 std::vector<Vector2> PCG::GenerateLevel(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, const PCGConfig pcgConfig)
 {
@@ -64,6 +66,7 @@ std::vector<Vector2> PCG::GenerateLevel(const std::unique_ptr<Coordinator>& coor
 	// From this point don't modify terrainVertices these are used to render ground color
 
 	// TODO: obstacles
+	AddObstacles(coordinator, assetManager, terrainVertices);
 
 	return terrainVertices;
 }
@@ -129,6 +132,82 @@ void PCG::AddTerrain(const std::unique_ptr<Coordinator>& coordinator, const std:
 		// terrainConnector.AddComponent<CircleColliderComponent>(1.f);
 		// terrainConnector.Group("Terrain");
 	}
+}
+
+void PCG::AddObstacles(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, const std::vector<Vector2>& terrainVertices)
+{
+	// Skip first and last vertices to avoid edges
+	for (size_t i = 1; i < terrainVertices.size() - 1; i++)
+	{
+		// Random chance to spawn an obstacle (30% chance)
+		if (Random::Float(0.0f, 1.0f) < 1.0f)
+		{
+			// Random obstacle type (1-3)
+			int obstacleType = Random::Int(1, 3);
+
+			// Spawn different obstacles based on random type
+			switch (obstacleType)
+			{
+				case 1:
+					SpawnLaser(coordinator, assetManager, terrainVertices[i], terrainVertices[i + 1]);
+					break;
+					// case 2:
+					// 	// AddObstacle2(position);
+					// 	break;
+					// case 3:
+					// 	// AddObstacle3(position);
+					// 	break;
+				default:;
+			}
+
+			i++;
+		}
+	}
+}
+
+void PCG::SpawnLaser(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager,
+	const Vector2 firstPoint, const Vector2 secondPoint)
+{
+	float angle = std::atan2(secondPoint.y - firstPoint.y, secondPoint.x - firstPoint.x);
+
+	// Add sprites for the laser and laser shooter
+	assetManager->AddSprite("laser", R"(.\Assets\Sprites\Obstacles\laser.bmp)", 1, 1);
+	assetManager->AddSprite("laser_shooter", R"(.\Assets\Sprites\Obstacles\laser_shooter.bmp)", 1, 1);
+
+	// Create the first laser shooter entity (bottom)
+	Entity shooter1 = coordinator->CreateEntity();
+	shooter1.AddComponent<SpriteComponent>("laser_shooter", 3);
+	shooter1.AddComponent<TransformComponent>(
+		firstPoint,
+		Vector2(1.f, 1.f), // Scale
+		angle // Rotation
+	);
+	shooter1.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	shooter1.AddComponent<CircleColliderComponent>(assetManager->GetSpriteHeight("laser_shooter") * 0.42f);
+	shooter1.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
+	shooter1.Group("LaserShooter");
+
+	// Create the laser entity
+	Entity laser = coordinator->CreateEntity();
+	float laserHeight = assetManager->GetSpriteHeight("laser");
+
+	Vector2 laserPosition = Vector2(
+		firstPoint.x - std::sin(angle) * (laserHeight / 1.7f),
+		firstPoint.y + std::cos(angle) * (laserHeight / 1.7f)
+	);
+
+	laser.AddComponent<SpriteComponent>("laser", 3);
+	laser.AddComponent<TransformComponent>(
+		laserPosition,
+		Vector2(1.f, 1.f),
+		angle
+	);
+	laser.AddComponent<RigidBodyComponent>(
+		Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f
+	);
+	laser.AddComponent<ColliderTypeComponent>(ColliderType::Box);
+	laser.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("laser"), assetManager->GetSpriteHeight("laser") * 0.9f);
+	laser.Group("StaticKillers");
 }
 
 void PCG::RenderTerrain(const Camera& camera, const std::vector<Vector2>& terrainVertices, const Color color)

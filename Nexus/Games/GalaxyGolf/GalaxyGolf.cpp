@@ -136,7 +136,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
 			m_worldSettings.groundColor = Color(Colors::GRAY);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 4, 0.5f, 0.7f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.5f, 0.7f });
 			break;
 		}
 
@@ -191,11 +191,6 @@ void GalaxyGolf::LoadLevel(int level)
 	Logger::Log("Golf ball id = " + std::to_string(golfBall.GetId()));
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
-
-
-	//
-	// AddObstacleLaser(Vector2(250.f, 45.f), true);
-
 }
 
 void GalaxyGolf::Update(float deltaTime)
@@ -306,69 +301,6 @@ void GalaxyGolf::Render()
 void GalaxyGolf::Shutdown()
 {
 	Logger::Warn("GalaxyGolf::Shutdown()");
-}
-
-
-
-void GalaxyGolf::AddObstacleLaser(Vector2 position, bool isHorizontal)
-{
-	// Add sprites for the laser and laser shooter
-	m_assetManager->AddSprite("laser", R"(.\Assets\Sprites\Obstacles\laser.bmp)", 1, 1);
-	m_assetManager->AddSprite("laser_shooter", R"(.\Assets\Sprites\Obstacles\laser_shooter.bmp)", 1, 1);
-
-	// Create the laser entity
-	Entity laser = m_coordinator->CreateEntity();
-	laser.AddComponent<SpriteComponent>("laser", 3);
-	laser.AddComponent<TransformComponent>(
-		position,
-		Vector2(1.f, 1.f),
-		isHorizontal ? PI * 0.5f : 0.0f
-	);
-	laser.AddComponent<RigidBodyComponent>(
-		Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f
-	);
-	laser.AddComponent<CircleColliderComponent>(
-		m_assetManager->GetSpriteWidth("laser") / 2.f,
-		Vector2(0.0f, m_assetManager->GetSpriteHeight("laser") / 1.5f)
-	);
-	laser.Tag("Laser");
-	laser.Group("Killers");
-	laser.AddComponent<ColliderTypeComponent>(ColliderType::Box);
-	if (isHorizontal) laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9f);
-	else laser.AddComponent<BoxColliderComponent>(m_assetManager->GetSpriteWidth("laser"), m_assetManager->GetSpriteHeight("laser") * 0.9f);
-	Logger::Log("Killers ball id = " + std::to_string(laser.GetId()));
-
-	// Create the first laser shooter entity (top or left)
-	Entity shooter1 = m_coordinator->CreateEntity();
-	shooter1.AddComponent<SpriteComponent>("laser_shooter", 3);
-	shooter1.AddComponent<TransformComponent>(
-		isHorizontal
-		? Vector2(position.x - m_assetManager->GetSpriteHeight("laser") * 0.6f, position.y)
-		: Vector2(position.x, position.y - m_assetManager->GetSpriteHeight("laser") * 0.6f),
-		Vector2(1.f, 1.f), // Scale
-		isHorizontal ? -PI * 0.5f : 0 // Rotation
-	);
-	shooter1.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	shooter1.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42f);
-	shooter1.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
-
-	shooter1.Tag("LaserShooter");
-
-	// Create the second laser shooter entity (bottom or right)
-	Entity shooter2 = m_coordinator->CreateEntity();
-	shooter2.AddComponent<SpriteComponent>("laser_shooter", 3);
-	shooter2.AddComponent<TransformComponent>(
-		isHorizontal
-		? Vector2(position.x + m_assetManager->GetSpriteHeight("laser") * 0.6f, position.y)
-		: Vector2(position.x, position.y + m_assetManager->GetSpriteHeight("laser") * 0.6f),
-		Vector2(1.f, 1.f),
-		static_cast<float>(isHorizontal ? PI * 0.5 : PI) // Rotation
-	);
-	shooter2.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	shooter2.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteHeight("laser_shooter") * 0.42f);
-	shooter2.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 0.f, 0.f, 0.0f, 0.1f, 0.1f);
-	shooter2.Tag("LaserShooter");
-
 }
 
 // void GalaxyGolf::SpawnShape(Vector2 position, ColliderType colliderType) const

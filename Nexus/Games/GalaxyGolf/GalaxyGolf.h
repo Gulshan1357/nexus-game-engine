@@ -57,8 +57,4 @@ private:
 	// Level settings
 	WorldSettings m_worldSettings;
 	std::vector<Vector2> m_terrainVertices;
-
-	// Obstacle
-	void AddObstacleLaser(Vector2 position, bool isHorizontal = true);
-	// void SpawnShape(Vector2 position, ColliderType colliderType) const;
 };

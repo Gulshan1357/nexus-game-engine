@@ -295,6 +295,7 @@
     <ClCompile Include="src\PCG\TerrainGenerator.cpp" />
     <ClCompile Include="src\Physics\Camera.cpp" />
     <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
+    <ClCompile Include="src\Systems\CollisionSystem.cpp" />
     <ClCompile Include="src\Systems\ConstraintSystem.cpp" />
     <ClCompile Include="src\Systems\GameplaySystem.cpp" />
     <ClCompile Include="src\Systems\ParticleEffectSystem.cpp" />

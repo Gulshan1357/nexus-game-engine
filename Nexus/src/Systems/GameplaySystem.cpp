@@ -68,7 +68,7 @@ void GameplaySystem::onCollision(const CollisionEvent& event)
 	const auto& otherEntity = isAPlayer ? event.b : event.a;
 
 	// Handle Killers
-	if (otherEntity.BelongsToGroup("Killers"))
+	if (otherEntity.BelongsToGroup("StaticKillers"))
 	{
 		playerEntity.Kill();
 		return;
