@@ -25,6 +25,9 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 4. **Sport Balls Pixel-art Pack**  
    - [Asset Link](https://beemaxstudio.itch.io/sport-balls-pixel-pack)
    - *For golf ball*  
+4. **Pixel Explosions Sound Effect Pack [SFX]**  
+   - [Asset Link](https://jdsherbert.itch.io/pixel-explosions-sfx-pack)
+   - *For explosion sound* 
   
 
 ---

@@ -102,11 +102,12 @@ void PCG::RenderTerrain(const Camera& camera, const std::vector<Vector2>& terrai
 	for (const auto& vertex : polygonVertices)
 	{
 		screenVertices.push_back(Camera::WorldToScreen(vertex, camera));
-		Graphics::DrawCircle(Camera::WorldToScreen(vertex, camera), 2.f, 4, Color(Colors::RED));
 	}
 
 	// Draw the filled polygon representing the terrain
-	Graphics::DrawFillPolygon(screenVertices, color);
+	// Graphics::DrawFillPolygon(screenVertices, color);
+	Graphics::DrawFillFadingPolygon(screenVertices, color, Color(Colors::GRAY));
+
 }
 
 void PCG::SpawnHole(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, Vector2 position)
@@ -299,7 +300,7 @@ void PCG::SpawnConnectedBeads(const std::unique_ptr<Coordinator>& coordinator,
 	anchor.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 0.f, 0.f, 0.0f, 1.f, 0.7f);
 	anchor.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	anchor.AddComponent<CircleColliderComponent>(assetManager->GetSpriteWidth("star2") / 2);
-	anchor.Group("Anchor");
+	anchor.Group("TightAnchor");
 
 
 	Entity bead = coordinator->CreateEntity();
@@ -415,14 +416,14 @@ void PCG::SpawnExplosiveShape(const std::unique_ptr<Coordinator>& coordinator,
 		case ShapeType::SQUARE:
 			entity.AddComponent<SpriteComponent>("exploding-square", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, .5f, 0.7f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("exploding-square") / 2, assetManager->GetSpriteHeight("exploding-square") / 2);
 			break;
 		case ShapeType::RECTANGLE:
 			entity.AddComponent<SpriteComponent>("exploding-rectangle", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, .5f, 0.7f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("exploding-rectangle") / 2, assetManager->GetSpriteHeight("exploding-rectangle") / 2);
 			break;
@@ -449,21 +450,21 @@ void PCG::SpawnGlassShape(const std::unique_ptr<Coordinator>& coordinator,
 		case ShapeType::TRIANGLE:
 			entity.AddComponent<SpriteComponent>("glass-triangle", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 8.f, 0.1f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
 			entity.AddComponent<PolygonColliderComponent>(polygonVertices);
 			break;
 		case ShapeType::SQUARE:
 			entity.AddComponent<SpriteComponent>("glass-square", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 8.f, 0.1f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("glass-square") / 2, assetManager->GetSpriteHeight("glass-square") / 2);
 			break;
 		case ShapeType::RECTANGLE:
 			entity.AddComponent<SpriteComponent>("glass-rectangle", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 8.f, 0.1f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("glass-rectangle") / 2, assetManager->GetSpriteHeight("glass-rectangle") / 2);
 			break;
@@ -490,21 +491,21 @@ void PCG::SpawnWoodenShape(const std::unique_ptr<Coordinator>& coordinator,
 		case ShapeType::TRIANGLE:
 			entity.AddComponent<SpriteComponent>("wood-triangle", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 15.f, 0.f, 0.0f, 3.f, 0.7f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
 			entity.AddComponent<PolygonColliderComponent>(polygonVertices);
 			break;
 		case ShapeType::SQUARE:
 			entity.AddComponent<SpriteComponent>("wood-square", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 15.f, 0.f, 0.0f, 3.f, 0.7f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("wood-square") / 2, assetManager->GetSpriteHeight("wood-square") / 2);
 			break;
 		case ShapeType::RECTANGLE:
 			entity.AddComponent<SpriteComponent>("wood-rectangle", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 15.f, 0.f, 0.0f, 3.f, 0.7f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("wood-rectangle") / 2, assetManager->GetSpriteHeight("wood-rectangle") / 2);
 			break;
@@ -530,21 +531,21 @@ void PCG::SpawnStoneShape(const std::unique_ptr<Coordinator>& coordinator,
 		case ShapeType::TRIANGLE:
 			entity.AddComponent<SpriteComponent>("stone-triangle", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 0.2f, 0.9f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Polygon);
 			entity.AddComponent<PolygonColliderComponent>(polygonVertices);
 			break;
 		case ShapeType::SQUARE:
 			entity.AddComponent<SpriteComponent>("stone-square", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 0.2f, 0.9f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("stone-square") / 2, assetManager->GetSpriteHeight("stone-square") / 2);
 			break;
 		case ShapeType::RECTANGLE:
 			entity.AddComponent<SpriteComponent>("stone-rectangle", 3);
 			entity.AddComponent<TransformComponent>(spawnPosition, Vector2(.5f, .5f));
-			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 1.f, 0.7f);
+			entity.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 50.f, 0.f, 0.0f, 0.2f, 0.9f);
 			entity.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 			entity.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("stone-rectangle") / 2, assetManager->GetSpriteHeight("stone-rectangle") / 2);
 			break;

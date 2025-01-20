@@ -6,6 +6,7 @@
 
 #include "Vector2.h"
 #include "Color.h"
+#include "Math.h"
 
 namespace Graphics
 {
@@ -206,5 +207,83 @@ namespace Graphics
 
 		// Rectangle outline
 		DrawPolygon(vertices, color);
+	}
+
+	//-------------------------------------------------------------------------------------------
+	// Draw a filled polygon based on the vertices(vector<Vector2>) with fading color
+	// Color values are in the range 0.0f to 1.0f. Default color is white
+	//-------------------------------------------------------------------------------------------
+	inline void DrawFillFadingPolygon(const std::vector<Vector2>& vertices, const Color& startColor, const Color& endColor)
+	{
+		if (vertices.size() < 3) return;
+
+		// Calculate the bounding box of the polygon
+		float minY = vertices[0].y, maxY = vertices[0].y;
+		float minX = vertices[0].x, maxX = vertices[0].x;
+
+		for (const auto& vertex : vertices)
+		{
+			minY = (((minY) < (vertex.y)) ? (minY) : (vertex.y));
+			maxY = (((maxY) > (vertex.y)) ? (maxY) : (vertex.y));
+			minX = (((minX) < (vertex.x)) ? (minX) : (vertex.x));
+			maxX = (((maxX) > (vertex.x)) ? (maxX) : (vertex.x));
+		}
+
+		// Calculate total height for color interpolation
+		const float totalHeight = maxY - minY;
+
+		// Iterate through each y-coordinate in the bounding box
+		const int startY = static_cast<int>(minY);
+		const int endY = static_cast<int>(maxY);
+
+		std::vector<float> intersections;
+		intersections.reserve(vertices.size());
+
+		for (int y = startY; y <= endY; ++y)
+		{
+			const float yCoordinate = static_cast<float>(y);
+			intersections.clear();
+
+			// Find intersections of the polygon's edges with the current y-coordinate
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				const Vector2& v1 = vertices[i];
+				const Vector2& v2 = vertices[(i + 1) % vertices.size()];
+
+				// Skip horizontal edges
+				if (std::abs(v1.y - v2.y) < FLT_EPSILON) continue;
+
+				// Check if the current y-coordinate intersects the edge
+				if ((yCoordinate >= v1.y && yCoordinate <= v2.y) || (yCoordinate >= v2.y && yCoordinate <= v1.y))
+				{
+					float t = (yCoordinate - v1.y) / (v2.y - v1.y);
+					float x = v1.x + t * (v2.x - v1.x);
+					intersections.push_back(x);
+				}
+			}
+
+			// Sort intersections by x-coordinate
+			std::sort(intersections.begin(), intersections.end());
+
+			if (intersections.size() >= 2)  // Add this check
+			{
+				// Calculate lerp factor (0.0 to 1.0) based on y position
+				float lerpFactor = 1.0f - ((yCoordinate - minY) / totalHeight);
+
+				// Get interpolated color using Math::Lerp
+				Color interpolatedColor = Math::Lerp(startColor, endColor, lerpFactor);
+
+				// Draw horizontal lines between pairs of intersections
+				for (size_t i = 0; i < intersections.size() - 1; i += 2)
+				{
+					Vector2 left(intersections[i], yCoordinate);
+					Vector2 right(intersections[i + 1], yCoordinate);
+					DrawLine(left, right, interpolatedColor);
+				}
+			}
+		}
+
+		// Polygon outline
+		DrawPolygon(vertices, startColor);
 	}
 }

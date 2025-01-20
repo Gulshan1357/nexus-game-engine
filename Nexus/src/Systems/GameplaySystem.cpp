@@ -4,9 +4,10 @@
 #include <functional>
 #include <utility>
 
+#include "PhysicsSystem.h"
 #include "src/ECS/Coordinator.h"
 #include "src/ECS/Entity.h"
-
+#include "src/AssetManagement/AssetManager.h"
 #include "src/EventManagement/EventManager.h"
 #include "src/Events/CollisionEvent.h"
 #include "src/Events/LaunchBallEvent.h"
@@ -15,13 +16,15 @@
 
 #include "src/Components/PlayerComponent.h"
 #include "src/Components/RigidBodyComponent.h"
+#include "src/Components/AnimationComponent.h"
+#include "src/Components/ColliderTypeComponent.h"
+#include "src/Components/CircleColliderComponent.h"
+#include "src/Components/SpriteComponent.h"
+#include "src/Components/TransformComponent.h"
 
 #include "../Games/GameState.h"
 #include "Games/Score.h"
-#include "src/AssetManagement/AssetManager.h"
-#include "src/Components/AnimationComponent.h"
-#include "src/Components/SpriteComponent.h"
-#include "src/Components/TransformComponent.h"
+
 #include "src/Utils/Logger.h"
 
 GameplaySystem::GameplaySystem(std::unique_ptr<Coordinator>& coordinator, std::unique_ptr<AssetManager>& assetManager, std::shared_ptr<AudioManager> audioManager, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
@@ -120,7 +123,19 @@ void GameplaySystem::onCollision(const CollisionEvent& event)
 
 		Vector2 explosionKickBackDir = playerEntity.GetComponent<TransformComponent>().position - otherEntity.GetComponent<TransformComponent>().position;
 		playerEntity.GetComponent<RigidBodyComponent>().AddForce(explosionKickBackDir * m_explosionStrength);
+
+		if (!m_audioManager->IsAudioPlaying("explosion"))	m_audioManager->PlayAudio("explosion", false);
 	}
+
+	// if (otherEntity.BelongsToGroup("Wood"))
+	// {
+	// 	if (!m_audioManager->IsAudioPlaying("wood-impact")) m_audioManager->PlayAudio("wood-impact", false);
+	// }
+	//
+	// if (otherEntity.BelongsToGroup("Stone"))
+	// {
+	// 	if (!m_audioManager->IsAudioPlaying("stone-impact")) m_audioManager->PlayAudio("stone-impact", false);
+	// }
 }
 
 void GameplaySystem::Update()

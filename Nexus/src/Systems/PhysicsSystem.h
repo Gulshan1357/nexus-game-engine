@@ -3,12 +3,14 @@
 #include "src/ECS/System.h"
 
 #include "src/Components/RigidbodyComponent.h"
-
+#include "src/Components/TransformComponent.h"
+#include "src/EventManagement/EventManager.h"
 #include "src/Physics/PhysicsEngine.h"
 #include "src/Physics/Constants.h"
 #include "../Games/GalaxyGolf/WorldSettings.h"
 #include "src/Events/CollisionEvent.h"
 #include "src/Utils/Random.h"
+#include "src/Utils/Logger.h"
 
 class PhysicsSystem : public System
 {
@@ -140,6 +142,26 @@ public:
 
 				constexpr float springForceStrength = 150.f;
 				const float restLength = Random::Float(100.f, 300.f);
+
+				// Adding spring force
+				Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, restLength, springForceStrength);
+				connectedEntityRigidBody.AddForce(springForce);
+				rigidBody.AddForce(-springForce);
+			}
+		}
+		if (entity.BelongsToGroup("TightAnchor") || entity.BelongsToGroup("Spring"))
+		{
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
+
+			// Adding forces to connected spring entities
+			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
+			{
+				auto& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
+				auto& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
+
+				constexpr float springForceStrength = 150.f;
+				constexpr float restLength = 50.f;
 
 				// Adding spring force
 				Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, restLength, springForceStrength);

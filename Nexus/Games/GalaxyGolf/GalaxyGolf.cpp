@@ -125,6 +125,9 @@ void GalaxyGolf::LoadLevel(int level)
 {
 	// Sounds
 	m_audioManager->AddAudio("golf_swing", R"(.\Assets\Audio\golf_swing.wav)");
+	m_audioManager->AddAudio("explosion", R"(.\Assets\Audio\Explosion.wav)");
+	m_audioManager->AddAudio("wood-impact", R"(.\Assets\Audio\Wood_crash.wav)");
+	m_audioManager->AddAudio("stone-impact", R"(.\Assets\Audio\stone_impact.wav)");
 
 	// Configure world settings
 	switch (m_worldType)
@@ -135,7 +138,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.gravity = -9.8f;
 			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
-			m_worldSettings.groundColor = Color(Colors::GRAY);
+			m_worldSettings.groundColor = Color(Colors::NEON_GREEN);
 			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.5f, 0.7f });
 			break;
 		}
@@ -143,20 +146,20 @@ void GalaxyGolf::LoadLevel(int level)
 		case WorldType::MARS:
 		{
 			Logger::Log("Mars selected!");
-			m_worldSettings.gravity = -9.0f;
+			m_worldSettings.gravity = -9.5f;
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
 			m_worldSettings.atmosphereDrag = 0.0005f;
-			m_worldSettings.groundColor = Color(Colors::RED);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.9f, 0.3f });
+			m_worldSettings.groundColor = Color(Colors::NEON_RED);
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.8f, 0.3f });
 			break;
 		}
 		case WorldType::SUPER_EARTH:
 		{
 			Logger::Log("Super Earth selected!");
-			m_worldSettings.gravity = -20.8f;
+			m_worldSettings.gravity = -15.8f;
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
-			m_worldSettings.groundColor = Color(Colors::DARK_GRAY);
+			m_worldSettings.groundColor = Color(Colors::NEON_BLUE);
 			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.9f, 0.1f });
 			break;
 		}
@@ -180,7 +183,7 @@ void GalaxyGolf::LoadLevel(int level)
 	Entity golfBall = m_coordinator->CreateEntity();
 	golfBall.AddComponent<SpriteComponent>("golf-ball", 3);
 	golfBall.AddComponent<TransformComponent>(Vector2(-100.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
-	golfBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 1.f, 0.7f);
+	golfBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 10.f, 0.f, 0.0f, 1.f, 0.7f);
 	golfBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
 	golfBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
 	golfBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
