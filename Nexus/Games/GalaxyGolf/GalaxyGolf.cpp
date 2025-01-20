@@ -147,7 +147,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
 			m_worldSettings.atmosphereDrag = 0.0005f;
 			m_worldSettings.groundColor = Color(Colors::RED);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 10, 0.9f, 0.3f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.9f, 0.3f });
 			break;
 		}
 		case WorldType::SUPER_EARTH:
@@ -157,7 +157,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
 			m_worldSettings.groundColor = Color(Colors::DARK_GRAY);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 10, 0.9f, 0.1f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.9f, 0.1f });
 			break;
 		}
 	}
@@ -191,6 +191,10 @@ void GalaxyGolf::LoadLevel(int level)
 	Logger::Log("Golf ball id = " + std::to_string(golfBall.GetId()));
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
+
+	// Vector2 terrainPoint = {100.f, 300.f};
+	// Add sprites for the laser and laser shooter
+
 }
 
 void GalaxyGolf::Update(float deltaTime)
@@ -292,8 +296,9 @@ void GalaxyGolf::Render()
 
 	if (m_isDebug)
 	{
-		m_coordinator->GetSystem<RenderDebugSystem>().Update(m_camera);
+		m_coordinator->GetSystem<RenderDebugSystem>().Render(m_camera);
 	}
+	m_coordinator->GetSystem<RenderDebugSystem>().RenderConnectedEntites(m_camera);
 
 	m_coordinator->GetSystem<RenderHUDSystem>().Update(m_camera, m_worldType, m_worldSettings, Color(Colors::WHITE));
 }

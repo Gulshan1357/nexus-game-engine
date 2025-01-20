@@ -9,7 +9,6 @@ class Coordinator;
 class PCG
 {
 public:
-
 	struct PCGConfig
 	{
 		float heightVariance = 700.f;
@@ -27,6 +26,8 @@ public:
 
 	// Obstacles
 	static void SpawnLaser(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, const Vector2 firstPoint, const Vector2 secondPoint);
+	static void SpawnPendulum(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, Vector2 terrainPoint);
+	static void SpawnConnectedBeads(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, Vector2 terrainPoint);
 
 	static void RenderTerrain(const Camera& camera, const std::vector<Vector2>& terrainVertices, Color color);
 };

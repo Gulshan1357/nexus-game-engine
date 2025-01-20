@@ -479,7 +479,7 @@ void TestApp::Render()
 
 	if (m_isDebug)
 	{
-		m_coordinator->GetSystem<RenderDebugSystem>().Update(m_camera);
+		m_coordinator->GetSystem<RenderDebugSystem>().Render(m_camera);
 	}
 }
 

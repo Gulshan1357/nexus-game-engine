@@ -22,11 +22,10 @@ public:
 		// RequireComponent<ColliderTypeComponent>();
 	}
 
-	void Update(const Camera& camera) const
+	void Render(const Camera& camera) const
 	{
 		for (auto entity : GetSystemEntities())
 		{
-			const auto& transform = entity.GetComponent<TransformComponent>();
 			if (entity.HasComponent<ColliderTypeComponent>())
 			{
 				auto& colliderType = entity.GetComponent<ColliderTypeComponent>();
@@ -65,7 +64,14 @@ public:
 				}
 				colliderType.contacts.clear();
 			}
+		}
+	}
 
+	void RenderConnectedEntites(const Camera& camera) const
+	{
+		for (auto entity : GetSystemEntities())
+		{
+			const auto& transform = entity.GetComponent<TransformComponent>();
 			// Debug lines for Spring relationship
 			for (auto connectedEntity : entity.GetEntitiesByRelationshipTag("Spring"))
 			{

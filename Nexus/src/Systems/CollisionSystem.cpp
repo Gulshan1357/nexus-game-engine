@@ -19,7 +19,7 @@
 bool CollisionSystem::ShouldIgnoreCollision(Entity a, Entity b)
 {
 	// Define groups and tags to ignore collisions between
-	const std::vector<std::string> groupsToIgnore = { "Terrain", "LaserShooter", "StaticKillers" };
+	const std::vector<std::string> groupsToIgnore = { "Terrain", "LaserShooter", "StaticKillers", "Anchor", "Spring" };
 	const std::vector<std::string> tagsToIgnore = { "Hole" };
 
 	// Check if both entities belong to groups that should ignore collision

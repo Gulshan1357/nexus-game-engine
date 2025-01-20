@@ -8,6 +8,7 @@
 #include "src/Physics/Constants.h"
 #include "../Games/GalaxyGolf/WorldSettings.h"
 #include "src/Events/CollisionEvent.h"
+#include "src/Utils/Random.h"
 
 class PhysicsSystem : public System
 {
@@ -58,27 +59,39 @@ public:
 			// auto& transform = entity.GetComponent<TransformComponent>();
 			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
 
-			if (!rigidBody.isKinematic)
+			// Adding weight force
+			Vector2 weight = Vector2(0.0f, (rigidBody.mass * worldSettings.gravity * Physics::PIXEL_PER_METER));
+			rigidBody.AddForce(weight);
+
+			// Adding wind force
+			Vector2 wind = Vector2(worldSettings.windSpeed, 0.0f);
+			rigidBody.AddForce(wind);
+
+			// Adding Drag force
+			Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, worldSettings.atmosphereDrag);
+			rigidBody.AddForce(drag);
+
+
+			AddSpringForceToConnectedEntities(entity);
+
+
+			if (entity.HasTag("GravityWell"))
 			{
-				// Adding weight force
-				Vector2 weight = Vector2(0.0f, (rigidBody.mass * worldSettings.gravity * Physics::PIXEL_PER_METER));
-				rigidBody.AddForce(weight);
+				for (auto& ball : entity.GetEntitiesByRelationshipTag("gravitational"))
+				{
+					PhysicsEngine::GenerateGravitationalForce(
+						rigidBody,
+						ball.GetComponent<RigidBodyComponent>(),
+						ball.GetComponent<TransformComponent>().position - entity.GetComponent<TransformComponent>().position,
+						1000,
+						50,
+						500
+					);
 
-				// Adding wind force
-				Vector2 wind = Vector2(worldSettings.windSpeed, 0.0f);
-				rigidBody.AddForce(wind);
-
-				// Adding Drag force
-				Vector2 drag = PhysicsEngine::GenerateDragForce(rigidBody, worldSettings.atmosphereDrag);
-				rigidBody.AddForce(drag);
-
-
-				// AddSpringForceToConnectedEntities(entity);
-
-				// HandleEdgeCollision(entity, transform, rigidBody);
-
-				PhysicsEngine::IntegrateForces(rigidBody, deltaTime);
+				}
 			}
+
+			PhysicsEngine::IntegrateForces(rigidBody, deltaTime);
 		}
 	}
 
@@ -125,8 +138,11 @@ public:
 				auto& connectedEntityTransform = connectedEntity.GetComponent<TransformComponent>();
 				auto& connectedEntityRigidBody = connectedEntity.GetComponent<RigidBodyComponent>();
 
-				// // Adding spring force
-				Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, 200, 1500);
+				constexpr float springForceStrength = 150.f;
+				const float restLength = Random::Float(100.f, 300.f);
+
+				// Adding spring force
+				Vector2 springForce = PhysicsEngine::GenerateSpringForce(connectedEntityTransform, transform, restLength, springForceStrength);
 				connectedEntityRigidBody.AddForce(springForce);
 				rigidBody.AddForce(-springForce);
 			}

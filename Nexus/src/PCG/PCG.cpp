@@ -14,6 +14,8 @@
 #include "src/Components/TransformComponent.h"
 #include "src/Components/BoxColliderComponent.h"
 #include "src/Components/CircleColliderComponent.h"
+#include "src/Components/ConstraintTypeComponent.h"
+#include "src/Components/JointConstraintComponent.h"
 
 #include "src/Physics/Camera.h"
 #include "src/Utils/Color.h"
@@ -39,26 +41,31 @@ std::vector<Vector2> PCG::GenerateLevel(const std::unique_ptr<Coordinator>& coor
 	std::vector<Vector2> terrainVertices;
 
 	// Elevated first point
-	terrainVertices.emplace_back(-600.f, 600.f);
+	terrainVertices.emplace_back(-1000.f, 600.f);
+
+	// Initial leveled ground
+	terrainVertices.emplace_back(-200.f, 0.f);
+	terrainVertices.emplace_back(-50.f, 0.f);
+
 	// PCG points
-	auto pcgPoints = generator.GenerateTerrain(-300.f, 0.f, terrainConfig);
+	auto pcgPoints = generator.GenerateTerrain(0.f, 0.f, terrainConfig);
 	terrainVertices.insert(terrainVertices.end(), pcgPoints.begin(), pcgPoints.end());
 
 	// Add a couple of points at the end so that the hole(goal) is on perfectly horizontal level
 	terrainVertices.emplace_back(terrainVertices.back().x + 50.f, terrainVertices.back().y);
-	terrainVertices.emplace_back(terrainVertices.back().x + 50.f, terrainVertices.back().y);
+	terrainVertices.emplace_back(terrainVertices.back().x + 300.f, terrainVertices.back().y);
 
 	// Create a dip for Hole
 	terrainVertices.emplace_back(terrainVertices.back().x + 20.f, terrainVertices.back().y - 25.f);
 	SpawnHole(coordinator, assetManager, { terrainVertices.back().x + 10.f,terrainVertices.back().y + 25.f });
 	terrainVertices.emplace_back(terrainVertices.back().x + 20.f, terrainVertices.back().y);
 
-	// Return to level and add some more points
+	// Final leveled ground
 	terrainVertices.emplace_back(terrainVertices.back().x + 20.f, terrainVertices.back().y + 25.f);
-	for (int i = 0; i < 5; i++) terrainVertices.emplace_back(terrainVertices.back().x + 50.f, terrainVertices.back().y);
+	terrainVertices.emplace_back(terrainVertices.back().x + 450.f, terrainVertices.back().y);
 
 	// Elevated last point
-	terrainVertices.emplace_back(terrainVertices.back().x + 300.f, terrainVertices.back().y + 600.f);
+	terrainVertices.emplace_back(terrainVertices.back().x + 800.f, terrainVertices.back().y + 600.f);
 
 	// Place colliders on ground surface
 	AddTerrain(coordinator, terrainVertices, pcgConfig.elasticity, pcgConfig.friction);
@@ -136,11 +143,14 @@ void PCG::AddTerrain(const std::unique_ptr<Coordinator>& coordinator, const std:
 
 void PCG::AddObstacles(const std::unique_ptr<Coordinator>& coordinator, const std::unique_ptr<AssetManager>& assetManager, const std::vector<Vector2>& terrainVertices)
 {
-	// Skip first and last vertices to avoid edges
-	for (size_t i = 1; i < terrainVertices.size() - 1; i++)
+	// Only spawn it once per map
+	bool isBeadsSpawned = false;
+
+	// Skip first and last couple of vertices to avoid ball spawn and the final hole
+	for (size_t i = 2; i < terrainVertices.size() - 6; i += 2)
 	{
 		// Random chance to spawn an obstacle (30% chance)
-		if (Random::Float(0.0f, 1.0f) < 1.0f)
+		if (Random::Float(0.0f, 1.0f) < .3f)
 		{
 			// Random obstacle type (1-3)
 			int obstacleType = Random::Int(1, 3);
@@ -151,16 +161,22 @@ void PCG::AddObstacles(const std::unique_ptr<Coordinator>& coordinator, const st
 				case 1:
 					SpawnLaser(coordinator, assetManager, terrainVertices[i], terrainVertices[i + 1]);
 					break;
-					// case 2:
-					// 	// AddObstacle2(position);
-					// 	break;
-					// case 3:
-					// 	// AddObstacle3(position);
-					// 	break;
+				case 2:
+
+					SpawnPendulum(coordinator, assetManager, terrainVertices[i]);
+
+					break;
+				case 3:
+				{
+					if (!isBeadsSpawned)
+					{
+						SpawnConnectedBeads(coordinator, assetManager, terrainVertices[i]);
+						isBeadsSpawned = true;
+					}
+					break;
+				}
 				default:;
 			}
-
-			i++;
 		}
 	}
 }
@@ -208,6 +224,83 @@ void PCG::SpawnLaser(const std::unique_ptr<Coordinator>& coordinator, const std:
 	laser.AddComponent<ColliderTypeComponent>(ColliderType::Box);
 	laser.AddComponent<BoxColliderComponent>(assetManager->GetSpriteWidth("laser"), assetManager->GetSpriteHeight("laser") * 0.9f);
 	laser.Group("StaticKillers");
+}
+
+void PCG::SpawnPendulum(const std::unique_ptr<Coordinator>& coordinator,
+	const std::unique_ptr<AssetManager>& assetManager, Vector2 terrainPoint)
+{
+	// Add sprites for the laser and laser shooter
+	assetManager->AddSprite("star", R"(.\Assets\Sprites\Obstacles\star_outline.bmp)", 1, 1);
+	assetManager->AddSprite("ball_blue", R"(.\Assets\Sprites\Obstacles\ball_blue.bmp)", 1, 1);
+
+	Entity anchor = coordinator->CreateEntity();
+	anchor.AddComponent<TransformComponent>(Vector2(terrainPoint.x, terrainPoint.y + 500.f), Vector2(1.0f, 1.0f));
+	anchor.AddComponent<SpriteComponent>("star", 3);
+	anchor.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 0.f, 0.f, 0.0f, 1.f, 0.7f);
+	anchor.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	anchor.AddComponent<CircleColliderComponent>(assetManager->GetSpriteWidth("star") / 2);
+	anchor.Group("Anchor");
+
+	Entity ball = coordinator->CreateEntity();
+	ball.AddComponent<TransformComponent>(Vector2(terrainPoint.x, terrainPoint.y + 100.f), Vector2(1.f, 1.0f));
+	ball.AddComponent<SpriteComponent>("ball_blue", 3);
+	ball.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 1.f, 0.7f);
+	ball.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	ball.AddComponent<CircleColliderComponent>(assetManager->GetSpriteWidth("ball_blue") / 2);
+	ball.Group("Spring");
+	anchor.AddRelationship(ball, "Spring");
+
+}
+
+void PCG::SpawnConnectedBeads(const std::unique_ptr<Coordinator>& coordinator,
+	const std::unique_ptr<AssetManager>& assetManager, Vector2 terrainPoint)
+{
+
+	assetManager->AddSprite("star2", R"(.\Assets\Sprites\Obstacles\star_outline.bmp)", 1, 1);
+	assetManager->AddSprite("ball_blue2", R"(.\Assets\Sprites\Obstacles\ball_blue.bmp)", 1, 1);
+
+	Entity anchor = coordinator->CreateEntity();
+	anchor.AddComponent<TransformComponent>(Vector2(terrainPoint.x, terrainPoint.y + 500.f), Vector2(1.0f, 1.0f));
+	anchor.AddComponent<SpriteComponent>("star2", 3);
+	anchor.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), true, 0.f, 0.f, 0.0f, 1.f, 0.7f);
+	anchor.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	anchor.AddComponent<CircleColliderComponent>(assetManager->GetSpriteWidth("star2") / 2);
+	anchor.Group("Anchor");
+
+
+	Entity bead = coordinator->CreateEntity();
+	bead.AddComponent<TransformComponent>(Vector2(terrainPoint.x, terrainPoint.y + 100.f), Vector2(1.f, 1.0f));
+	bead.AddComponent<SpriteComponent>("ball_blue2", 3);
+	bead.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 1.f, 0.7f);
+	bead.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	bead.AddComponent<CircleColliderComponent>(assetManager->GetSpriteWidth("ball_blue2") / 2);
+	bead.Group("Spring");
+	anchor.AddRelationship(bead, "Spring");
+
+	std::vector<Entity> joinedEntities;
+	joinedEntities.push_back(bead);
+	// Constraints
+	for (size_t i = 1; i < 3; i++)
+	{
+		Entity beadSubsequent = coordinator->CreateEntity();
+		float x = terrainPoint.x - (static_cast<float>(i) * 60.f);
+		beadSubsequent.AddComponent<TransformComponent>(Vector2(x, terrainPoint.y + 100.f), Vector2(1.f, 1.f));
+		beadSubsequent.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, static_cast<float>(i), 0.f, 0.0f, 0.1f, 0.1f);
+		beadSubsequent.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+		beadSubsequent.AddComponent<CircleColliderComponent>(assetManager->GetSpriteWidth("ball_blue2") / 2);
+		beadSubsequent.AddComponent<SpriteComponent>("ball_blue2");
+		beadSubsequent.Group("Bead");
+		joinedEntities.push_back(beadSubsequent);
+	}
+
+	for (size_t i = 0; i < joinedEntities.size() - 1; i++)
+	{
+		Vector2 midpoint = (joinedEntities[i].GetComponent<TransformComponent>().position + joinedEntities[i + 1].GetComponent<TransformComponent>().position) * 0.5f;
+		Entity joint = coordinator->CreateEntity();
+		joint.AddComponent<TransformComponent>(midpoint, Vector2(0.1f, 0.1f));
+		joint.AddComponent<ConstraintTypeComponent>(ConstrainType::JOINT);
+		joint.AddComponent<JointConstraintComponent>(joinedEntities[i], joinedEntities[i + 1]);
+	}
 }
 
 void PCG::RenderTerrain(const Camera& camera, const std::vector<Vector2>& terrainVertices, const Color color)
