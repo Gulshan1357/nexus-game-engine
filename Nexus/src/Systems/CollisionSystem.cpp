@@ -57,7 +57,7 @@ bool CollisionSystem::ShouldIgnoreCollision(Entity a, Entity b)
 
 void CollisionSystem::Update(const std::shared_ptr<EventManager>& eventManager) const
 {
-	auto entities = GetSystemEntities();
+	auto& entities = GetSystemEntities();
 
 	// Loop all entities that the system is interested in
 	for (auto i = entities.begin(); i != entities.end(); ++i)
@@ -95,7 +95,7 @@ bool CollisionSystem::IsColliding(const Entity a, const Entity b, const Collider
 	{
 		if (IsCollidingCircleCircle(a, b, contacts))
 		{
-			Logger::Log("Circle-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+			// Logger::Log("Circle-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
 			// Logger::Log("Collision Depth: ");
 			// for (const auto& contact : contacts)
 			// 	Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
@@ -107,7 +107,7 @@ bool CollisionSystem::IsColliding(const Entity a, const Entity b, const Collider
 	{
 		if (IsCollidingPolygonPolygon(a, b, contacts))
 		{
-			Logger::Log("Polygon-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+			// Logger::Log("Polygon-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
 			// Logger::Log("Collision Depth: ");
 			// for (const auto& contact : contacts)
 			// 	Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
@@ -120,7 +120,7 @@ bool CollisionSystem::IsColliding(const Entity a, const Entity b, const Collider
 	{
 		if (IsCollidingCirclePolygon(a, b, contacts))
 		{
-			Logger::Log("Circle-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+			// Logger::Log("Circle-Polygon collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
 			// Logger::Log("Collision Depth: ");
 			// for (const auto& contact : contacts)
 			// 	Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));
@@ -133,7 +133,7 @@ bool CollisionSystem::IsColliding(const Entity a, const Entity b, const Collider
 	{
 		if (IsCollidingCirclePolygon(b, a, contacts))
 		{
-			Logger::Log("Polygon-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
+			// Logger::Log("Polygon-Circle collision between Entity " + std::to_string(a.GetId()) + " and Entity " + std::to_string(b.GetId()));
 			// Logger::Log("Collision Depth: ");
 			// for (const auto& contact : contacts)
 			// Logger::Log("Collision Depth: " + std::to_string(contact.penetrationDepth));

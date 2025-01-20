@@ -39,7 +39,7 @@ public:
 
 	void Update(Camera& camera) const
 	{
-		auto entities = GetSystemEntities();
+		auto& entities = GetSystemEntities();
 		if (entities.empty()) return;
 
 		const bool isSinglePlayer = entities.size() == 1;

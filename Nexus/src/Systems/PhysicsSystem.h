@@ -54,7 +54,7 @@ public:
 	// Add and integrate forces for non-kinematic bodies
 	void UpdateForces(const float deltaTime, const WorldSettings& worldSettings)
 	{
-		for (auto entity : GetSystemEntities())
+		for (auto& entity : GetSystemEntities())
 		{
 			// auto& transform = entity.GetComponent<TransformComponent>();
 			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();

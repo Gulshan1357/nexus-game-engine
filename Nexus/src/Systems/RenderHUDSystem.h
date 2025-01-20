@@ -28,7 +28,7 @@ public:
 
 		// Top Right (Player scores)
 		Vector2 scorePos = { Physics::SCREEN_WIDTH - 150, Physics::SCREEN_HEIGHT };
-		for (auto entity : GetSystemEntities())
+		for (auto& entity : GetSystemEntities())
 		{
 			const auto& player = entity.GetComponent<PlayerComponent>();
 

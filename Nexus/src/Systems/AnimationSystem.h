@@ -24,7 +24,7 @@ public:
 
 	void Update(const std::unique_ptr<AssetManager>& assetManager, const float deltaTime) const
 	{
-		for (auto entity : GetSystemEntities())
+		for (auto& entity : GetSystemEntities())
 		{
 			auto& animationComponent = entity.GetComponent<AnimationComponent>();
 			auto& spriteComponent = entity.GetComponent<SpriteComponent>();

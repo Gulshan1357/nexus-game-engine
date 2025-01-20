@@ -31,7 +31,7 @@ public:
 		// TODO: Think of a way to avoid the sorting every update()
 		//------------------------------------------------------------------------
 
-		const auto entities = GetSystemEntities();
+		const auto& entities = GetSystemEntities();
 
 		m_renderQueue.clear();
 		m_renderQueue.reserve(entities.size());

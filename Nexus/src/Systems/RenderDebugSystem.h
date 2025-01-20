@@ -24,7 +24,7 @@ public:
 
 	void Render(const Camera& camera) const
 	{
-		for (auto entity : GetSystemEntities())
+		for (auto& entity : GetSystemEntities())
 		{
 			if (entity.HasComponent<ColliderTypeComponent>())
 			{

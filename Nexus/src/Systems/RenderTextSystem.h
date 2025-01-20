@@ -20,7 +20,7 @@ public:
 
 	void Update(const Camera& camera) const
 	{
-		for (auto entity : GetSystemEntities())
+		for (auto& entity : GetSystemEntities())
 		{
 			const UITextComponent& uiText = entity.GetComponent<UITextComponent>();
 
