@@ -6,7 +6,14 @@
 
 #include "src/ECS/Entity.h"
 #include "src/ECS/System.h"
+#include "src/InputManagement/InputEnums.h"
 
+namespace Input
+{
+	enum class PlayerID;
+}
+
+struct Vector2;
 class Coordinator;
 class AssetManager;
 class AudioManager;
@@ -44,6 +51,10 @@ private:
 	// Obstacles variables
 	float m_explosionStrength = 5000.f; // The kickback force to the player
 
+	// Multiplayer
+	Input::PlayerID lastActivePlayer = Input::PlayerID::PLAYER_2;
+	bool isActivePlayerMoving = false;
+
 public:
 	GameplaySystem(std::unique_ptr<Coordinator>& coordinator, std::unique_ptr<AssetManager>& assetManager, std::shared_ptr<AudioManager> audioManager, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> m_score);
 
@@ -55,7 +66,7 @@ public:
 	void onCollision(const CollisionEvent& event);
 
 	// If no player present then game over
-	void Update();
+	void Update(std::vector<Vector2>& terrainVertices);
 	void UpdateScore(Entity& player1);
 	void GameOver() const;
 };

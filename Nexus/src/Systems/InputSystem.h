@@ -59,9 +59,17 @@ public:
 		}
 	}
 
+	void RenderForce(const Camera& camera)
+	{
+		Graphics::PrintText( "Last Shot Strength:" + m_force.ToString(),
+			Vector2(Physics::SCREEN_WIDTH/2.f - 100.f, Physics::SCREEN_HEIGHT -20.f)
+			);
+	}
+
 private:
 	Vector2 m_startMousePos;
 	Vector2 m_endMousePos;
+	Vector2 m_force;
 
 	//------------------------------------------------------------------------
 	// Definition of all the actions. Action can be tailored to each player using playerID
@@ -75,10 +83,10 @@ private:
 		float magnitude = direction.MagnitudeSquared();
 		direction = -direction.Normalize();
 
-		Vector2 force = direction * magnitude;
+		m_force = direction * magnitude;
 
 		// Apply the force to the RigidBody
-		m_eventManager->EmitEvent<LaunchBallEvent>(player, playerId, force);
+		m_eventManager->EmitEvent<LaunchBallEvent>(player, playerId, m_force);
 
 	}
 };

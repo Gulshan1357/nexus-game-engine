@@ -11,23 +11,26 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
    - [License](Nexus/Assets/Sprites/kenney_tileset/License.txt)
 2. **Background Elements Redux (Kenney Vleugels)**  
    - [Asset Link](https://www.kenney.nl/assets/background-elements-redux)  
-2. **Physics Assets (Kenney Vleugels)**  
+3. **Physics Assets (Kenney Vleugels)**  
    - [Asset Link](https://www.kenney.nl/assets/physics-assets)
    - [License](Nexus/Assets/Sprites/kenney_physics-assets/License.txt)   
-2. **Royalty Free Sound Effects Archive: GameAudioGDC (Sonniss.com)**  
+4. **Royalty Free Sound Effects Archive: GameAudioGDC (Sonniss.com)**  
    - [Asset Link](https://sonniss.com/gameaudiogdc)  
    - [License](Nexus/Assets/Audio/License.pdf)  
-2. **Golf Swing (mixkit.co/)**  
+5. **Golf Swing (mixkit.co/)**  
    - [Asset Link](https://mixkit.co/free-sound-effects/golf/)  
    - [License](https://mixkit.co/license/#sfxFree)  
-3. **Rainbow + White Pixel Flag Animation Bundle**  
+6. **Rainbow + White Pixel Flag Animation Bundle**  
    - [Asset Link](https://decrebrian.itch.io/pixel-flag-animation-bundle)  
-4. **Sport Balls Pixel-art Pack**  
+7. **Sport Balls Pixel-art Pack**  
    - [Asset Link](https://beemaxstudio.itch.io/sport-balls-pixel-pack)
    - *For golf ball*  
-4. **Pixel Explosions Sound Effect Pack [SFX]**  
+8. **Pixel Explosions Sound Effect Pack [SFX]**  
    - [Asset Link](https://jdsherbert.itch.io/pixel-explosions-sfx-pack)
    - *For explosion sound* 
+9. **Dreamy Space Soundtrack**  
+   - [Asset Link](https://chiphead64.itch.io/dreamy-space-soundtrack)
+   - *For Background sound* 
   
 
 ---

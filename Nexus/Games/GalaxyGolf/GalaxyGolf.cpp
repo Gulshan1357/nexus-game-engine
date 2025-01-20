@@ -87,6 +87,7 @@ GalaxyGolf::GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, 
 
 GalaxyGolf::~GalaxyGolf()
 {
+	Shutdown();
 	Logger::Warn("GalaxyGolf Game destructor called!");
 }
 
@@ -124,10 +125,13 @@ void GalaxyGolf::Initialize()
 void GalaxyGolf::LoadLevel(int level)
 {
 	// Sounds
+	m_audioManager->AddAudio("GameplayBG", R"(.\Assets\Audio\chiphead64.wav)");
 	m_audioManager->AddAudio("golf_swing", R"(.\Assets\Audio\golf_swing.wav)");
 	m_audioManager->AddAudio("explosion", R"(.\Assets\Audio\Explosion.wav)");
 	m_audioManager->AddAudio("wood-impact", R"(.\Assets\Audio\Wood_crash.wav)");
 	m_audioManager->AddAudio("stone-impact", R"(.\Assets\Audio\stone_impact.wav)");
+
+	m_audioManager->PlayAudio("GameplayBG", true);
 
 	// Configure world settings
 	switch (m_worldType)
@@ -148,9 +152,9 @@ void GalaxyGolf::LoadLevel(int level)
 			Logger::Log("Mars selected!");
 			m_worldSettings.gravity = -9.5f;
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
-			m_worldSettings.atmosphereDrag = 0.0005f;
+			m_worldSettings.atmosphereDrag = 0.0008f;
 			m_worldSettings.groundColor = Color(Colors::NEON_RED);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.8f, 0.3f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.7f, 0.3f });
 			break;
 		}
 		case WorldType::SUPER_EARTH:
@@ -160,7 +164,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
 			m_worldSettings.groundColor = Color(Colors::NEON_BLUE);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.9f, 0.1f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.6f, 0.1f });
 			break;
 		}
 	}
@@ -180,25 +184,33 @@ void GalaxyGolf::LoadLevel(int level)
 	// background.Tag("Background");
 
 	// Red ball is the new Player 2
-	Entity golfBall = m_coordinator->CreateEntity();
-	golfBall.AddComponent<SpriteComponent>("golf-ball", 3);
-	golfBall.AddComponent<TransformComponent>(Vector2(-100.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
-	golfBall.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 10.f, 0.f, 0.0f, 1.f, 0.7f);
-	golfBall.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
-	golfBall.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
-	golfBall.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
-	golfBall.AddComponent<CameraFollowComponent>();
-	golfBall.Tag("Player1");
-	golfBall.Group("Player");
-	golfBall.AddComponent<ParticleEmitterComponent>(); // The type of emission is handled by Particle Effect system
-	Logger::Log("Golf ball id = " + std::to_string(golfBall.GetId()));
+	Entity playerOne = m_coordinator->CreateEntity();
+	playerOne.AddComponent<SpriteComponent>("golf-ball", 3);
+	playerOne.AddComponent<TransformComponent>(Vector2(-100.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
+	playerOne.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 10.f, 0.f, 0.0f, 1.f, 0.7f);
+	playerOne.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	playerOne.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
+	playerOne.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_1);
+	playerOne.AddComponent<CameraFollowComponent>();
+	playerOne.Tag("Player1");
+	playerOne.Group("Player");
+	playerOne.AddComponent<ParticleEmitterComponent>(); // The type of emission is handled by Particle Effect system
+	Logger::Log("Golf ball id = " + std::to_string(playerOne.GetId()));
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
-	// Vector2 terrainPoint = {100.f, 300.f};
-	// Add sprites for the laser and laser shooter
-
-
+	// Entity playerTwo = m_coordinator->CreateEntity();
+	// playerTwo.AddComponent<SpriteComponent>("golf-ball", 3);
+	// playerTwo.AddComponent<TransformComponent>(Vector2(-100.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
+	// playerTwo.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 10.f, 0.f, 0.0f, 1.f, 0.7f);
+	// playerTwo.AddComponent<ColliderTypeComponent>(ColliderType::Circle);
+	// playerTwo.AddComponent<CircleColliderComponent>(m_assetManager->GetSpriteWidth("golf-ball") / 4);
+	// playerTwo.AddComponent<PlayerComponent>(Input::PlayerID::PLAYER_2);
+	// // playerTwo.AddComponent<CameraFollowComponent>();
+	// playerTwo.Tag("Player2");
+	// playerTwo.Group("Player");
+	// playerTwo.AddComponent<ParticleEmitterComponent>(); // The type of emission is handled by Particle Effect system
+	// Logger::Log("Golf ball id = " + std::to_string(playerOne.GetId()));
 
 }
 
@@ -225,7 +237,7 @@ void GalaxyGolf::Update(float deltaTime)
 
 	//------------------------------------------------------------------------	
 	// Invoke all the systems that needs to be updated
-	m_coordinator->GetSystem<GameplaySystem>().Update();
+	m_coordinator->GetSystem<GameplaySystem>().Update(m_terrainVertices);
 	m_coordinator->GetSystem<AnimationSystem>().Update(m_assetManager, deltaTime);
 	// [Physics system Start] Order is important. First integrate the forces, then resolve the constraint(penetration due to collision and joint), then integrate the velocities
 	const float dt = deltaTime / 1000.0f; // Converting to seconds
@@ -306,9 +318,16 @@ void GalaxyGolf::Render()
 	m_coordinator->GetSystem<RenderDebugSystem>().RenderConnectedEntites(m_camera);
 
 	m_coordinator->GetSystem<RenderHUDSystem>().Update(m_camera, m_worldType, m_worldSettings, Color(Colors::WHITE));
+	m_coordinator->GetSystem<InputSystem>().RenderForce(m_camera);
 }
 
 void GalaxyGolf::Shutdown()
 {
+	if (m_audioManager->IsAudioPlaying("GameplayBG"))
+	{
+		m_audioManager->StopAudio("GameplayBG");
+		m_audioManager->ClearAudioMap();
+	}
+	
 	Logger::Warn("GalaxyGolf::Shutdown()");
 }

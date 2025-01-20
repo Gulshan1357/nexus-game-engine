@@ -49,6 +49,7 @@ void GameplaySystem::SubscribeToEvents(const std::shared_ptr<EventManager>& even
 
 void GameplaySystem::onBallLaunch(const LaunchBallEvent& event)
 {
+	Logger::Log(event.force.ToString());
 	event.player.GetComponent<RigidBodyComponent>().AddForce(event.force);
 	auto& playerComponent = event.player.GetComponent<PlayerComponent>();
 
@@ -138,7 +139,7 @@ void GameplaySystem::onCollision(const CollisionEvent& event)
 	// }
 }
 
-void GameplaySystem::Update()
+void GameplaySystem::Update(std::vector<Vector2>& terrainVertices)
 {
 	const auto currentTime = std::chrono::steady_clock::now();
 	// Check if we haven't received a hole collision recently
@@ -152,6 +153,36 @@ void GameplaySystem::Update()
 	for (auto& player : GetSystemEntities())
 	{
 		UpdateScore(player);
+		auto& playerPosition = player.GetComponent<TransformComponent>().position;
+		auto& playerVelocity = player.GetComponent<RigidBodyComponent>().velocity;
+		float minX = terrainVertices.front().x;
+		float maxX = terrainVertices.back().x;
+		float minY =  -1000.f;
+		float maxY = 3000.f;
+		// Check X bounds
+		if (playerPosition.x < minX)
+		{
+			playerPosition.x = minX;
+			playerVelocity.x *= -1.0f;  // Reverse x velocity
+		}
+		else if (playerPosition.x > maxX)
+		{
+			playerPosition.x = maxX;
+			playerVelocity.x *= -1.0f;  // Reverse x velocity
+		}
+
+		// Check Y bounds
+		if (playerPosition.y < minY)
+		{
+			playerPosition.y = minY;
+			playerVelocity.y *= -1.0f;  // Reverse y velocity
+		}
+		else if (playerPosition.y > maxY)
+		{
+			playerPosition.y = maxY;
+			playerVelocity.y *= -1.0f;  // Reverse y velocity
+		}
+
 	}
 	if (GetSystemEntities().empty())
 	{
