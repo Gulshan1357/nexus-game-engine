@@ -342,6 +342,13 @@ void Game::RenderGameOver() const
 		GLUT_BITMAP_TIMES_ROMAN_24
 	);
 
+	Graphics::PrintText(
+		"Press ESC to return to main menu.",
+		Vector2(centerX - 140.f, currentY + 60.f),
+		m_fontPrimary,
+		GLUT_BITMAP_HELVETICA_18
+	);
+	
 	Graphics::DrawLine(
 		Vector2(centerX - 150, currentY + 30),
 		Vector2(centerX + 150, currentY + 30),

@@ -56,7 +56,7 @@
 GalaxyGolf::GalaxyGolf(WorldType worldType, std::weak_ptr<GameState> gameState, std::weak_ptr<Score> score)
 	: m_worldType(worldType), m_gameState(std::move(gameState)), m_score(std::move(score))
 {
-	m_isDebug = true;
+	m_isDebug = false;
 
 	m_coordinator = std::make_unique<Coordinator>();
 	m_eventManager = std::make_shared<EventManager>();
@@ -142,7 +142,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.gravity = -9.8f;
 			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
-			m_worldSettings.groundColor = Color(Colors::NEON_GREEN);
+			m_worldSettings.groundColor = Color(0.3f,0.6f,0.2f);
 			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.5f, 0.7f });
 			break;
 		}
@@ -153,7 +153,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.gravity = -4.5f;
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
 			m_worldSettings.atmosphereDrag = 0.0008f;
-			m_worldSettings.groundColor = Color(Colors::NEON_RED);
+			m_worldSettings.groundColor = Color(0.7f, 0.3f, 0.2f);
 			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.4f, 0.3f });
 			break;
 		}
@@ -163,7 +163,7 @@ void GalaxyGolf::LoadLevel(int level)
 			m_worldSettings.gravity = -13.8f;
 			m_worldSettings.windSpeed = Random::Float(-500.f, 500.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
-			m_worldSettings.groundColor = Color(Colors::NEON_BLUE);
+			m_worldSettings.groundColor = Color(0.2f, 0.3f, 0.5f);
 			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.6f, 0.1f });
 			break;
 		}
@@ -174,7 +174,8 @@ void GalaxyGolf::LoadLevel(int level)
 	m_assetManager->AddSprite("red-ball", R"(.\Assets\Sprites\ball_red_small.bmp)", 1, 1);
 	m_assetManager->AddSprite("golf-ball", R"(.\Assets\Sprites\golf.bmp)", 1, 1);
 	m_assetManager->AddSprite("alien", R"(.\Assets\Sprites\kenney_physics-assets\Aliens\alienPink_round.bmp)", 1, 1);
-
+	m_assetManager->AddSprite("sign", R"(.\Assets\Sprites\hand_point_e.bmp)", 1, 1);
+	
 	// Animations
 	m_assetManager->CreateAnimation("flag", 0, 1.0f / 15.0f, { 0,1,2,3,4,5,6 });
 
@@ -199,12 +200,24 @@ void GalaxyGolf::LoadLevel(int level)
 
 	m_inputManager->AddInputKeyToAction(Input::PlayerID::PLAYER_1, VK_LBUTTON, Input::PlayerAction::LMOUSE);
 
-	Entity alienOne = m_coordinator->CreateEntity();
-	alienOne.AddComponent<SpriteComponent>("alien", 3);
-	alienOne.AddComponent<TransformComponent>(Vector2(100.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
-	alienOne.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 1.f, 0.7f);
-	alienOne.Group("Aliens");
-	alienOne.AddRelationship(playerOne, "Attracted");
+	// Sign
+	Entity directionSign = m_coordinator->CreateEntity();
+	directionSign.AddComponent<SpriteComponent>("sign", 3);
+	directionSign.AddComponent<TransformComponent>(Vector2(-120.f, 100.f), Vector2(1.0f, 1.0f));
+	Entity goRightSign = m_coordinator->CreateEntity();
+	goRightSign.AddComponent<TransformComponent>(Vector2(-120.f, 80.f), Vector2(1.0f, 1.0f));
+	goRightSign.AddComponent<UITextComponent>("Go Right!", Vector2(-140.f, 70.f), Color(Colors::GOLD), FontType::BITMAP_9_BY_15, true);
+
+	// A curious alien attracted to the player. Gravitational force
+	if (Random::Float(0.f, 1.0f) < 0.3f)
+	{
+		Entity alienOne = m_coordinator->CreateEntity();
+		alienOne.AddComponent<SpriteComponent>("alien", 3);
+		alienOne.AddComponent<TransformComponent>(Vector2(2000.f, 300.f), Vector2(0.5f, 0.5f), -0.3f);
+		alienOne.AddComponent<RigidBodyComponent>(Vector2(0.0f, 0.0f), Vector2(), false, 5.f, 0.f, 0.0f, 1.f, 0.7f);
+		alienOne.Group("Aliens");
+		alienOne.AddRelationship(playerOne, "Attracted");	
+	}
 
 }
 

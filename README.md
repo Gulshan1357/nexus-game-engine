@@ -6,14 +6,15 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 
 ## Credits
 
-1. **Platformer Art Extended Tileset (Kenney Vleugels)**  
-   - [Asset Link](https://www.kenney.nl/assets/platformer-art-extended-tileset)  
-   - [License](Nexus/Assets/Sprites/kenney_tileset/License.txt)
+1. **Dreamy Space Soundtrack**  
+   - [Asset Link](https://chiphead64.itch.io/dreamy-space-soundtrack)
+   - *For Background sound* 
 2. **Background Elements Redux (Kenney Vleugels)**  
    - [Asset Link](https://www.kenney.nl/assets/background-elements-redux)  
 3. **Physics Assets (Kenney Vleugels)**  
    - [Asset Link](https://www.kenney.nl/assets/physics-assets)
    - [License](Nexus/Assets/Sprites/kenney_physics-assets/License.txt)   
+   - *For stone, glass, wood shapes sprites* 
 4. **Royalty Free Sound Effects Archive: GameAudioGDC (Sonniss.com)**  
    - [Asset Link](https://sonniss.com/gameaudiogdc)  
    - [License](Nexus/Assets/Audio/License.pdf)  
@@ -28,9 +29,9 @@ This repository contains my project for the **Ubisoft NEXT 2024-2025 Programming
 8. **Pixel Explosions Sound Effect Pack [SFX]**  
    - [Asset Link](https://jdsherbert.itch.io/pixel-explosions-sfx-pack)
    - *For explosion sound* 
-9. **Dreamy Space Soundtrack**  
-   - [Asset Link](https://chiphead64.itch.io/dreamy-space-soundtrack)
-   - *For Background sound* 
+9. **Cursor Pack**  
+   - [Asset Link](https://www.kenney.nl/assets/cursor-pack)
+   - *For Start arrow* 
   
 
 ---

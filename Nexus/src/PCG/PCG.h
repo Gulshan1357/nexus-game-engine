@@ -34,7 +34,7 @@ public:
 	// Destructible Obstacle
 	enum class ShapeType
 	{
-		TRIANGLE,
+		// TRIANGLE,
 		SQUARE,
 		RECTANGLE
 	};

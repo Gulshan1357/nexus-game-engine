@@ -38,8 +38,11 @@ public:
 			scorePos.y -= 20.f;
 			Graphics::PrintText(scoreText, scorePos, color);
 
-			if (entity.HasTag("Player1")) DisplayControls(color, {Physics::SCREEN_WIDTH/2.f - 100.f, Physics::SCREEN_HEIGHT - 40.f}, player.activeAbility);
+			if (entity.HasTag("Player1")) DisplayActiveAbility(color, {Physics::SCREEN_WIDTH/2.f - 100.f, Physics::SCREEN_HEIGHT - 40.f}, player.activeAbility);
 		}
+
+		Graphics::PrintText("Press B for debug mode", {Physics::SCREEN_WIDTH - 230.f, 30.f}, color);
+		Graphics::PrintText("Press QWE to change abilities", {Physics::SCREEN_WIDTH - 230.f, 10.f}, color);
 	}
 
 private:
@@ -63,17 +66,17 @@ private:
 		Graphics::PrintText(timeText, timePos, color);
 	}
 
-	void DisplayControls(const Color color, const Vector2 pos, const Ability activeAbility) const
+	void DisplayActiveAbility(const Color color, const Vector2 pos, const Ability activeAbility) const
 	{
 		switch (activeAbility) {
 		case Ability::NORMAL_SHOT:
-			Graphics::PrintText("Active Ability: Normal shot", pos, color);
+			Graphics::PrintText("Active Ability: Normal shot", pos, Color(Colors::NEON_GREEN));
 			break;
 		case Ability::POWER_SHOT:
-			Graphics::PrintText("Active Ability: Power shot (Twice as powerful)", pos, color);
+			Graphics::PrintText("Active Ability: Power shot (Twice as powerful)", pos, Color(Colors::NEON_RED));
 			break;
 		case Ability::WEAK_SHOT:
-			Graphics::PrintText("Active Ability: Weak shot (Weak but precise in low gravity/friction/drag worlds)", pos, color);
+			Graphics::PrintText("Active Ability: Weak shot (Weak but precise in low gravity/friction/drag worlds)", pos, Color(Colors::NEON_BLUE));
 			break;
 		}
 		

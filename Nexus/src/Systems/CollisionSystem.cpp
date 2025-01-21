@@ -24,7 +24,8 @@ bool CollisionSystem::ShouldIgnoreCollision(const Entity a, const Entity b)
 		"LaserShooter",
 		"StaticKillers",
 		"Anchor",
-		"Spring"
+		"Spring",
+		"Bead"
 	};
 	const std::vector<std::string> tagsToIgnore = { "Hole" };
 
@@ -58,6 +59,8 @@ bool CollisionSystem::ShouldIgnoreCollision(const Entity a, const Entity b)
 			}
 		}
 	}
+
+	// if (a.BelongsToGroup("Bead") && )
 	return false;
 }
 
