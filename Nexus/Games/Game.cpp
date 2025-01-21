@@ -230,8 +230,8 @@ void Game::RenderMapSelection() const
 
 	const std::vector<std::pair<std::string, std::string>> menuItems = {
 		{"EARTH", "[1]"},
-		{"MARS", "[2]"},
-		{"JUPITER", "[3]"}
+		{"MARS (Low Gravity)", "[2]"},
+		{"Super Earth (Extra gravity)", "[3]"}
 	};
 
 	float currentY = startY + 50;
@@ -247,7 +247,7 @@ void Game::RenderMapSelection() const
 		{
 			Graphics::PrintText(
 				shortcut,
-				Vector2(centerX + 70, currentY),
+				Vector2(centerX + 100, currentY),
 				m_fontPrimary,
 				GLUT_BITMAP_HELVETICA_18
 			);

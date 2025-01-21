@@ -140,7 +140,7 @@ void GalaxyGolf::LoadLevel(int level)
 		{
 			Logger::Log("Earth selected!");
 			m_worldSettings.gravity = -9.8f;
-			m_worldSettings.windSpeed = Random::Float(-5.f, 5.f);
+			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
 			m_worldSettings.atmosphereDrag = 0.01f;
 			m_worldSettings.groundColor = Color(Colors::NEON_GREEN);
 			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.5f, 0.7f });
@@ -150,18 +150,18 @@ void GalaxyGolf::LoadLevel(int level)
 		case WorldType::MARS:
 		{
 			Logger::Log("Mars selected!");
-			m_worldSettings.gravity = -9.5f;
+			m_worldSettings.gravity = -4.5f;
 			m_worldSettings.windSpeed = Random::Float(-.5f, .5f);
 			m_worldSettings.atmosphereDrag = 0.0008f;
 			m_worldSettings.groundColor = Color(Colors::NEON_RED);
-			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.7f, 0.3f });
+			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.4f, 0.3f });
 			break;
 		}
 		case WorldType::SUPER_EARTH:
 		{
 			Logger::Log("Super Earth selected!");
-			m_worldSettings.gravity = -15.8f;
-			m_worldSettings.windSpeed = Random::Float(-100.f, 100.f);
+			m_worldSettings.gravity = -13.8f;
+			m_worldSettings.windSpeed = Random::Float(-500.f, 500.f);
 			m_worldSettings.atmosphereDrag = 0.03f;
 			m_worldSettings.groundColor = Color(Colors::NEON_BLUE);
 			m_terrainVertices = PCG::GenerateLevel(m_coordinator, m_assetManager, { 700.f, 20, 0.6f, 0.1f });
