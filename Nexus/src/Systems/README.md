@@ -78,3 +78,9 @@ Systems maintain a list of relevant entity IDs and, during each `update()`, iter
 13. **Trajectory System**
     - Requires: `PlayerComponent`.
     - Purpose: Calculate and renders the probable trajectory  of the ball before it is launched.
+
+
+14. **RenderHUD System**
+    - Requires: `PlayerComponent`.
+    - Purpose: Displays HUD while playing
+

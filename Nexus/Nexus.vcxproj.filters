@@ -25,9 +25,7 @@
       <Filter>API\third_party\miniaudio</Filter>
     </ClCompile>
     <ClCompile Include="App\DirectSound.cpp" />
-    <ClCompile Include="Games\OriginalDemo.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
-    <ClCompile Include="Games\TestApp.cpp" />
     <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
@@ -79,9 +77,7 @@
     </ClInclude>
     <ClInclude Include="App\DirectSound.h" />
     <ClInclude Include="App\mydirectsound.h" />
-    <ClInclude Include="Games\OriginalDemo.h" />
     <ClInclude Include="src\Utils\Logger.h" />
-    <ClInclude Include="Games\TestApp.h" />
     <ClInclude Include="src\ECS\Entity.h" />
     <ClInclude Include="src\ECS\Coordinator.h" />
     <ClInclude Include="src\ECS\Pool.h" />

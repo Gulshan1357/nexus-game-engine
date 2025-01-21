@@ -198,9 +198,7 @@
     <ClInclude Include="Games\GalaxyGolf\WorldSettings.h" />
     <ClInclude Include="Games\Game.h" />
     <ClInclude Include="Games\GameState.h" />
-    <ClInclude Include="Games\OriginalDemo.h" />
     <ClInclude Include="Games\Score.h" />
-    <ClInclude Include="Games\TestApp.h" />
     <ClInclude Include="Games\UI\UIEffects.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
     <ClInclude Include="src\AssetManagement\AssetEnums.h" />
@@ -279,8 +277,6 @@
     <ClCompile Include="App\SimpleSprite.cpp" />
     <ClCompile Include="Games\GalaxyGolf\GalaxyGolf.cpp" />
     <ClCompile Include="Games\Game.cpp" />
-    <ClCompile Include="Games\OriginalDemo.cpp" />
-    <ClCompile Include="Games\TestApp.cpp" />
     <ClCompile Include="Games\UI\UIEffects.cpp" />
     <ClCompile Include="Nexus.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />

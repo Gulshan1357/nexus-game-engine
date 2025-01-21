@@ -210,8 +210,8 @@ void PCG::AddObstacles(const std::unique_ptr<Coordinator>& coordinator, const st
 								SpawnConnectedBeads(coordinator, assetManager, terrainVertices[i]);
 								isBeadsSpawned = true;
 							}
+							break;
 						}
-						break;
 					default:;
 				}
 			}

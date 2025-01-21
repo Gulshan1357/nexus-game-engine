@@ -7,3 +7,8 @@ For each map/level the Game instantiates a new GalaxyGolf class
 
 1. **UI**: Contain some helper fucnctions to create UI effects like Concentric circles, color fade etc.
 2. **GalaxyGolf**: The golf game. Since Game class need the overall score to display during the GameOver state, the galaxygolf propagates the accumulated score when it is closed.
+
+
+## Contains files
+
+1. **Game**: Responsible for the control between UI screens like game over, main menu and actual gameplay
