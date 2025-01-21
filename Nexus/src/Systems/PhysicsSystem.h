@@ -61,9 +61,12 @@ public:
 			// auto& transform = entity.GetComponent<TransformComponent>();
 			auto& rigidBody = entity.GetComponent<RigidBodyComponent>();
 
-			// Adding weight force
-			Vector2 weight = Vector2(0.0f, (rigidBody.mass * worldSettings.gravity * Physics::PIXEL_PER_METER));
-			rigidBody.AddForce(weight);
+			if (!entity.BelongsToGroup("Aliens")) // No gravity for bodies that are getting attracted by gravitational force b/w each other
+			{
+				// Adding weight force
+				Vector2 weight = Vector2(0.0f, (rigidBody.mass * worldSettings.gravity * Physics::PIXEL_PER_METER));
+				rigidBody.AddForce(weight);
+			}
 
 			// Adding wind force
 			Vector2 wind = Vector2(worldSettings.windSpeed, 0.0f);
@@ -77,18 +80,18 @@ public:
 			AddSpringForceToConnectedEntities(entity);
 
 
-			if (entity.HasTag("GravityWell"))
+			if (entity.BelongsToGroup("Aliens"))
 			{
-				for (auto& ball : entity.GetEntitiesByRelationshipTag("gravitational"))
+				for (auto& ball : entity.GetEntitiesByRelationshipTag("Attracted"))
 				{
-					PhysicsEngine::GenerateGravitationalForce(
+					rigidBody.AddForce(PhysicsEngine::GenerateGravitationalForce(
 						rigidBody,
 						ball.GetComponent<RigidBodyComponent>(),
 						ball.GetComponent<TransformComponent>().position - entity.GetComponent<TransformComponent>().position,
-						1000,
+						10000,
 						50,
 						500
-					);
+					));
 
 				}
 			}

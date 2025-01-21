@@ -57,4 +57,8 @@ private:
 	// Level settings
 	WorldSettings m_worldSettings;
 	std::vector<Vector2> m_terrainVertices;
+
+	// Not enough time to implement multiplayer
+	// // Multiplayer
+	// Input::PlayerID m_activePlayer = Input::PlayerID::PLAYER_1; // Gameplay system handles active player 
 };
