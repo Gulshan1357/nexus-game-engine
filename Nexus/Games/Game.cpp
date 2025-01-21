@@ -170,9 +170,16 @@ void Game::RenderMenu() const
 	float currentY = m_menuStartY;
 	const std::vector<std::pair<std::string, std::string>> menuItems = {
 		{"PLAY GAME", "[Enter]"},
-		{"CREDITS", "[2]"},
+		// {"CREDITS", "[2]"},
 		{"EXIT", "[F1]"}
 	};
+
+	Graphics::PrintText(
+		"Experience golf in other planets!",
+		Vector2(m_leftMargin, currentY + 60.f),
+		m_fontPrimary,
+		GLUT_BITMAP_HELVETICA_18
+	);
 
 	Graphics::DrawLine(
 		Vector2(m_leftMargin - 10, currentY + 30),
@@ -278,6 +285,13 @@ void Game::RenderPaused() const
 		Vector2(centerX - 80.f, startY + 150.f),
 		m_fontPrimary,
 		GLUT_BITMAP_TIMES_ROMAN_24
+	);
+
+	Graphics::PrintText(
+		"Plan your shot by analysing the world characteristics. Wind speed and gravity is displayed in the HUD but the friction and bounciness are hidden. ",
+		Vector2(centerX - 380.f, startY + 100.f),
+		m_fontPrimary,
+		GLUT_BITMAP_HELVETICA_12
 	);
 
 	Graphics::DrawLine(
@@ -433,8 +447,11 @@ void Game::RenderUIControls() const
 	);
 
 	const std::vector<std::pair<std::string, std::string>> controls = {
-		{"Move", "WASD | Left joystick"},
-		{"Pause", "Esc | ------"}
+		{"Aim", "Hold Left mouse button and drag"},
+		{"Shoot", "Release the left mouse button"},
+		{"Weak Shot", "Q"},
+		{"Normal Shot", "W"},
+		{"Power Shot", "E"}
 	};
 
 	currentY -= m_controlsSpacing / 2.f;
@@ -450,7 +467,7 @@ void Game::RenderUIControls() const
 		);
 		Graphics::PrintText(
 			key,
-			Vector2(m_leftMargin + 50, currentY),
+			Vector2(m_leftMargin + 120, currentY),
 			m_fontSecondary,
 			GLUT_BITMAP_9_BY_15
 		);

@@ -35,9 +35,10 @@ public:
 			std::string scoreText;
 			if (entity.HasTag("Player1")) scoreText = "Player One strokes: " + std::to_string(player.totalStrokes);
 			else if (entity.HasTag("Player2")) scoreText = "Player Two strokes: " + std::to_string(player.totalStrokes);
-
 			scorePos.y -= 20.f;
 			Graphics::PrintText(scoreText, scorePos, color);
+
+			if (entity.HasTag("Player1")) DisplayControls(color, {Physics::SCREEN_WIDTH/2.f - 100.f, Physics::SCREEN_HEIGHT - 40.f}, player.activeAbility);
 		}
 	}
 
@@ -60,6 +61,22 @@ private:
 			(seconds < 10 ? "0" : "") + std::to_string(seconds);
 
 		Graphics::PrintText(timeText, timePos, color);
+	}
+
+	void DisplayControls(const Color color, const Vector2 pos, const Ability activeAbility) const
+	{
+		switch (activeAbility) {
+		case Ability::NORMAL_SHOT:
+			Graphics::PrintText("Active Ability: Normal shot", pos, color);
+			break;
+		case Ability::POWER_SHOT:
+			Graphics::PrintText("Active Ability: Power shot (Twice as powerful)", pos, color);
+			break;
+		case Ability::WEAK_SHOT:
+			Graphics::PrintText("Active Ability: Weak shot (Weak but precise in low gravity/friction/drag worlds)", pos, color);
+			break;
+		}
+		
 	}
 
 	static void DisplayWorldSetting(const Color color, Vector2 position, const WorldType& worldType, const WorldSettings& worldSettings)

@@ -4,8 +4,10 @@
 #include <map>
 #include <memory>
 
+#include "Games/GalaxyGolf/AbilitiesEnum.h"
 #include "src/ECS/Entity.h"
 #include "src/ECS/System.h"
+#include "src/Events/PlayerStateChangeEvent.h"
 #include "src/InputManagement/InputEnums.h"
 
 namespace Input
@@ -51,6 +53,9 @@ private:
 	// Obstacles variables
 	float m_explosionStrength = 5000.f; // The kickback force to the player
 
+	// Active player ability
+	Ability m_activeAbility = Ability::NORMAL_SHOT;
+
 	// Multiplayer
 	Input::PlayerID lastActivePlayer = Input::PlayerID::PLAYER_2;
 	bool isActivePlayerMoving = false;
@@ -60,6 +65,7 @@ public:
 
 	// Subscribe to events
 	void SubscribeToEvents(const std::shared_ptr<EventManager>& eventManager);
+	void OnPlayerStateChange(const PlayerStateChangeEvent& event);
 
 	// Callbacks
 	void onBallLaunch(const LaunchBallEvent& event);

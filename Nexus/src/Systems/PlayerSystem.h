@@ -49,18 +49,18 @@ public:
 				}
 			}
 
-			// Use 1, 2, 3 to trigger normal, power and sniper shots
-			if (App::IsKeyPressed('1'))
+			// Use 1, 2, 3 to trigger normal, power and weak shots
+			if (App::IsKeyPressed('W'))
 			{
 				player.activeAbility = Ability::NORMAL_SHOT;
 			}
-			if (App::IsKeyPressed('2'))
+			if (App::IsKeyPressed('E'))
 			{
 				player.activeAbility = Ability::POWER_SHOT;
 			}
-			if (App::IsKeyPressed('3'))
+			if (App::IsKeyPressed('Q'))
 			{
-				player.activeAbility = Ability::SNIPER_SHOT;
+				player.activeAbility = Ability::WEAK_SHOT;
 			}
 		}
 	}

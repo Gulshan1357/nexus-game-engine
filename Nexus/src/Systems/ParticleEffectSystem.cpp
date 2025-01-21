@@ -242,7 +242,7 @@ void ParticleEffectSystem::OnPlayerStateChange(const PlayerStateChangeEvent& eve
 			case Ability::POWER_SHOT:
 				PlayPowerShotEffect(event.player);
 				break;
-			case Ability::SNIPER_SHOT:
+			case Ability::WEAK_SHOT:
 				PlaySniperShotEffect(event.player);
 				break;
 		}

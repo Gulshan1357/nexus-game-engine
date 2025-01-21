@@ -24,6 +24,7 @@
 
 #include "../Games/GameState.h"
 #include "Games/Score.h"
+#include "src/Events/PlayerStateChangeEvent.h"
 
 #include "src/Utils/Logger.h"
 
@@ -45,12 +46,32 @@ void GameplaySystem::SubscribeToEvents(const std::shared_ptr<EventManager>& even
 	const std::function<void(GameplaySystem*, LaunchBallEvent&)> callbackLaunch = [this](auto&&, auto&& placeholder2) { onBallLaunch(std::forward<decltype(placeholder2)>(placeholder2)); };
 	eventManager->SubscribeToEvent<LaunchBallEvent>(this, callbackLaunch);
 
+	// Player State change event
+	const std::function<void(GameplaySystem*, PlayerStateChangeEvent&)> callback = [this](auto&&, auto&& placeholder2) { OnPlayerStateChange(std::forward<decltype(placeholder2)>(placeholder2)); };
+	eventManager->SubscribeToEvent<PlayerStateChangeEvent>(this, callback);
+	
+}
+
+void GameplaySystem::OnPlayerStateChange(const PlayerStateChangeEvent& event)
+{
+	m_activeAbility = event.activeAbility;
 }
 
 void GameplaySystem::onBallLaunch(const LaunchBallEvent& event)
 {
 	Logger::Log(event.force.ToString());
-	event.player.GetComponent<RigidBodyComponent>().AddForce(event.force);
+	switch (m_activeAbility) {
+	case Ability::NORMAL_SHOT:
+		event.player.GetComponent<RigidBodyComponent>().AddForce(event.force);
+		break;
+	case Ability::POWER_SHOT:
+		event.player.GetComponent<RigidBodyComponent>().AddForce(event.force * 2);
+		break;
+	case Ability::WEAK_SHOT:
+		event.player.GetComponent<RigidBodyComponent>().AddForce(event.force / 2);
+		break;
+	}
+	
 	auto& playerComponent = event.player.GetComponent<PlayerComponent>();
 
 	playerComponent.totalStrokes += 1;

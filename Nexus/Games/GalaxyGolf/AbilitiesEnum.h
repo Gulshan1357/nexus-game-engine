@@ -4,5 +4,5 @@ enum class Ability
 {
 	NORMAL_SHOT,
 	POWER_SHOT,
-	SNIPER_SHOT
+	WEAK_SHOT
 };
