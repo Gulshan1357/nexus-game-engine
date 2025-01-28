@@ -44,4 +44,10 @@
      - `Int()`: Return a random int value between `min` and `max`.
    - *This RNG helper is inspired by [Cherno](https://www.youtube.com/watch?v=GK0jHlv3e3w)*
 
+7. **VectorN**  
+   - Purpose: A struct representing a N-dimensional vector. N represented by `dimensions` and the content represented by `data`.  
+
+8. **Matrix**  
+   - Purpose: A struct representing a MxN matrix, using `numRows` and `numCols`.
+
 ---
