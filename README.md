@@ -1,6 +1,6 @@
 # Nexus Game Engine (Ubisoft Next Project)
 
-https://www.youtube.com/watch?v=6T4g1QKDbH4
+[YouTube Link](https://youtu.be/AFiTRo31Kq4)
 
 ---
 A 2D mini-golf game project for the Ubisoft **Ubisoft NEXT 2024-2025 Programming Challenge**!
